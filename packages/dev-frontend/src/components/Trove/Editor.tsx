@@ -18,12 +18,14 @@ export const Row: React.FC<RowProps> = ({ sx, label, labelId, labelFor, children
         htmlFor={labelFor}
         sx={{
           p: 0,
-          pl: 3,
-          pt: "12px",
+          pl: 0,
+          mb: "14px",
           position: "absolute",
-          fontSize: 1,
+          fontSize: 18,
+          fontWeight: 500,
           border: 1,
-          borderColor: "transparent"
+          borderColor: "transparent",
+          lineHeight: "20px"
         }}
       >
         <Flex sx={{ alignItems: "center" }}>
@@ -102,12 +104,12 @@ export const StaticAmounts: React.FC<StaticAmountsProps & SxProp> = ({
     >
       {amount && (
         <Flex sx={{ alignItems: "center" }}>
-          <Text sx={{ color, fontWeight: "medium" }}>{amount}</Text>
+          <Text sx={{ color, fontWeight: 400, opacity: "0.6" }}>{amount}</Text>
 
           {unit && (
             <>
               &nbsp;
-              <Text sx={{ fontWeight: "light", opacity: 0.8 }}>{unit}</Text>
+              <Text sx={{ fontWeight: "light", opacity: 0.6 }}>{unit}</Text>
             </>
           )}
 
@@ -132,8 +134,8 @@ const staticStyle: ThemeUICSSProperties = {
   flexGrow: 1,
 
   mb: 0,
-  pl: 3,
-  pr: "11px",
+  // pl: 3,
+  // pr: "11px",
   pb: 0,
   pt: "28px",
 
@@ -147,16 +149,11 @@ const editableStyle: ThemeUICSSProperties = {
   flexGrow: 1,
 
   mb: [2, 3],
-  pl: 3,
-  pr: "11px",
-  pb: 2,
-  pt: "28px",
+  minHeight: "100%",
 
-  fontSize: 4,
-
-  boxShadow: [1, 2],
-  border: 1,
-  borderColor: "muted"
+  fontSize: 18,
+  fontWeight: 400,
+  lineHeight: 'normal'
 };
 
 type StaticRowProps = RowProps & StaticAmountsProps;

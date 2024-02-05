@@ -9,8 +9,7 @@ import { LiquityStoreProvider } from "@liquity/lib-react";
 import { useLiquity } from "./hooks/LiquityContext";
 import { TransactionMonitor } from "./components/Transaction";
 import { UserAccount } from "./components/UserAccount";
-import { SystemStatsPopup } from "./components/SystemStatsPopup";
-import { Header } from "./components/Header";
+import { LiquityLogo } from "./components/LiquityLogo";
 
 import { PageSwitcher } from "./pages/PageSwitcher";
 import { RiskyTrovesPage } from "./pages/RiskyTrovesPage";
@@ -46,34 +45,20 @@ export const LiquityFrontend: React.FC<LiquityFrontendProps> = ({ loader }) => {
           <StabilityViewProvider>
             <StakingViewProvider>
               <BondsProvider>
-                <Flex sx={{ flexDirection: "column", minHeight: "100%" }}>
-                  <Header>
+                <div className="flex flex-col min-h-full pb-[192px] sm:pb-[166px] bg-main-gradient">
+                  <div className="flex flex-row justify-between px-5 md:px-10 lg:px-[60px] py-[15px]">
+                    <LiquityLogo />
                     <UserAccount />
-                    <SystemStatsPopup />
-                  </Header>
-
-                  <Container
-                    variant="main"
-                    sx={{
-                      display: "flex",
-                      flexGrow: 1,
-                      flexDirection: "column",
-                      alignItems: "center"
-                    }}
-                  >
-                    <Switch>
-                      <Route path="/" exact>
-                        <PageSwitcher />
-                      </Route>
-                      <Route path="/bonds">
-                        <Bonds />
-                      </Route>
-                      <Route path="/risky-troves">
-                        <RiskyTrovesPage />
-                      </Route>
-                    </Switch>
-                  </Container>
-                </Flex>
+                  </div>
+                  <div className="bg-[#1D0D76] text-lg font-normal p-5 text-center text-dark-gray">Currently in simple mode. Click here to &nbsp;
+                    <span className="underline">travel to the Den</span>
+                  </div>
+                  <Switch>
+                    <Route path="/" exact>
+                      <PageSwitcher />
+                    </Route>
+                  </Switch>
+                </div>
               </BondsProvider>
             </StakingViewProvider>
           </StabilityViewProvider>

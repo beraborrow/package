@@ -9,7 +9,7 @@ import { LiquityLogo } from "./LiquityLogo";
 import { Nav } from "./Nav";
 import { SideNav } from "./SideNav";
 
-const logoHeight = "32px";
+const logoHeight = "51px";
 
 const select = ({ frontend }: LiquityStoreState) => ({
   frontend
@@ -27,7 +27,7 @@ export const Header: React.FC = ({ children }) => {
       <Flex sx={{ alignItems: "center", flex: 1 }}>
         <LiquityLogo height={logoHeight} />
 
-        <Box
+        {/* <Box
           sx={{
             mx: [2, 3],
             width: "0px",
@@ -40,7 +40,7 @@ export const Header: React.FC = ({ children }) => {
             <SideNav />
             <Nav />
           </>
-        )}
+        )} */}
       </Flex>
 
       {children}

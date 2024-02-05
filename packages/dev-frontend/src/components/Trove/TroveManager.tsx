@@ -214,34 +214,24 @@ export const TroveManager: React.FC<TroveManagerProps> = ({ collateral, debt }) 
       changePending={changePending}
       dispatch={dispatch}
     >
-      {description ??
-        (openingNewTrove ? (
-          <ActionDescription>
-            Start by entering the amount of ETH you'd like to deposit as collateral.
-          </ActionDescription>
-        ) : (
-          <ActionDescription>
-            Adjust your Trove by modifying its collateral, debt, or both.
-          </ActionDescription>
-        ))}
+      {description ?? <div />}
 
       <Flex variant="layout.actions">
-        <Button variant="cancel" onClick={handleCancel}>
-          Cancel
-        </Button>
-
-        {validChange ? (
-          <TroveAction
-            transactionId={`${transactionIdPrefix}${validChange.type}`}
-            change={validChange}
-            maxBorrowingRate={maxBorrowingRate}
-            borrowingFeeDecayToleranceMinutes={60}
-          >
-            Confirm
-          </TroveAction>
-        ) : (
-          <Button disabled>Confirm</Button>
-        )}
+        {
+          !changePending ? (
+          validChange ? (
+            <TroveAction
+              transactionId={`${transactionIdPrefix}${validChange.type}`}
+              change={validChange}
+              maxBorrowingRate={maxBorrowingRate}
+              borrowingFeeDecayToleranceMinutes={60}
+            >
+              Complete transaction
+            </TroveAction>
+          ) : (
+            <Button sx={{width: "100%"}} disabled>Complete transaction</Button>
+          )): (<Button sx={{width: "100%"}} disabled>Transaction in progress</Button>)
+        }
       </Flex>
     </TroveEditor>
   );

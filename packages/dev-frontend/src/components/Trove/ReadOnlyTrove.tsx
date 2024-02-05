@@ -1,5 +1,5 @@
-import React, { useCallback } from "react";
-import { Card, Heading, Box, Flex, Button } from "theme-ui";
+import React from "react";
+import { Grid } from "theme-ui";
 import { useLiquitySelector } from "@liquity/lib-react";
 import { LiquityStoreState } from "@liquity/lib-base";
 import { DisabledEditableRow } from "./Editor";
@@ -11,49 +11,45 @@ import { CollateralRatio } from "./CollateralRatio";
 const select = ({ trove, price }: LiquityStoreState) => ({ trove, price });
 
 export const ReadOnlyTrove: React.FC = () => {
-  const { dispatchEvent } = useTroveView();
-  const handleAdjustTrove = useCallback(() => {
-    dispatchEvent("ADJUST_TROVE_PRESSED");
-  }, [dispatchEvent]);
-  const handleCloseTrove = useCallback(() => {
-    dispatchEvent("CLOSE_TROVE_PRESSED");
-  }, [dispatchEvent]);
 
   const { trove, price } = useLiquitySelector(select);
+  const { view } = useTroveView();
 
-  // console.log("READONLY TROVE", trove.collateral.prettify(4));
+  const liquidationPrice = trove.collateral.eq(0) ? price : trove.debt.mulDiv(1.1, trove.collateral)
+
   return (
-    <Card>
-      <Heading>Trove</Heading>
-      <Box sx={{ p: [2, 3] }}>
-        <Box>
+    <div className="mt-7 sm:mt-8">
+      <div className="text-[32px] font-semibold p-0 py-2">
+        {view === "CLOSING" ? "Current Borrowing" : "Your Borrowing"}
+      </div>
+      <div className="px-0 mt-4">
+        <Grid gap={2} columns={[2, '1fr 2fr']}>
           <DisabledEditableRow
-            label="Collateral"
+            label="Net Asset Value"
             inputId="trove-collateral"
-            amount={trove.collateral.prettify(4)}
-            unit="ETH"
+            amount={"$" + trove.collateral.mul(price).prettify(4)}
+            unit=""
           />
-
           <DisabledEditableRow
-            label="Debt"
+            label="Amount Borrowed"
             inputId="trove-debt"
             amount={trove.debt.prettify()}
             unit={COIN}
           />
-
-          <CollateralRatio value={trove.collateralRatio(price)} />
-        </Box>
-
-        <Flex variant="layout.actions">
-          <Button variant="outline" onClick={handleCloseTrove}>
-            Close Trove
-          </Button>
-          <Button onClick={handleAdjustTrove}>
-            <Icon name="pen" size="sm" />
-            &nbsp;Adjust
-          </Button>
-        </Flex>
-      </Box>
-    </Card>
+          <DisabledEditableRow
+            label="Collateral Health"
+            inputId="trove-ratio"
+            amount={(trove.collateralRatio(price).mul(100)).prettify(1)}
+            unit="%"
+          />
+          <DisabledEditableRow
+            label="Liquidation Price"
+            inputId="trove-price"
+            amount={"$" + liquidationPrice.prettify(4)}
+            unit=""
+          />
+        </Grid>
+      </div>
+    </div>
   );
 };

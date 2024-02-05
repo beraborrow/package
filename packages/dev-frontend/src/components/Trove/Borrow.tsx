@@ -1,17 +1,18 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { Flex, Button, Box, Spinner, Text, Input } from "theme-ui";
+import React, { useCallback, useEffect, useState, useRef } from "react";
+import { Flex, Button, Text, Input } from "theme-ui";
 import {
   LiquityStoreState,
   Decimal,
   Trove,
   LUSD_LIQUIDATION_RESERVE,
-  LUSD_MINIMUM_NET_DEBT,
+  // Difference
 } from "@liquity/lib-base";
 import { useLiquitySelector } from "@liquity/lib-react";
 
 import { useStableTroveChange } from "../../hooks/useStableTroveChange";
 import { useMyTransactionState } from "../Transaction";
 import { TroveAction } from "./TroveAction";
+import { useTroveView } from "./context/TroveViewContext";
 import { Icon } from "../Icon";
 import { ExpensiveTroveChangeWarning, GasEstimationState } from "./ExpensiveTroveChangeWarning";
 import {
@@ -20,8 +21,9 @@ import {
 } from "./validation/validateTroveChange";
 
 const selector = (state: LiquityStoreState) => {
-  const { fees, price, accountBalance } = state;
+  const { trove, fees, price, accountBalance } = state;
   return {
+    trove,
     fees,
     price,
     accountBalance,
@@ -29,39 +31,74 @@ const selector = (state: LiquityStoreState) => {
   };
 };
 
-const EMPTY_TROVE = new Trove(Decimal.ZERO, Decimal.ZERO);
 const TRANSACTION_ID = "trove-creation";
-// const GAS_ROOM_ETH = Decimal.from(0.1);
+const GAS_ROOM_ETH = Decimal.from(0.1);
 
-export const Opening: React.FC = () => {
-  // const { dispatchEvent } = useTroveView();
-  const { fees, price, accountBalance, validationContext } = useLiquitySelector(selector);
+const feeFrom = (original: Trove, edited: Trove, borrowingRate: Decimal): Decimal => {
+  const change = original.whatChanged(edited, borrowingRate);
 
-  const borrowingRate = fees.borrowingRate();
+  if (change && change.type !== "invalidCreation" && change.params.borrowLUSD) {
+    return change.params.borrowLUSD.mul(borrowingRate);
+  } else {
+    return Decimal.ZERO;
+  }
+};
+
+export const Borrow: React.FC = () => {
+  const { dispatchEvent } = useTroveView();
+  const { trove, fees, price, accountBalance, validationContext } = useLiquitySelector(selector);
   const [editing, setEditing] = useState<string>();
-
-  const [collateral, setCollateral] = useState<Decimal>(Decimal.ZERO);
-  const [borrowAmount, setBorrowAmount] = useState<Decimal>(Decimal.ZERO);
-
+  const previousTrove = useRef<Trove>(trove);
+  const [collateral, setCollateral] = useState<Decimal>(trove.collateral);
+  const [netDebt, setNetDebt] = useState<Decimal>(trove.netDebt);
   const [custom, setCustom] = useState<Boolean>(false)
-  const maxBorrowingRate = borrowingRate.add(0.005);
 
-  const fee = borrowAmount.mul(borrowingRate);
-  // const feePct = new Percent(borrowingRate);
-  const totalDebt = borrowAmount.add(LUSD_LIQUIDATION_RESERVE).add(fee);
-  const isDirty = !collateral.isZero || !borrowAmount.isZero;
-  const trove = isDirty ? new Trove(collateral, totalDebt) : EMPTY_TROVE;
-  // const maxCollateral = accountBalance.gt(GAS_ROOM_ETH)
-  //   ? accountBalance.sub(GAS_ROOM_ETH)
-  //   : Decimal.ZERO;
-  // const collateralMaxedOut = collateral.eq(maxCollateral);
-  // const collateralRatio =
-  //   !collateral.isZero && !borrowAmount.isZero ? trove.collateralRatio(price) : undefined;
-  const [collateralRatio, setCollateralRatio] = useState (!collateral.isZero && !borrowAmount.isZero ? trove.collateralRatio(price) : undefined)
+  const transactionState = useMyTransactionState(TRANSACTION_ID);
+  const borrowingRate = fees.borrowingRate();
+
+  useEffect(() => {
+    if (transactionState.type === "confirmedOneShot") {
+      dispatchEvent("TROVE_ADJUSTED");
+    }
+  }, [transactionState.type, dispatchEvent]);
+
+  useEffect(() => {
+    // if (!previousTrove.current.collateral.eq(trove.collateral)) {
+      // const unsavedChanges = Difference.between(collateral, previousTrove.current.collateral);
+      // const nextCollateral = applyUnsavedCollateralChanges(unsavedChanges, trove);
+      // setCollateral(nextCollateral);
+    // }
+    // if (!previousTrove.current.netDebt.eq(trove.netDebt)) {
+      // const unsavedChanges = Difference.between(netDebt, previousTrove.current.netDebt);
+      // const nextNetDebt = applyUnsavedNetDebtChanges(unsavedChanges, trove);
+      // setNetDebt(nextNetDebt);
+    // }
+    previousTrove.current = trove;
+  }, [trove, collateral, netDebt]);
+
+  const reset = useCallback(() => {
+    setCollateral(trove.collateral);
+    setNetDebt(trove.netDebt);
+  }, [trove.collateral, trove.netDebt]);
+
+  const isDirty = !collateral.eq(trove.collateral) || !netDebt.eq(trove.netDebt);
+  const isDebtIncrease = netDebt.gt(trove.netDebt);
+  const debtIncreaseAmount = isDebtIncrease ? netDebt.sub(trove.netDebt) : Decimal.ZERO;
+
+  const fee = isDebtIncrease
+    ? feeFrom(trove, new Trove(trove.collateral, trove.debt.add(debtIncreaseAmount)), borrowingRate)
+    : Decimal.ZERO;
+  const totalDebt = netDebt.add(LUSD_LIQUIDATION_RESERVE).add(fee);
+  const maxBorrowingRate = borrowingRate.add(0.005);
+  const updatedTrove = isDirty ? new Trove(collateral, totalDebt) : trove;
+  const availableEth = accountBalance.gt(GAS_ROOM_ETH)
+    ? accountBalance.sub(GAS_ROOM_ETH)
+    : Decimal.ZERO;
+  const [collateralRatio, setCollateralRatio] = useState (!collateral.isZero && !netDebt.isZero ? updatedTrove.collateralRatio(price) : undefined)
 
   const [troveChange, description] = validateTroveChange(
-    EMPTY_TROVE,
     trove,
+    updatedTrove,
     borrowingRate,
     validationContext
   );
@@ -69,40 +106,27 @@ export const Opening: React.FC = () => {
   const stableTroveChange = useStableTroveChange(troveChange);
   const [gasEstimationState, setGasEstimationState] = useState<GasEstimationState>({ type: "idle" });
 
-  const transactionState = useMyTransactionState(TRANSACTION_ID);
   const isTransactionPending =
     transactionState.type === "waitingForApproval" ||
     transactionState.type === "waitingForConfirmation";
 
-  // const handleCancelPressed = useCallback(() => {
-  //   dispatchEvent("CANCEL_ADJUST_TROVE_PRESSED");
-  // }, [dispatchEvent]);
-
-  const reset = useCallback(() => {
-    setCollateral(Decimal.ZERO);
-    setBorrowAmount(Decimal.ZERO);
-  }, []);
-
-  useEffect(() => {
-    if (!collateral.isZero && borrowAmount.isZero) {
-      setBorrowAmount(LUSD_MINIMUM_NET_DEBT);
-      setCollateralRatio(Decimal.from(collateral.mulDiv(price, LUSD_MINIMUM_NET_DEBT.add(LUSD_LIQUIDATION_RESERVE).add(fee))))
-    }
-  }, [collateral, borrowAmount]);
+  if (trove.status !== "open") {
+    return null;
+  }
 
   const onCollateralRatioChange = (e: any) => {
     if (isNaN(Number(e.target.value))) return
     if (Number(e.target.value) <= 0) {
       setCollateralRatio(Decimal.from(1.11))
-      setBorrowAmount(Decimal.from(collateral.mulDiv(price, Decimal.from(1.1)).sub(LUSD_LIQUIDATION_RESERVE)))
+      setNetDebt(Decimal.from(collateral.mulDiv(price, Decimal.from(1.1)).sub(LUSD_LIQUIDATION_RESERVE)))
       return
     }
     setCollateralRatio(Decimal.from(Number(e.target.value)/100))
-    setBorrowAmount(Decimal.from(collateral.mulDiv(price, Decimal.from(Number(e.target.value)/100)).sub(LUSD_LIQUIDATION_RESERVE)))
+    setNetDebt(Decimal.from(collateral.mulDiv(price, Decimal.from(Number(e.target.value)/100)).sub(LUSD_LIQUIDATION_RESERVE)))
   }
 
-  const onBorrowingAmountChange = (e: any) => {
-    setBorrowAmount(Decimal.from(e.target.value))
+  const onNetDebtChange = (e: any) => {
+    setNetDebt(Decimal.from(e.target.value))
     setCollateralRatio(Decimal.from(collateral.mulDiv(price, Decimal.from(e.target.value).add(LUSD_LIQUIDATION_RESERVE).add(fee))))
   }
 
@@ -112,16 +136,20 @@ export const Opening: React.FC = () => {
       return
     }
     if (!collateral.isZero && Number(e.target.value) > 0) {
-      setCollateralRatio(Decimal.from(e.target.value).mulDiv(price, borrowAmount.add(LUSD_LIQUIDATION_RESERVE).add(fee)))
+      setCollateralRatio(Decimal.from(e.target.value).mulDiv(price, netDebt.add(LUSD_LIQUIDATION_RESERVE).add(fee)))
     }
     setCollateral(Decimal.from(e.target.value))
   }
+
+  const handleRedeemTrove = useCallback(() => {
+    dispatchEvent("CLOSE_TROVE_PRESSED");
+  }, [dispatchEvent]);
 
   return (
     <>
       <div className="flex flex-row justify-between text-lg font-medium p-0 border border-dark-gray rounded-[260px]">
         <div className="bg-dark-gray text-[#150D39] w-full text-center p-5 rounded-l-[260px]">Borrow</div>
-        <span className="bg-transparent text-dark-gray w-full text-center p-5">Redeem</span>
+        <span className="cursor-pointer bg-transparent text-dark-gray w-full text-center p-5" onClick={handleRedeemTrove}>Redeem</span>
         {/* {isDirty && !isTransactionPending && (
           <Button variant="titleIcon" sx={{ ":enabled:hover": { color: "danger" } }} onClick={reset}>
             <Icon name="history" size="lg" />
@@ -132,16 +160,23 @@ export const Opening: React.FC = () => {
       <div className="px-0 py-4 mt-[44px] text-dark-gray">
         <div className="mb-[28px]">
             <div className="flex flex-row font-medium text-lg justify-between mb-[14px]">
-                <div>Collateral</div>
+                <div>Pay back</div>
                 <div className="flex flex-row">
                     <div>Balance</div>
-                    <div className="ml-2 font-normal">{`${accountBalance}`} iBGT</div>
+                    <div className="ml-2 font-normal">{`${availableEth.prettify(4)}`} iBGT</div>
                 </div>
             </div>
-            <div 
+            <div
               className={`flex flex-row items-center justify-between border ${editing !== "collateral" && collateral.eq(0) ? "border-[#F45348]" : "border-[#FFEDD4]"} rounded-[180px] p-5`}
               onClick={() => setEditing("collateral")}
             >
+                {/* <input 
+                    className="bg-transparent text-lg w-full outline-none"
+                    value={collateral.toString(4)}
+                    onChange={(e) => onCollateralChange(e)}
+                    onBlur={() => setEditing(undefined)}
+                    onClick={() => setEditing("collateral")}
+                /> */}
                 {
                   editing === "collateral" ? (
                     <Input
@@ -151,7 +186,6 @@ export const Opening: React.FC = () => {
                       step="any"
                       defaultValue={collateral.toString(4)}
                       onChange={e => onCollateralChange(e)}
-                      
                       onBlur={() => {setEditing(undefined)}}
                       variant="editor"
                       sx={{
@@ -171,7 +205,6 @@ export const Opening: React.FC = () => {
                   )
                 }
                 <div className="flex flex-row items-center font-medium text-lg">
-                    {/* <span className="w-4 h-4 rounded-full bg-[#BDFAE2] mr-2" /> */}
                     iBGT
                 </div>
             </div>
@@ -184,10 +217,10 @@ export const Opening: React.FC = () => {
             <div className="text-lg font-medium">Calculate Debt</div>
             <div className="flex flex-row items-center text-lg font-medium justify-between">
                 <div className="flex flex-row gap-2">
-                  <span className={`${custom?"opacity-30": "opacity-100"} cursor-pointer`} onClick={() => setCustom(!custom)}>Auto</span>
-                  <span className={`${custom?"opacity-100": "opacity-30"} cursor-pointer`} onClick={() => setCustom(!custom)}>Custom</span>
+                    <span className={`${custom?"opacity-30": "opacity-100"} cursor-pointer`} onClick={() => setCustom(!custom)}>Auto</span>
+                    <span className={`${custom?"opacity-100": "opacity-30"} cursor-pointer`} onClick={() => setCustom(!custom)}>Custom</span>
                 </div>
-                <div className={`flex flex-row justify-between border ${custom?"border-[#FFEDD4]":"border-transparent"} rounded-[150px] p-5`}>
+                <div className={`flex flex-row justify-between border ${custom?"border-[#FFEDD4]":"border-transparent"} rounded-[30px] p-[14px]`}>
                     <input 
                         className="bg-transparent text-lg outline-none w-[100px]"
                         value={collateralRatio?.mul(100).toString(1)}
@@ -203,19 +236,19 @@ export const Opening: React.FC = () => {
             <div className="flex flex-row font-medium text-lg justify-between mb-[14px]">
                 NECT to be minted
             </div>
-            <div 
-              className={`flex flex-row items-center justify-between border ${editing !== "netdebt" && borrowAmount.eq(0) ? "border-[#F45348]" : "border-[#FFEDD4]"} rounded-[180px] p-5`}
+            <div
+              className={`flex flex-row items-center justify-between border ${editing !== "netdebt" && netDebt.eq(0) ? "border-[#F45348]" : "border-[#FFEDD4]"} rounded-[180px] p-5`}
               onClick={() => setEditing("netdebt")}
             >
                 {
                   editing === "netdebt" ? (
                     <Input
                       autoFocus
-                      id="trove-collateral"
+                      id="trove-netdebt"
                       type="number"
                       step="any"
-                      defaultValue={borrowAmount.toString(4)}
-                      onChange={e => onBorrowingAmountChange(e)}
+                      defaultValue={netDebt.toString(4)}
+                      onChange={e => onNetDebtChange(e)}
                       onBlur={() => {setEditing(undefined)}}
                       variant="editor"
                       sx={{
@@ -231,33 +264,32 @@ export const Opening: React.FC = () => {
                       }}
                     />
                   ):(
-                    <div className="opacity-60">{borrowAmount.prettify(4)}</div>
+                    <div className="opacity-60">{netDebt.prettify(4)}</div>
                   )
                 }
                 <div className="flex flex-row items-center font-medium text-lg">
-                    <span className="w-4 h-4 rounded-full bg-[#BDFAE2] mr-2" />
                     NECT
                 </div>
             </div>
             {
-              editing !== "netdebt" && borrowAmount.eq(0) &&
+              editing !== "netdebt" && netDebt.eq(0) &&
               <span className="flex flex-row justify-end text-[#F45348] text-lg mt-1 italic">*Please enter a value</span>
             }
         </div>
         <div className="mb-[28px]">
             <div className="flex flex-row justify-between text-lg font-normal mb-[14px]">
                 <div>+ Net debt</div>
-                <div>{`${borrowAmount}`} NECT</div>
+                <div>{`${netDebt.prettify(4)}`} NECT</div>
             </div>
             <div className="flex flex-row justify-between text-lg font-normal mb-[14px]">
                 <div>+ Mint fee</div>
-                <div>{`${fee}`} NECT</div>
+                <div>{`${fee.prettify(4)}`} NECT</div>
             </div>
             <div className="flex flex-row justify-between text-lg font-normal mb-[14px]">
                 <div>+ Liquidation reserve</div>
                 <div>{`${LUSD_LIQUIDATION_RESERVE}`} NECT</div>
             </div>
-            <div className="my-[14px] h-0 w-full border-t border-[#BDFAE2]" />
+            <div className="my-[14px] h-0 w-full border-t border-dark-gray" />
             <div className="flex flex-row justify-between text-lg font-normal mb-[14px]">
                 <div>Total debt</div>
                 <div>{totalDebt.prettify(2)} NECT</div>
@@ -277,22 +309,18 @@ export const Opening: React.FC = () => {
         <Flex variant="layout.actions">
           {
             !isTransactionPending ? (
-            gasEstimationState.type === "inProgress" ? (
-              <Button sx={{width: "100%"}} disabled>
-                <Spinner size="24px" sx={{ color: "background" }} />
-              </Button>
-            ) : stableTroveChange ? (
+            stableTroveChange ? (
               <TroveAction
                 transactionId={TRANSACTION_ID}
                 change={stableTroveChange}
-                maxBorrowingRate={maxBorrowingRate.mul(2)}
+                maxBorrowingRate={maxBorrowingRate}
                 borrowingFeeDecayToleranceMinutes={60}
               >
                 Complete transaction
               </TroveAction>
             ) : (
               <Button sx={{width: "100%"}} disabled>Complete transaction</Button>
-            )) : (<Button sx={{width: "100%"}} disabled>Transaction in progress</Button>)
+            )): (<Button sx={{width: "100%"}} disabled>Transaction in progress</Button>)
           }
         </Flex>
       </div>

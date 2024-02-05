@@ -444,6 +444,8 @@ export class Trove {
 
   /** Calculate the Trove's collateralization ratio at a given price. */
   collateralRatio(price: Decimalish): Decimal {
+    if (this.collateral.eq(0)) return Decimal.from(0)
+    if (this.debt.eq(0)) return Decimal.from(0)
     return this.collateral.mulDiv(price, this.debt);
   }
 

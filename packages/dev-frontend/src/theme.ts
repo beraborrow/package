@@ -7,12 +7,14 @@ const baseColors = {
   green: "#28c081",
   yellow: "#fd9d28",
   red: "#dc2c10",
-  lightRed: "#ff755f"
+  lightRed: "#ff755f",
+  orange: "#EC6F15",
+  darkBlue: "#0B1722"
 };
 
 const colors = {
-  primary: baseColors.blue,
-  secondary: baseColors.purple,
+  primary: baseColors.orange,
+  secondary: baseColors.darkBlue,
   accent: baseColors.cyan,
 
   success: baseColors.green,
@@ -22,8 +24,8 @@ const colors = {
   info: baseColors.blue,
   invalid: "pink",
 
-  text: "#293147",
-  background: "white",
+  text: "#FFEDD4",
+  background: "#150E2F",
   muted: "#eaebed",
   highlight: "#efeffe"
 };
@@ -42,8 +44,9 @@ const button: ThemeUIStyleObject = {
   px: "32px",
   py: "12px",
 
-  color: "white",
+  color: "darkBlue",
   border: 1,
+  borderRadius: "33px",
 
   fontWeight: "bold",
 
@@ -152,7 +155,7 @@ const theme: Theme = {
 
   fonts: {
     body: [
-      "system-ui",
+      "Metropolis",
       "-apple-system",
       "BlinkMacSystemFont",
       '"Segoe UI"',
@@ -202,13 +205,14 @@ const theme: Theme = {
 
       ":enabled:hover": {
         bg: "secondary",
-        borderColor: "secondary"
+        borderColor: "primary",
+        color: "primary"
       }
     },
 
     outline: {
       ...button,
-      ...buttonOutline("primary", "secondary")
+      ...buttonOutline("primary", "primary")
     },
 
     cancel: {
@@ -396,10 +400,6 @@ const theme: Theme = {
     actions: {
       justifyContent: "flex-end",
       mt: 2,
-
-      button: {
-        ml: 2
-      }
     },
 
     disabledOverlay: {
