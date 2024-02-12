@@ -3,20 +3,20 @@
 pragma solidity 0.6.11;
 
 import "../Dependencies/SafeMath.sol";
-import "../Dependencies/LiquityMath.sol";
+import "../Dependencies/BeraBorrowMath.sol";
 import "../Dependencies/IERC20.sol";
 import "../Interfaces/IBorrowerOperations.sol";
 import "../Interfaces/ITroveManager.sol";
 import "../Interfaces/IStabilityPool.sol";
 import "../Interfaces/IPriceFeed.sol";
-import "../Interfaces/ILQTYStaking.sol";
+import "../Interfaces/IPOLLENStaking.sol";
 import "./BorrowerOperationsScript.sol";
 import "./ETHTransferScript.sol";
-import "./LQTYStakingScript.sol";
+import "./POLLENStakingScript.sol";
 import "../Dependencies/console.sol";
 
 
-contract BorrowerWrappersScript is BorrowerOperationsScript, ETHTransferScript, LQTYStakingScript {
+contract BorrowerWrappersScript is BorrowerOperationsScript, ETHTransferScript, POLLENStakingScript {
     using SafeMath for uint;
 
     string constant public NAME = "BorrowerWrappersScript";
@@ -24,17 +24,17 @@ contract BorrowerWrappersScript is BorrowerOperationsScript, ETHTransferScript, 
     ITroveManager immutable troveManager;
     IStabilityPool immutable stabilityPool;
     IPriceFeed immutable priceFeed;
-    IERC20 immutable lusdToken;
-    IERC20 immutable lqtyToken;
-    ILQTYStaking immutable lqtyStaking;
+    IERC20 immutable nectToken;
+    IERC20 immutable pollenToken;
+    IPOLLENStaking immutable pollenStaking;
 
     constructor(
         address _borrowerOperationsAddress,
         address _troveManagerAddress,
-        address _lqtyStakingAddress
+        address _pollenStakingAddress
     )
         BorrowerOperationsScript(IBorrowerOperations(_borrowerOperationsAddress))
-        LQTYStakingScript(_lqtyStakingAddress)
+        POLLENStakingScript(_pollenStakingAddress)
         public
     {
         checkContract(_troveManagerAddress);
@@ -49,20 +49,20 @@ contract BorrowerWrappersScript is BorrowerOperationsScript, ETHTransferScript, 
         checkContract(address(priceFeedCached));
         priceFeed = priceFeedCached;
 
-        address lusdTokenCached = address(troveManagerCached.lusdToken());
-        checkContract(lusdTokenCached);
-        lusdToken = IERC20(lusdTokenCached);
+        address nectTokenCached = address(troveManagerCached.nectToken());
+        checkContract(nectTokenCached);
+        nectToken = IERC20(nectTokenCached);
 
-        address lqtyTokenCached = address(troveManagerCached.lqtyToken());
-        checkContract(lqtyTokenCached);
-        lqtyToken = IERC20(lqtyTokenCached);
+        address pollenTokenCached = address(troveManagerCached.pollenToken());
+        checkContract(pollenTokenCached);
+        pollenToken = IERC20(pollenTokenCached);
 
-        ILQTYStaking lqtyStakingCached = troveManagerCached.lqtyStaking();
-        require(_lqtyStakingAddress == address(lqtyStakingCached), "BorrowerWrappersScript: Wrong LQTYStaking address");
-        lqtyStaking = lqtyStakingCached;
+        IPOLLENStaking pollenStakingCached = troveManagerCached.pollenStaking();
+        require(_pollenStakingAddress == address(pollenStakingCached), "BorrowerWrappersScript: Wrong POLLENStaking address");
+        pollenStaking = pollenStakingCached;
     }
 
-    function claimCollateralAndOpenTrove(uint _maxFee, uint _LUSDAmount, address _upperHint, address _lowerHint) external payable {
+    function claimCollateralAndOpenTrove(uint _maxFee, uint _NECTAmount, address _upperHint, address _lowerHint) external payable {
         uint balanceBefore = address(this).balance;
 
         // Claim collateral
@@ -76,78 +76,78 @@ contract BorrowerWrappersScript is BorrowerOperationsScript, ETHTransferScript, 
         uint totalCollateral = balanceAfter.sub(balanceBefore).add(msg.value);
 
         // Open trove with obtained collateral, plus collateral sent by user
-        borrowerOperations.openTrove{ value: totalCollateral }(_maxFee, _LUSDAmount, _upperHint, _lowerHint);
+        borrowerOperations.openTrove{ value: totalCollateral }(_maxFee, _NECTAmount, _upperHint, _lowerHint);
     }
 
     function claimSPRewardsAndRecycle(uint _maxFee, address _upperHint, address _lowerHint) external {
         uint collBalanceBefore = address(this).balance;
-        uint lqtyBalanceBefore = lqtyToken.balanceOf(address(this));
+        uint pollenBalanceBefore = pollenToken.balanceOf(address(this));
 
         // Claim rewards
         stabilityPool.withdrawFromSP(0);
 
         uint collBalanceAfter = address(this).balance;
-        uint lqtyBalanceAfter = lqtyToken.balanceOf(address(this));
+        uint pollenBalanceAfter = pollenToken.balanceOf(address(this));
         uint claimedCollateral = collBalanceAfter.sub(collBalanceBefore);
 
-        // Add claimed ETH to trove, get more LUSD and stake it into the Stability Pool
+        // Add claimed ETH to trove, get more NECT and stake it into the Stability Pool
         if (claimedCollateral > 0) {
             _requireUserHasTrove(address(this));
-            uint LUSDAmount = _getNetLUSDAmount(claimedCollateral);
-            borrowerOperations.adjustTrove{ value: claimedCollateral }(_maxFee, 0, LUSDAmount, true, _upperHint, _lowerHint);
-            // Provide withdrawn LUSD to Stability Pool
-            if (LUSDAmount > 0) {
-                stabilityPool.provideToSP(LUSDAmount, address(0));
+            uint NECTAmount = _getNetNECTAmount(claimedCollateral);
+            borrowerOperations.adjustTrove{ value: claimedCollateral }(_maxFee, 0, NECTAmount, true, _upperHint, _lowerHint);
+            // Provide withdrawn NECT to Stability Pool
+            if (NECTAmount > 0) {
+                stabilityPool.provideToSP(NECTAmount, address(0));
             }
         }
 
-        // Stake claimed LQTY
-        uint claimedLQTY = lqtyBalanceAfter.sub(lqtyBalanceBefore);
-        if (claimedLQTY > 0) {
-            lqtyStaking.stake(claimedLQTY);
+        // Stake claimed POLLEN
+        uint claimedPOLLEN = pollenBalanceAfter.sub(pollenBalanceBefore);
+        if (claimedPOLLEN > 0) {
+            pollenStaking.stake(claimedPOLLEN);
         }
     }
 
     function claimStakingGainsAndRecycle(uint _maxFee, address _upperHint, address _lowerHint) external {
         uint collBalanceBefore = address(this).balance;
-        uint lusdBalanceBefore = lusdToken.balanceOf(address(this));
-        uint lqtyBalanceBefore = lqtyToken.balanceOf(address(this));
+        uint nectBalanceBefore = nectToken.balanceOf(address(this));
+        uint pollenBalanceBefore = pollenToken.balanceOf(address(this));
 
         // Claim gains
-        lqtyStaking.unstake(0);
+        pollenStaking.unstake(0);
 
         uint gainedCollateral = address(this).balance.sub(collBalanceBefore); // stack too deep issues :'(
-        uint gainedLUSD = lusdToken.balanceOf(address(this)).sub(lusdBalanceBefore);
+        uint gainedNECT = nectToken.balanceOf(address(this)).sub(nectBalanceBefore);
 
-        uint netLUSDAmount;
-        // Top up trove and get more LUSD, keeping ICR constant
+        uint netNECTAmount;
+        // Top up trove and get more NECT, keeping ICR constant
         if (gainedCollateral > 0) {
             _requireUserHasTrove(address(this));
-            netLUSDAmount = _getNetLUSDAmount(gainedCollateral);
-            borrowerOperations.adjustTrove{ value: gainedCollateral }(_maxFee, 0, netLUSDAmount, true, _upperHint, _lowerHint);
+            netNECTAmount = _getNetNECTAmount(gainedCollateral);
+            borrowerOperations.adjustTrove{ value: gainedCollateral }(_maxFee, 0, netNECTAmount, true, _upperHint, _lowerHint);
         }
 
-        uint totalLUSD = gainedLUSD.add(netLUSDAmount);
-        if (totalLUSD > 0) {
-            stabilityPool.provideToSP(totalLUSD, address(0));
+        uint totalNECT = gainedNECT.add(netNECTAmount);
+        if (totalNECT > 0) {
+            stabilityPool.provideToSP(totalNECT, address(0));
 
-            // Providing to Stability Pool also triggers LQTY claim, so stake it if any
-            uint lqtyBalanceAfter = lqtyToken.balanceOf(address(this));
-            uint claimedLQTY = lqtyBalanceAfter.sub(lqtyBalanceBefore);
-            if (claimedLQTY > 0) {
-                lqtyStaking.stake(claimedLQTY);
+            // Providing to Stability Pool also triggers POLLEN claim, so stake it if any
+            uint pollenBalanceAfter = pollenToken.balanceOf(address(this));
+            uint claimedPOLLEN = pollenBalanceAfter.sub(pollenBalanceBefore);
+            if (claimedPOLLEN > 0) {
+                pollenStaking.stake(claimedPOLLEN);
             }
         }
 
     }
 
-    function _getNetLUSDAmount(uint _collateral) internal returns (uint) {
+    function _getNetNECTAmount(uint _collateral) internal returns (uint) {
         uint price = priceFeed.fetchPrice();
         uint ICR = troveManager.getCurrentICR(address(this), price);
 
-        uint LUSDAmount = _collateral.mul(price).div(ICR);
+        uint NECTAmount = _collateral.mul(price).div(ICR);
         uint borrowingRate = troveManager.getBorrowingRateWithDecay();
-        uint netDebt = LUSDAmount.mul(LiquityMath.DECIMAL_PRECISION).div(LiquityMath.DECIMAL_PRECISION.add(borrowingRate));
+        uint netDebt = NECTAmount.mul(BeraBorrowMath.DECIMAL_PRECISION).div(BeraBorrowMath.DECIMAL_PRECISION.add(borrowingRate));
 
         return netDebt;
     }
