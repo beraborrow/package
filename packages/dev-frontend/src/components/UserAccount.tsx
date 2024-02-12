@@ -6,8 +6,8 @@ import { ConnectKitButton } from "connectkit";
 export const UserAccount: React.FC = () => {
 
   return (
-    <Flex sx={{gap: "20px"}}>
-      <img src="./faucet.svg" className="w-[52px] h-[52px]"/>
+    <Flex sx={{gap: "20px", alignItems: "center"}}>
+      <img src="./faucet.svg" className="w-8 h-8 lg:w-[52px] lg:h-[52px]"/>
       <ConnectKitButton.Custom>
         {connectKit => (
           <Button

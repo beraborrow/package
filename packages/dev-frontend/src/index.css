@@ -15,3 +15,58 @@ html {
 .black-background {
   background-color: #343434;
 }
+
+.den-window-shadow {
+  box-shadow: 0px 0px 14px 10px rgba(236, 111, 21, 0.20);
+}
+
+.filter-shadow {
+  filter: drop-shadow(0px 0px 44px #000);
+}
+
+@keyframes fromSmallToBig {
+  from {
+    scale: 100%;
+  }
+  to {
+    scale: 105%;
+  }
+}
+
+@keyframes fromBigToSmall {
+  from {
+    scale: 105%;
+  }
+  to {
+    scale: 100%;
+  }
+}
+
+.fadeBearFromSmallToBig {
+  animation-name: fromSmallToBig;
+  animation-duration: 2s;
+  animation-delay: 1s;
+}
+
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 4px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 4px;
+  height: 82px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: transparent;
+}

@@ -30,5 +30,5 @@ export const StabilityDepositAction: React.FC<StabilityDepositActionProps> = ({
       : liquity.send.withdrawLUSDFromStabilityPool.bind(liquity.send, change.withdrawLUSD)
   );
 
-  return <Button onClick={sendTransaction}>{children}</Button>;
+  return <Button style={{width: "100%", marginTop: "16px"}} onClick={sendTransaction}>{children}</Button>;
 };

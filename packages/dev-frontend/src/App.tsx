@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useMemo } from "react";
 import { createClient, WagmiConfig } from "wagmi";
 import { mainnet, goerli, sepolia, localhost } from "wagmi/chains";
 import { ConnectKitProvider } from "connectkit";
@@ -16,6 +16,9 @@ import { DisposableWalletProvider } from "./testUtils/DisposableWalletProvider";
 import { LiquityFrontend } from "./LiquityFrontend";
 import { AppLoader } from "./components/AppLoader";
 import { useAsyncValue } from "./hooks/AsyncValue";
+
+import { CurPageContext } from "./contexts/CurPageContext";
+
 
 const isDemoMode = import.meta.env.VITE_APP_DEMO_MODE === "true";
 
@@ -82,6 +85,13 @@ const App = () => {
   const config = useAsyncValue(getConfig);
   const loader = <AppLoader />;
 
+  const [curPage, setCurPage] = useState (0)
+
+  const contextValue = useMemo(
+    () => ({ curPage, setCurPage }),
+    [curPage]
+  );
+
   return (
     <ThemeProvider theme={theme}>
       {config.loaded && (
@@ -109,7 +119,9 @@ const App = () => {
                 unsupportedMainnetFallback={<UnsupportedMainnetFallback />}
               >
                 <TransactionProvider>
-                  <LiquityFrontend loader={loader} />
+                  <CurPageContext.Provider value={contextValue}>
+                    <LiquityFrontend loader={loader} />
+                  </CurPageContext.Provider>
                 </TransactionProvider>
               </LiquityProvider>
             </WalletConnector>

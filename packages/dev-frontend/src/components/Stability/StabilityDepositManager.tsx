@@ -138,16 +138,16 @@ export const StabilityDepositManager: React.FC = () => {
         ))}
 
       <Flex variant="layout.actions">
-        <Button variant="cancel" onClick={handleCancel}>
+        {/* <Button variant="cancel" onClick={handleCancel}>
           Cancel
-        </Button>
+        </Button> */}
 
         {validChange ? (
           <StabilityDepositAction transactionId={transactionId} change={validChange}>
-            Confirm
+            Complete transaction
           </StabilityDepositAction>
         ) : (
-          <Button disabled>Confirm</Button>
+          <Button style={{width: "100%", marginTop: "16px"}} disabled>Complete transaction</Button>
         )}
       </Flex>
     </StabilityDepositEditor>

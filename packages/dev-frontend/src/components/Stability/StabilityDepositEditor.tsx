@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import { Heading, Box, Card, Button } from "theme-ui";
+import React, { useState, useCallback } from "react";
+import { Heading, Box, Card, Input } from "theme-ui";
+import { useStabilityView } from "./context/StabilityViewContext";
 
 import {
   Decimal,
@@ -38,65 +39,107 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
   children
 }) => {
   const { lusdBalance, lusdInStabilityPool } = useLiquitySelector(select);
-  const editingState = useState<string>();
-
-  const edited = !editedLUSD.eq(originalDeposit.currentLUSD);
-
-  const maxAmount = originalDeposit.currentLUSD.add(lusdBalance);
-  const maxedOut = editedLUSD.eq(maxAmount);
+  const [isWithdraw, setIsWithdraw] = useState<boolean>(false)
+  
+  const [editing, setEditing] = useState<string>();
 
   const lusdInStabilityPoolAfterChange = lusdInStabilityPool
     .sub(originalDeposit.currentLUSD)
     .add(editedLUSD);
 
-  const originalPoolShare = originalDeposit.currentLUSD.mulDiv(100, lusdInStabilityPool);
   const newPoolShare = editedLUSD.mulDiv(100, lusdInStabilityPoolAfterChange);
-  const poolShareChange =
-    originalDeposit.currentLUSD.nonZero &&
-    Difference.between(newPoolShare, originalPoolShare).nonZero;
 
   return (
-    <Card>
-      <Heading>
-        Stability Pool
-        {edited && !changePending && (
-          <Button
-            variant="titleIcon"
-            sx={{ ":enabled:hover": { color: "danger" } }}
-            onClick={() => dispatch({ type: "revert" })}
-          >
+    <>
+      <div className="flex flex-row justify-between text-lg font-medium p-0 border border-dark-gray rounded-[260px]">
+        <div className={`${!isWithdraw ? "bg-dark-gray text-[#150D39]" : "bg-transparent text-dark-gray"} cursor-pointer w-full text-center p-5 rounded-l-[260px]`} onClick={() => setIsWithdraw(!isWithdraw)}>Deposit</div>
+        <span className={`${isWithdraw ? "bg-dark-gray text-[#150D39]" : "bg-transparent text-dark-gray"} cursor-pointer w-full text-center p-5 rounded-r-[260px]`} onClick={() => setIsWithdraw(!isWithdraw)}>Withdraw</span>
+        {/* {isDirty && !isTransactionPending && (
+          <Button variant="titleIcon" sx={{ ":enabled:hover": { color: "danger" } }} onClick={reset}>
             <Icon name="history" size="lg" />
           </Button>
-        )}
-      </Heading>
+        )} */}
+      </div>
 
-      <Box sx={{ p: [2, 3] }}>
-        <EditableRow
-          label="Deposit"
-          inputId="deposit-lqty"
-          amount={editedLUSD.prettify()}
-          maxAmount={maxAmount.toString()}
-          maxedOut={maxedOut}
-          unit={COIN}
-          {...{ editingState }}
-          editedAmount={editedLUSD.toString(2)}
-          setEditedAmount={newValue => dispatch({ type: "setDeposit", newValue })}
-        />
-
-        {newPoolShare.infinite ? (
-          <StaticRow label="Pool share" inputId="deposit-share" amount="N/A" />
-        ) : (
+      <div className="px-0 py-4 mt-[44px] text-dark-gray">
+        <div className={`${isWithdraw ? "mb-[48px]" : "mb-[28px]"}`}>
+          <div className="flex flex-row font-medium text-lg justify-between mb-[14px]">
+              <div>{isWithdraw ? "Withdraw": "Deposit"}</div>
+              <div className="flex flex-row">
+                  <div>Balance</div>
+                  <div className="ml-2 font-normal">{`${lusdBalance.prettify(4)}`} NECT</div>
+              </div>
+          </div>
+          <div 
+              className={`flex flex-row items-center justify-between border ${editing !== "collateral" && editedLUSD.eq(0) ? "border-[#F45348]" : "border-[#FFEDD4]"} rounded-[180px] p-5`}
+              onClick={() => setEditing("collateral")}
+            >
+                {
+                  editing === "collateral" ? (
+                    <Input
+                      autoFocus
+                      id="trove-collateral"
+                      type="number"
+                      step="any"
+                      defaultValue={editedLUSD.toString(4)}
+                      onChange={(e) => dispatch({ type: "setDeposit", newValue: e.target.value })}
+                      onBlur={() => {setEditing(undefined)}}
+                      variant="editor"
+                      sx={{
+                        backgroundColor: "transparent",
+                        fontSize: "18px",
+                        fontWeight: "medium",
+                        width: "100%",
+                        outline: "2px solid transparent",
+                        outlineOffset: "2px",
+                        borderColor: "transparent",
+                        padding: 0,
+                        marginRight: "4px"
+                      }}
+                    />
+                  ):(
+                    <div className="opacity-60">{editedLUSD.prettify(4)}</div>
+                  )
+                }
+                <div className="flex flex-row items-center font-medium text-lg">
+                    {/* <span className="w-4 h-4 rounded-full bg-[#BDFAE2] mr-2" /> */}
+                    NECT
+                </div>
+            </div>
+        </div>
+        {
+          isWithdraw ?
           <StaticRow
-            label="Pool share"
-            inputId="deposit-share"
-            amount={newPoolShare.prettify(4)}
-            pendingAmount={poolShareChange?.prettify(4).concat("%")}
-            pendingColor={poolShareChange?.positive ? "success" : "danger"}
-            unit="%"
-          />
-        )}
+            label="Rewards received"
+            inputId="deposit-rewards-received"
+            amount={originalDeposit.lqtyReward.prettify()}
+            color={originalDeposit.lqtyReward.nonZero && "success"}
+            unit="POLLEN"
+          /> : 
+          newPoolShare.infinite ? (
+            <StaticRow label="Pool share" inputId="deposit-share" amount="N/A" />
+          ) : (
+            <div className="mb-[28px]">
+              <div className="flex flex-row font-medium text-lg justify-between mb-[14px]">
+                  <div>Pool share</div>
+                  <div className="flex flex-row">
+                      <div className="ml-2 font-normal">{`${newPoolShare.prettify(4)}`} %</div>
+                  </div>
+              </div>
+              <div 
+                  className={`flex flex-row items-center justify-between border border-[#FFEDD4] rounded-[180px] p-5`}
+                >
+                    <div className="opacity-60">{editedLUSD.mulDiv(newPoolShare, 100).prettify(4)}</div>
+                    <div className="flex flex-row items-center font-medium text-lg">
+                        {/* <span className="w-4 h-4 rounded-full bg-[#BDFAE2] mr-2" /> */}
+                        NECT
+                    </div>
+                </div>
+            </div>
+          )
+        }
 
-        {!originalDeposit.isEmpty && (
+        {/* {!originalDeposit.isEmpty && (
           <>
             <StaticRow
               label="Liquidation gain"
@@ -125,11 +168,11 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
               }
             />
           </>
-        )}
+        )} */}
         {children}
-      </Box>
+      </div>
 
-      {changePending && <LoadingOverlay />}
-    </Card>
+      {/* {changePending && <LoadingOverlay />} */}
+    </>
   );
 };
