@@ -91,7 +91,7 @@ const Selection: React.FC = props => {
                                     onMouseEnter={()=> setHoverBear(true)}
                                     onMouseLeave={()=> setHoverBear(false)}
                                     onClick={onShowTrove}
-                                    src="/imgs/bear-honey.png" className={`flex flex-row mx-auto items-start min-w-[365px] md:min-w-[536px] h-[271px] md:h-[410px] z-[3] -mb-[250px] md:-mb-[100px] lg:mb-0 ${(!showTrove && hoverBear)?"filter-shadow": ""} ${showTrove? "animate-fade-smaller-bear" : "cursor-pointer"} ${showStability?"invisible":"visible"}`}
+                                    src="/imgs/bear-honey.png" className={`flex flex-row mx-auto items-start min-w-[365px] md:min-w-[536px] h-[271px] md:h-[410px] z-[3] -mb-[150px] md:-mb-[100px] lg:mb-0 ${(!showTrove && hoverBear)?"filter-shadow": ""} ${showTrove? "animate-fade-smaller-bear" : "cursor-pointer"} ${showStability?"invisible":"visible"}`}
                                 />
                             </div>
                             <img

@@ -1,5 +1,4 @@
 import React, { useContext } from "react";
-import { Flex, Container } from "theme-ui";
 import { HashRouter as Router, Switch, Route } from "react-router-dom";
 import { Wallet } from "@ethersproject/wallet";
 
@@ -12,6 +11,7 @@ import { UserAccount } from "./components/UserAccount";
 import { LiquityLogo } from "./components/LiquityLogo";
 
 import { PageSwitcher } from "./pages/PageSwitcher";
+import { Footer } from "./pages/Footer"
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -60,6 +60,7 @@ export const LiquityFrontend: React.FC<LiquityFrontendProps> = ({ loader }) => {
                 {
                   curPage === 0 ? <Home /> : 
                   (curPage === 2 || curPage === 3 || curPage === 4) ? <Selection /> : 
+                  <>
                   <div className="flex flex-col min-h-full pb-[192px] sm:pb-[166px] bg-main-gradient">
                     <div className="flex flex-row justify-between px-5 md:px-10 lg:px-[60px] py-[15px]">
                       <LiquityLogo />
@@ -74,8 +75,9 @@ export const LiquityFrontend: React.FC<LiquityFrontendProps> = ({ loader }) => {
                       </Route>
                     </Switch>
                   </div>
+                  <Footer />
+                  </>
                 }
-                
               </BondsProvider>
             </StakingViewProvider>
           </StabilityViewProvider>

@@ -45,6 +45,7 @@ const feeFrom = (original: Trove, edited: Trove, borrowingRate: Decimal): Decima
 };
 
 export const Borrow: React.FC = () => {
+  console.log (">>>>>>>>>>>>>>>>>>>>>>>>>2222222222222")
   const { dispatchEvent } = useTroveView();
   const { trove, fees, price, accountBalance, validationContext } = useLiquitySelector(selector);
   const [editing, setEditing] = useState<string>();
