@@ -94,7 +94,6 @@ export const Borrow: React.FC = () => {
   const availableEth = accountBalance.gt(GAS_ROOM_ETH)
     ? accountBalance.sub(GAS_ROOM_ETH)
     : Decimal.ZERO;
-  const [collateralRatio, setCollateralRatio] = useState (!collateral.isZero && !netDebt.isZero ? updatedTrove.collateralRatio(price) : undefined)
 
   const [troveChange, description] = validateTroveChange(
     trove,
@@ -117,27 +116,17 @@ export const Borrow: React.FC = () => {
   const onCollateralRatioChange = (e: any) => {
     if (isNaN(Number(e.target.value))) return
     if (Number(e.target.value) <= 0) {
-      setCollateralRatio(Decimal.from(1.11))
-      setNetDebt(Decimal.from(collateral.mulDiv(price, Decimal.from(1.1)).sub(LUSD_LIQUIDATION_RESERVE)))
+      setCollateral(Decimal.from(netDebt.add(LUSD_LIQUIDATION_RESERVE).add(fee).mulDiv(1.1, price)))
       return
     }
-    setCollateralRatio(Decimal.from(Number(e.target.value)/100))
-    setNetDebt(Decimal.from(collateral.mulDiv(price, Decimal.from(Number(e.target.value)/100)).sub(LUSD_LIQUIDATION_RESERVE)))
+    setCollateral(Decimal.from(netDebt.add(LUSD_LIQUIDATION_RESERVE).add(fee).mulDiv(Number(e.target.value)/100, price)))
   }
 
   const onNetDebtChange = (e: any) => {
     setNetDebt(Decimal.from(e.target.value))
-    setCollateralRatio(Decimal.from(collateral.mulDiv(price, Decimal.from(e.target.value).add(LUSD_LIQUIDATION_RESERVE).add(fee))))
   }
 
   const onCollateralChange = (e: any) => {
-    if (Number(e.target.value) === 0) {
-      setCollateralRatio(Decimal.from(0))
-      return
-    }
-    if (!collateral.isZero && Number(e.target.value) > 0) {
-      setCollateralRatio(Decimal.from(e.target.value).mulDiv(price, netDebt.add(LUSD_LIQUIDATION_RESERVE).add(fee)))
-    }
     setCollateral(Decimal.from(e.target.value))
   }
 
@@ -220,13 +209,40 @@ export const Borrow: React.FC = () => {
                     <span className={`${custom?"opacity-30": "opacity-100"} cursor-pointer`} onClick={() => setCustom(!custom)}>Auto</span>
                     <span className={`${custom?"opacity-100": "opacity-30"} cursor-pointer`} onClick={() => setCustom(!custom)}>Custom</span>
                 </div>
-                <div className={`flex flex-row justify-between border ${custom?"border-[#FFEDD4]":"border-transparent"} rounded-[30px] p-[14px]`}>
-                    <input 
+                <div
+                  onClick={() => setEditing("collateral-ratio")}
+                  className={`flex flex-row justify-between border ${custom?"border-[#FFEDD4]":"border-transparent"} rounded-[30px] p-[14px]`}
+                >
+                    {/* <input 
                         className="bg-transparent text-lg outline-none w-[100px]"
                         value={collateralRatio?.mul(100).toString(1)}
                         disabled={custom?false:true}
                         onChange={(e) => onCollateralRatioChange(e)}
-                    />
+                    /> */}
+                    {
+                      (custom && editing === "collateral-ratio") ? 
+                      <Input
+                        autoFocus
+                        id="trove-collateral-ratio"
+                        type="number"
+                        step="any"
+                        defaultValue={updatedTrove.collateralRatio(price).mul(100).toString(1)}
+                        onChange={e => onCollateralRatioChange(e)}
+                        onBlur={() => {setEditing(undefined)}}
+                        variant="editor"
+                        sx={{
+                          backgroundColor: "transparent",
+                          fontSize: "18px",
+                          fontWeight: "medium",
+                          width: "100%",
+                          outline: "2px solid transparent",
+                          outlineOffset: "2px",
+                          borderColor: "transparent",
+                          padding: 0,
+                          marginRight: "4px"
+                        }}
+                      /> : <div>{updatedTrove.collateralRatio(price).mul(100).prettify(1)}</div>
+                    }
                     <div className="text-lg font-medium">%</div>
                 </div>
                 

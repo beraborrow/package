@@ -4,7 +4,7 @@ import { hexDataSlice, hexDataLength } from "@ethersproject/bytes";
 import { defaultAbiCoder } from "@ethersproject/abi";
 
 import "react-circular-progressbar/dist/styles.css";
-
+import { toast } from 'react-toastify';
 import { EthersTransactionOverrides, EthersTransactionCancelledError } from "@liquity/lib-ethers";
 import { SentLiquityTransaction, LiquityReceipt } from "@liquity/lib-base";
 
@@ -13,7 +13,7 @@ import { useLiquity } from "../hooks/LiquityContext";
 import { Tooltip } from "./Tooltip";
 import type { TooltipProps } from "./Tooltip";
 
-import { TransactionStatus } from "./TransactionStatus";
+// import { TransactionStatus } from "./TransactionStatus";
 
 type TransactionIdle = {
   type: "idle";
@@ -323,6 +323,22 @@ export const TransactionMonitor: React.FC = () => {
       transactionState.type === "failed" ||
       transactionState.type === "cancelled"
     ) {
+      if (transactionState.type === "failed") {
+        toast(() => (
+          <div className="flex flex-row text-lg gap-2 text-[#F45348]">
+            <div className="flex flex-row mt-2 items-center w-[14px] h-[14px] bg-[#F45348] rounded-full"/>
+            Transaction failed. Please try again.
+          </div>
+        )) //toast.info(transactionState.error.message)
+      }
+      if (transactionState.type === "confirmed") {
+        toast(() => (
+          <div className="flex flex-row text-lg gap-2 text-[#BDFAE2]">
+            <div className="flex flex-row mt-2 items-center w-[14px] h-[14px] bg-[#BDFAE2] rounded-full"/>
+            Transaction completed.
+          </div>
+        ))
+      } 
       let cancelled = false;
 
       setTimeout(() => {
@@ -342,9 +358,10 @@ export const TransactionMonitor: React.FC = () => {
   }
 
   return (
-    <TransactionStatus
-      state={transactionState.type}
-      message={transactionState.type === "failed" ? transactionState.error.message : undefined}
-    />
+    // <TransactionStatus
+    //   state={transactionState.type}
+    //   message={transactionState.type === "failed" ? transactionState.error.message : undefined}
+    // />
+    <></>
   );
 };

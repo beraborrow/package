@@ -12,8 +12,8 @@ import { UserAccount } from "./components/UserAccount";
 import { LiquityLogo } from "./components/LiquityLogo";
 
 import { PageSwitcher } from "./pages/PageSwitcher";
-import { RiskyTrovesPage } from "./pages/RiskyTrovesPage";
-import { Bonds } from "./pages/Bonds";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import { TroveViewProvider } from "./components/Trove/context/TroveViewProvider";
 import { StabilityViewProvider } from "./components/Stability/context/StabilityViewProvider";
@@ -82,6 +82,7 @@ export const LiquityFrontend: React.FC<LiquityFrontendProps> = ({ loader }) => {
         </TroveViewProvider>
       </Router>
       <TransactionMonitor />
+      <ToastContainer toastStyle={{ backgroundColor: "#343434" }} />
     </LiquityStoreProvider>
   );
 };
