@@ -95,10 +95,10 @@ contract HintHelpers is BeraBorrowBase, Ownable, CheckContract {
                 if (netNECTDebt > MIN_NET_DEBT) {
                     uint maxRedeemableNECT = BeraBorrowMath._min(remainingNECT, netNECTDebt.sub(MIN_NET_DEBT));
 
-                    uint ETH = troveManager.getTroveColl(currentTroveuser)
-                        .add(troveManager.getPendingETHReward(currentTroveuser));
+                    uint iBGT = troveManager.getTroveColl(currentTroveuser)
+                        .add(troveManager.getPendingiBGTReward(currentTroveuser));
 
-                    uint newColl = ETH.sub(maxRedeemableNECT.mul(DECIMAL_PRECISION).div(_price));
+                    uint newColl = iBGT.sub(maxRedeemableNECT.mul(DECIMAL_PRECISION).div(_price));
                     uint newDebt = netNECTDebt.sub(maxRedeemableNECT);
 
                     uint compositeDebt = _getCompositeDebt(newDebt);

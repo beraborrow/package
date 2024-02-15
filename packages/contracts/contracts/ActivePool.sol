@@ -24,7 +24,7 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
     address public troveManagerAddress;
     address public stabilityPoolAddress;
     address public defaultPoolAddress;
-    uint256 internal ETH;  // deposited ether tracker
+    uint256 internal iBGT;  // deposited ibgt tracker
     uint256 internal NECTDebt;
 
     // --- Events ---
@@ -32,7 +32,7 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
     event BorrowerOperationsAddressChanged(address _newBorrowerOperationsAddress);
     event TroveManagerAddressChanged(address _newTroveManagerAddress);
     event ActivePoolNECTDebtUpdated(uint _NECTDebt);
-    event ActivePoolETHBalanceUpdated(uint _ETH);
+    event ActivePooliBGTBalanceUpdated(uint _iBGT);
 
     // --- Contract setters ---
 
@@ -66,12 +66,12 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
     // --- Getters for public variables. Required by IPool interface ---
 
     /*
-    * Returns the ETH state variable.
+    * Returns the iBGT state variable.
     *
-    *Not necessarily equal to the the contract's raw ETH balance - ether can be forcibly sent to contracts.
+    *Not necessarily equal to the the contract's raw iBGT balance - ibgt can be forcibly sent to contracts.
     */
-    function getETH() external view override returns (uint) {
-        return ETH;
+    function getiBGT() external view override returns (uint) {
+        return iBGT;
     }
 
     function getNECTDebt() external view override returns (uint) {
@@ -80,14 +80,14 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
 
     // --- Pool functionality ---
 
-    function sendETH(address _account, uint _amount) external override {
+    function sendiBGT(address _account, uint _amount) external override {
         _requireCallerIsBOorTroveMorSP();
-        ETH = ETH.sub(_amount);
-        emit ActivePoolETHBalanceUpdated(ETH);
-        emit EtherSent(_account, _amount);
+        iBGT = iBGT.sub(_amount);
+        emit ActivePooliBGTBalanceUpdated(iBGT);
+        emit iBGTSent(_account, _amount);
 
         (bool success, ) = _account.call{ value: _amount }("");
-        require(success, "ActivePool: sending ETH failed");
+        require(success, "ActivePool: sending iBGT failed");
     }
 
     function increaseNECTDebt(uint _amount) external override {
@@ -130,7 +130,7 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
 
     receive() external payable {
         _requireCallerIsBorrowerOperationsOrDefaultPool();
-        ETH = ETH.add(msg.value);
-        emit ActivePoolETHBalanceUpdated(ETH);
+        iBGT = iBGT.add(msg.value);
+        emit ActivePooliBGTBalanceUpdated(iBGT);
     }
 }

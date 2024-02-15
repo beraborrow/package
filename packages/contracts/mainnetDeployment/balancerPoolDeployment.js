@@ -5,7 +5,7 @@ const { WeightedPool2TokensFactory } = require("./ABIs/WeightedPool2TokensFactor
 const { WeightedPool2Tokens } = require("./ABIs/WeightedPool2Tokens.js")
 const { IVault } = require("./ABIs/IVault.js")
 const { ERC20 } = require("./ABIs/ERC20.js")
-const { WETH: WETH_ABI } = require("./ABIs/WETH.js")
+const { iBGT: iBGT_ABI } = require("./ABIs/iBGT.js")
 const { ChainlinkAggregatorV3Interface } = require("./ABIs/ChainlinkAggregatorV3Interface.js")
 const toBigNum = ethers.BigNumber.from
 const { TestHelper: th, TimeValues: timeVals } = require("../utils/testHelpers.js")
@@ -21,15 +21,15 @@ const DELEGATE_OWNER = '0xBA1BA1ba1BA1bA1bA1Ba1BA1ba1BA1bA1ba1ba1B';
 
 // Mainnet addresses; adjust for testnets
 
-const WETH = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
-const LUSD = '0x5f98805A4E8be255a32880FDeC7F6728C6568bA0';
-const CHAINLINK_ETHUSD_PROXY = '0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419';
+const iBGT = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
+const NECT = '0x5f98805A4E8be255a32880FDeC7F6728C6568bA0';
+const CHAINLINK_iBGTUSD_PROXY = '0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419';
 
-const tokens = [LUSD, WETH];
+const tokens = [NECT, iBGT];
 const weights = [toBigNum(dec(4, 17)), toBigNum(dec(6, 17))];
 
-const NAME = 'WETH/LUSD Pool';
-const SYMBOL = '60WETH-40LUSD';
+const NAME = 'iBGT/NECT Pool';
+const SYMBOL = '60iBGT-40NECT';
 const swapFeePercentage = toBigNum(dec(5, 15)); // 0.5%
 
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
@@ -64,7 +64,7 @@ async function main() {
   );
 
   const chainlinkProxy = new ethers.Contract(
-    CHAINLINK_ETHUSD_PROXY,
+    CHAINLINK_iBGTUSD_PROXY,
     ChainlinkAggregatorV3Interface,
     deployerWallet
   );
@@ -88,7 +88,6 @@ async function main() {
     console.log('Create Pool gas: ', receipt1.gasUsed.toString());
 
     // We need to get the new pool address out of the PoolCreated event
-    // (Or just grab it from Etherscan)
     const events = receipt1.events.filter((e) => e.event === 'PoolCreated');
     poolAddress = events[0].args.pool;
   }
@@ -105,15 +104,15 @@ async function main() {
   // Get latest price
   const chainlinkPrice = await chainlinkProxy.latestAnswer();
   // chainlink price has only 8 decimals
-  const eth_price = chainlinkPrice.mul(toBigNum(dec(1, 10)));
-  th.logBN('ETH price', eth_price);
+  const ibgt_price = chainlinkPrice.mul(toBigNum(dec(1, 10)));
+  th.logBN('iBGT price', ibgt_price);
   // Tokens must be in the same order
   // Values must be decimal-normalized!
-  const weth_balance = INITIAL_FUNDING.mul(weights[1]).div(eth_price);
-  const lusd_balance = INITIAL_FUNDING.mul(weights[0]).div(toBigNum(dec(1, 18)));
-  const initialBalances = [lusd_balance, weth_balance];
-  th.logBN('Initial LUSD', lusd_balance);
-  th.logBN('Initial WETH', weth_balance);
+  const ibgt_balance = INITIAL_FUNDING.mul(weights[1]).div(ibgt_price);
+  const nect_balance = INITIAL_FUNDING.mul(weights[0]).div(toBigNum(dec(1, 18)));
+  const initialBalances = [nect_balance, ibgt_balance];
+  th.logBN('Initial NECT', nect_balance);
+  th.logBN('Initial iBGT', ibgt_balance);
 
   const JOIN_KIND_INIT = 0;
 
@@ -135,33 +134,33 @@ async function main() {
   // (well, except for the BPT out)
 
   // Need to approve the Vault to transfer the tokens!
-  const weth = new ethers.Contract(
-    WETH,
-    WETH_ABI.abi,
+  const ibgt = new ethers.Contract(
+    iBGT,
+    iBGT_ABI.abi,
     deployerWallet
   );
-  th.logBN('weth balance: ', await weth.balanceOf(deployerWalletAddress));
-  const currentWethBalance = await weth.balanceOf(deployerWalletAddress);
-  let depositWethReceipt;
-  if (currentWethBalance.lt(weth_balance)) {
-    const txDepositWeth = await weth.deposit({ value: weth_balance.sub(currentWethBalance) });
-    depositWethReceipt = await txDepositWeth.wait();
-    console.log('WETH deposit gas: ', depositWethReceipt.gasUsed.toString());
+  th.logBN('ibgt balance: ', await ibgt.balanceOf(deployerWalletAddress));
+  const currentiBgtBalance = await ibgt.balanceOf(deployerWalletAddress);
+  let depositiBgtReceipt;
+  if (currentiBgtBalance.lt(ibgt_balance)) {
+    const txDepositiBgt = await ibgt.deposit({ value: ibgt_balance.sub(currentiBgtBalance) });
+    depositiBgtReceipt = await txDepositiBgt.wait();
+    console.log('iBGT deposit gas: ', depositiBgtReceipt.gasUsed.toString());
   }
-  th.logBN('weth balance: ', await weth.balanceOf(deployerWalletAddress));
-  const txApproveWeth = await weth.approve(VAULT, weth_balance);
-  const approveWethReceipt = await txApproveWeth.wait();
-  console.log('Approve WETH gas: ', approveWethReceipt.gasUsed.toString());
+  th.logBN('ibgt balance: ', await ibgt.balanceOf(deployerWalletAddress));
+  const txApproveiBgt = await ibgt.approve(VAULT, ibgt_balance);
+  const approveiBgtReceipt = await txApproveiBgt.wait();
+  console.log('Approve iBGT gas: ', approveiBgtReceipt.gasUsed.toString());
 
-  // Approve LUSD
-  const lusd = new ethers.Contract(
-    LUSD,
+  // Approve NECT
+  const nect = new ethers.Contract(
+    NECT,
     ERC20.abi,
     deployerWallet
   );
-  const txApproveLusd = await lusd.approve(VAULT, lusd_balance);
-  const approveLusdReceipt = await txApproveLusd.wait();
-  console.log('Approve LUSD gas: ', approveLusdReceipt.gasUsed.toString());
+  const txApproveNect = await nect.approve(VAULT, nect_balance);
+  const approveNectReceipt = await txApproveNect.wait();
+  console.log('Approve NECT gas: ', approveNectReceipt.gasUsed.toString());
 
   // joins and exits are done on the Vault, not the pool
   const tx2 = await vault.joinPool(poolId, deployerWalletAddress, deployerWalletAddress, joinPoolRequest);
@@ -171,7 +170,7 @@ async function main() {
   console.log('Join Pool gas: ', receipt2.gasUsed.toString());
   th.logBN('Pool BPT tokens', await pool.totalSupply());
 
-  console.log('Total gas: ', receipt1.gasUsed.add(depositWethReceipt.gasUsed).add(approveWethReceipt.gasUsed).add(approveLusdReceipt.gasUsed).add(receipt2.gasUsed).toString());
+  console.log('Total gas: ', receipt1.gasUsed.add(depositiBgtReceipt.gasUsed).add(approveiBgtReceipt.gasUsed).add(approveNectReceipt.gasUsed).add(receipt2.gasUsed).toString());
 }
 
 main()

@@ -9,11 +9,11 @@ const assertRevert = th.assertRevert
 const toBN = th.toBN
 const dec = th.dec
 
-contract('Deploying the LQTY contracts: LCF, CI, LQTYStaking, and LQTYToken ', async accounts => {
-  const [liquityAG, A, B] = accounts;
+contract('Deploying the POLLEN contracts: LCF, CI, POLLENStaking, and POLLENToken ', async accounts => {
+  const [beraborrowAG, A, B] = accounts;
   const [bountyAddress, lpRewardsAddress, multisig] = accounts.slice(997, 1000)
 
-  let LQTYContracts
+  let POLLENContracts
 
   const oneMillion = toBN(1000000)
   const digits = toBN(1e18)
@@ -22,15 +22,15 @@ contract('Deploying the LQTY contracts: LCF, CI, LQTYStaking, and LQTYToken ', a
 
   beforeEach(async () => {
     // Deploy all contracts from the first account
-    LQTYContracts = await deploymentHelper.deployLQTYContracts(bountyAddress, lpRewardsAddress, multisig)
-    await deploymentHelper.connectLQTYContracts(LQTYContracts)
+    POLLENContracts = await deploymentHelper.deployPOLLENContracts(bountyAddress, lpRewardsAddress, multisig)
+    await deploymentHelper.connectPOLLENContracts(POLLENContracts)
 
-    lqtyStaking = LQTYContracts.lqtyStaking
-    lqtyToken = LQTYContracts.lqtyToken
-    communityIssuance = LQTYContracts.communityIssuance
-    lockupContractFactory = LQTYContracts.lockupContractFactory
+    pollenStaking = POLLENContracts.pollenStaking
+    pollenToken = POLLENContracts.pollenToken
+    communityIssuance = POLLENContracts.communityIssuance
+    lockupContractFactory = POLLENContracts.lockupContractFactory
 
-    //LQTY Staking and CommunityIssuance have not yet had their setters called, so are not yet
+    //POLLEN Staking and CommunityIssuance have not yet had their setters called, so are not yet
     // connected to the rest of the system
   })
 
@@ -39,63 +39,63 @@ contract('Deploying the LQTY contracts: LCF, CI, LQTYStaking, and LQTYToken ', a
     it("Stores the deployer's address", async () => {
       const storedDeployerAddress = await communityIssuance.owner()
 
-      assert.equal(liquityAG, storedDeployerAddress)
+      assert.equal(beraborrowAG, storedDeployerAddress)
     })
   })
 
-  describe('LQTYStaking deployment', async accounts => {
+  describe('POLLENStaking deployment', async accounts => {
     it("Stores the deployer's address", async () => {
-      const storedDeployerAddress = await lqtyStaking.owner()
+      const storedDeployerAddress = await pollenStaking.owner()
 
-      assert.equal(liquityAG, storedDeployerAddress)
+      assert.equal(beraborrowAG, storedDeployerAddress)
     })
   })
 
-  describe('LQTYToken deployment', async accounts => {
+  describe('POLLENToken deployment', async accounts => {
     it("Stores the multisig's address", async () => {
-      const storedMultisigAddress = await lqtyToken.multisigAddress()
+      const storedMultisigAddress = await pollenToken.multisigAddress()
 
       assert.equal(multisig, storedMultisigAddress)
     })
 
     it("Stores the CommunityIssuance address", async () => {
-      const storedCIAddress = await lqtyToken.communityIssuanceAddress()
+      const storedCIAddress = await pollenToken.communityIssuanceAddress()
 
       assert.equal(communityIssuance.address, storedCIAddress)
     })
 
     it("Stores the LockupContractFactory address", async () => {
-      const storedLCFAddress = await lqtyToken.lockupContractFactory()
+      const storedLCFAddress = await pollenToken.lockupContractFactory()
 
       assert.equal(lockupContractFactory.address, storedLCFAddress)
     })
 
-    it("Mints the correct LQTY amount to the multisig's address: (64.66 million)", async () => {
-      const multisigLQTYEntitlement = await lqtyToken.balanceOf(multisig)
+    it("Mints the correct POLLEN amount to the multisig's address: (64.66 million)", async () => {
+      const multisigPOLLENEntitlement = await pollenToken.balanceOf(multisig)
 
      const twentyThreeSixes = "6".repeat(23)
       const expectedMultisigEntitlement = "64".concat(twentyThreeSixes).concat("7")
-      assert.equal(multisigLQTYEntitlement, expectedMultisigEntitlement)
+      assert.equal(multisigPOLLENEntitlement, expectedMultisigEntitlement)
     })
 
-    it("Mints the correct LQTY amount to the CommunityIssuance contract address: 32 million", async () => {
-      const communityLQTYEntitlement = await lqtyToken.balanceOf(communityIssuance.address)
+    it("Mints the correct POLLEN amount to the CommunityIssuance contract address: 32 million", async () => {
+      const communityPOLLENEntitlement = await pollenToken.balanceOf(communityIssuance.address)
       // 32 million as 18-digit decimal
       const _32Million = dec(32, 24)
 
-      assert.equal(communityLQTYEntitlement, _32Million)
+      assert.equal(communityPOLLENEntitlement, _32Million)
     })
 
-    it("Mints the correct LQTY amount to the bountyAddress EOA: 2 million", async () => {
-      const bountyAddressBal = await lqtyToken.balanceOf(bountyAddress)
+    it("Mints the correct POLLEN amount to the bountyAddress EOA: 2 million", async () => {
+      const bountyAddressBal = await pollenToken.balanceOf(bountyAddress)
       // 2 million as 18-digit decimal
       const _2Million = dec(2, 24)
 
       assert.equal(bountyAddressBal, _2Million)
     })
 
-    it("Mints the correct LQTY amount to the lpRewardsAddress EOA: 1.33 million", async () => {
-      const lpRewardsAddressBal = await lqtyToken.balanceOf(lpRewardsAddress)
+    it("Mints the correct POLLEN amount to the lpRewardsAddress EOA: 1.33 million", async () => {
+      const lpRewardsAddressBal = await pollenToken.balanceOf(lpRewardsAddress)
       // 1.3 million as 18-digit decimal
       const _1pt33Million = "1".concat("3".repeat(24))
 
@@ -108,47 +108,47 @@ contract('Deploying the LQTY contracts: LCF, CI, LQTYStaking, and LQTYToken ', a
 
       const storedDeployerAddress = await communityIssuance.owner()
 
-      assert.equal(storedDeployerAddress, liquityAG)
+      assert.equal(storedDeployerAddress, beraborrowAG)
     })
 
     it("Has a supply cap of 32 million", async () => {
-      const supplyCap = await communityIssuance.LQTYSupplyCap()
+      const supplyCap = await communityIssuance.POLLENSupplyCap()
 
       assert.isTrue(expectedCISupplyCap.eq(supplyCap))
     })
 
-    it("Liquity AG can set addresses if CI's LQTY balance is equal or greater than 32 million ", async () => {
-      const LQTYBalance = await lqtyToken.balanceOf(communityIssuance.address)
-      assert.isTrue(LQTYBalance.eq(expectedCISupplyCap))
+    it("BeraBorrow AG can set addresses if CI's POLLEN balance is equal or greater than 32 million ", async () => {
+      const POLLENBalance = await pollenToken.balanceOf(communityIssuance.address)
+      assert.isTrue(POLLENBalance.eq(expectedCISupplyCap))
 
       // Deploy core contracts, just to get the Stability Pool address
-      const coreContracts = await deploymentHelper.deployLiquityCore()
+      const coreContracts = await deploymentHelper.deployBeraBorrowCore()
 
       const tx = await communityIssuance.setAddresses(
-        lqtyToken.address,
+        pollenToken.address,
         coreContracts.stabilityPool.address,
-        { from: liquityAG }
+        { from: beraborrowAG }
       );
       assert.isTrue(tx.receipt.status)
     })
 
-    it("Liquity AG can't set addresses if CI's LQTY balance is < 32 million ", async () => {
+    it("BeraBorrow AG can't set addresses if CI's POLLEN balance is < 32 million ", async () => {
       const newCI = await CommunityIssuance.new()
 
-      const LQTYBalance = await lqtyToken.balanceOf(newCI.address)
-      assert.equal(LQTYBalance, '0')
+      const POLLENBalance = await pollenToken.balanceOf(newCI.address)
+      assert.equal(POLLENBalance, '0')
 
       // Deploy core contracts, just to get the Stability Pool address
-      const coreContracts = await deploymentHelper.deployLiquityCore()
+      const coreContracts = await deploymentHelper.deployBeraBorrowCore()
 
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
-      await lqtyToken.transfer(newCI.address, '31999999999999999999999999', {from: multisig}) // 1e-18 less than CI expects (32 million)
+      await pollenToken.transfer(newCI.address, '31999999999999999999999999', {from: multisig}) // 1e-18 less than CI expects (32 million)
 
       try {
         const tx = await newCI.setAddresses(
-          lqtyToken.address,
+          pollenToken.address,
           coreContracts.stabilityPool.address,
-          { from: liquityAG }
+          { from: beraborrowAG }
         );
       
         // Check it gives the expected error message for a failed Solidity 'assert'
@@ -158,34 +158,34 @@ contract('Deploying the LQTY contracts: LCF, CI, LQTYStaking, and LQTYToken ', a
     })
   })
 
-  describe('Connecting LQTYToken to LCF, CI and LQTYStaking', async accounts => {
-    it('sets the correct LQTYToken address in LQTYStaking', async () => {
-      // Deploy core contracts and set the LQTYToken address in the CI and LQTYStaking
-      const coreContracts = await deploymentHelper.deployLiquityCore()
-      await deploymentHelper.connectLQTYContractsToCore(LQTYContracts, coreContracts)
+  describe('Connecting POLLENToken to LCF, CI and POLLENStaking', async accounts => {
+    it('sets the correct POLLENToken address in POLLENStaking', async () => {
+      // Deploy core contracts and set the POLLENToken address in the CI and POLLENStaking
+      const coreContracts = await deploymentHelper.deployBeraBorrowCore()
+      await deploymentHelper.connectPOLLENContractsToCore(POLLENContracts, coreContracts)
 
-      const lqtyTokenAddress = lqtyToken.address
+      const pollenTokenAddress = pollenToken.address
 
-      const recordedLQTYTokenAddress = await lqtyStaking.lqtyToken()
-      assert.equal(lqtyTokenAddress, recordedLQTYTokenAddress)
+      const recordedPOLLENTokenAddress = await pollenStaking.pollenToken()
+      assert.equal(pollenTokenAddress, recordedPOLLENTokenAddress)
     })
 
-    it('sets the correct LQTYToken address in LockupContractFactory', async () => {
-      const lqtyTokenAddress = lqtyToken.address
+    it('sets the correct POLLENToken address in LockupContractFactory', async () => {
+      const pollenTokenAddress = pollenToken.address
 
-      const recordedLQTYTokenAddress = await lockupContractFactory.lqtyTokenAddress()
-      assert.equal(lqtyTokenAddress, recordedLQTYTokenAddress)
+      const recordedPOLLENTokenAddress = await lockupContractFactory.pollenTokenAddress()
+      assert.equal(pollenTokenAddress, recordedPOLLENTokenAddress)
     })
 
-    it('sets the correct LQTYToken address in CommunityIssuance', async () => {
-      // Deploy core contracts and set the LQTYToken address in the CI and LQTYStaking
-      const coreContracts = await deploymentHelper.deployLiquityCore()
-      await deploymentHelper.connectLQTYContractsToCore(LQTYContracts, coreContracts)
+    it('sets the correct POLLENToken address in CommunityIssuance', async () => {
+      // Deploy core contracts and set the POLLENToken address in the CI and POLLENStaking
+      const coreContracts = await deploymentHelper.deployBeraBorrowCore()
+      await deploymentHelper.connectPOLLENContractsToCore(POLLENContracts, coreContracts)
 
-      const lqtyTokenAddress = lqtyToken.address
+      const pollenTokenAddress = pollenToken.address
 
-      const recordedLQTYTokenAddress = await communityIssuance.lqtyToken()
-      assert.equal(lqtyTokenAddress, recordedLQTYTokenAddress)
+      const recordedPOLLENTokenAddress = await communityIssuance.pollenToken()
+      assert.equal(pollenTokenAddress, recordedPOLLENTokenAddress)
     })
   })
 })
