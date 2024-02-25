@@ -1,6 +1,5 @@
 import React from "react";
 import { StabilityDepositManager } from "./StabilityDepositManager";
-import { ActiveDeposit } from "./ActiveDeposit";
 import { StabilityStats } from "./StabilityStats";
 import { useStabilityView } from "./context/StabilityViewContext";
 

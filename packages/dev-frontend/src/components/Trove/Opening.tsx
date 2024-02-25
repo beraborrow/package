@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { Flex, Button, Box, Spinner, Text, Input } from "theme-ui";
+import React, { useEffect, useState } from "react";
+import { Flex, Button, Spinner, Input } from "theme-ui";
 import {
   LiquityStoreState,
   Decimal,
@@ -12,7 +12,6 @@ import { useLiquitySelector } from "@liquity/lib-react";
 import { useStableTroveChange } from "../../hooks/useStableTroveChange";
 import { useMyTransactionState } from "../Transaction";
 import { TroveAction } from "./TroveAction";
-import { Icon } from "../Icon";
 import { ExpensiveTroveChangeWarning, GasEstimationState } from "./ExpensiveTroveChangeWarning";
 import {
   selectForTroveChangeValidation,
@@ -76,11 +75,6 @@ export const Opening: React.FC = () => {
   // const handleCancelPressed = useCallback(() => {
   //   dispatchEvent("CANCEL_ADJUST_TROVE_PRESSED");
   // }, [dispatchEvent]);
-
-  const reset = useCallback(() => {
-    setCollateral(Decimal.ZERO);
-    setBorrowAmount(Decimal.ZERO);
-  }, []);
 
   useEffect(() => {
     if (!collateral.isZero && borrowAmount.isZero) {
@@ -194,7 +188,7 @@ export const Opening: React.FC = () => {
                         id="trove-collateral-ratio"
                         type="number"
                         step="any"
-                        defaultValue={trove.collateralRatio(price).mul(100).toString(1)}
+                        defaultValue={trove.collateralRatio(price).mul(100).gt(10000)?"0":trove.collateralRatio(price).mul(100).toString(1)}
                         onChange={e => onCollateralRatioChange(e)}
                         onBlur={() => {setEditing(undefined)}}
                         variant="editor"
@@ -209,7 +203,7 @@ export const Opening: React.FC = () => {
                           padding: 0,
                           marginRight: "4px"
                         }}
-                      /> : <div>{trove.collateralRatio(price).mul(100).prettify(1)}</div>
+                      /> : <div>{trove.collateralRatio(price).mul(100).gt(10000)?"0":trove.collateralRatio(price).mul(100).prettify(1)}</div>
                     }
                     <div className="text-lg font-medium">%</div>
                 </div>

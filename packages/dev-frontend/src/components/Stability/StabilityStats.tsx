@@ -8,7 +8,6 @@ import { DisabledEditableRow } from "../Trove/Editor";
 // import { COIN } from "../../strings";
 // import { CollateralRatio } from "./CollateralRatio";
 
-import { Percent, Decimal } from "@liquity/lib-base";
 // import { AddressZero } from "@ethersproject/constants";
 // import { useFluid } from "../../hooks/FluidContext";
 
@@ -49,10 +48,7 @@ export const StabilityStats: React.FC = () => {
   const {
     // trove,
     // numberOfTroves,
-    price,
     lusdInStabilityPool,
-    total,
-    borrowingRate,
     remainingStabilityPoolLQTYReward
     // totalStakedFLO,
     // kickbackRate
@@ -61,7 +57,6 @@ export const StabilityStats: React.FC = () => {
   // const saiInStabilityPoolPct =
   //   total.debt.nonZero && new Percent(saiInStabilityPool.div(total.debt));
   // const totalCollateralRatioPct = new Percent(total.collateralRatio(price));
-  const borrowingFeePct = new Percent(borrowingRate);
   // const kickbackRatePct = frontendTag === AddressZero ? "100" : kickbackRate?.mul(100).prettify();
 
   return (

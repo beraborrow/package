@@ -1,24 +1,13 @@
 import React, { useCallback } from "react";
-import { Heading, Box, Card } from "theme-ui";
 
 import {
-  Percent,
-  Difference,
   Decimalish,
   Decimal,
   Trove,
   LiquityStoreState,
-  LUSD_LIQUIDATION_RESERVE
 } from "@liquity/lib-base";
 import { useLiquitySelector } from "@liquity/lib-react";
 import { useTroveView } from "./context/TroveViewContext";
-
-import { COIN } from "../../strings";
-
-import { StaticRow } from "./Editor";
-import { LoadingOverlay } from "../LoadingOverlay";
-import { CollateralRatio } from "./CollateralRatio";
-import { InfoIcon } from "../InfoIcon";
 
 type TroveEditorProps = {
   original: Trove;
@@ -38,22 +27,18 @@ const select = ({ trove, fees, price, accountBalance }: LiquityStoreState) => ({
   accountBalance
 });
 
-const GAS_ROOM_ETH = Decimal.from(0.1);
-
 export const TroveEditor: React.FC<TroveEditorProps> = ({
   children,
 }) => {
   const { dispatchEvent } = useTroveView();
-  const { trove, accountBalance } = useLiquitySelector(select);
+  const { trove } = useLiquitySelector(select);
 
   // const feePct = new Percent(borrowingRate);
 
   // const originalCollateralRatio = !original.isEmpty ? original.collateralRatio(price) : undefined;
   // const collateralRatio = !edited.isEmpty ? edited.collateralRatio(price) : undefined;
   // const collateralRatioChange = Difference.between(collateralRatio, originalCollateralRatio);
-  const availableEth = accountBalance.gt(GAS_ROOM_ETH)
-    ? accountBalance.sub(GAS_ROOM_ETH)
-    : Decimal.ZERO;
+
 
   const handleOpenTrove = useCallback(() => {
     dispatchEvent("TROVE_ADJUSTED");

@@ -3,8 +3,6 @@ import { TroveManager } from "./TroveManager";
 import { ReadOnlyTrove } from "./ReadOnlyTrove";
 import { Borrow } from "./Borrow";
 import { Opening } from "./Opening";
-import { Adjusting } from "./Adjusting";
-import { RedeemedTrove } from "./RedeemedTrove";
 import { useTroveView } from "./context/TroveViewContext";
 import { ReadOnlyStats } from "./ReadOnlyStats";
 import { Decimal } from "@liquity/lib-base";

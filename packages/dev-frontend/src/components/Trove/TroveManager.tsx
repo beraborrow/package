@@ -1,11 +1,10 @@
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
 import { Flex, Button } from "theme-ui";
 
 import { LiquityStoreState, Decimal, Trove, Decimalish, LUSD_MINIMUM_DEBT } from "@liquity/lib-base";
 
 import { LiquityStoreUpdate, useLiquityReducer, useLiquitySelector } from "@liquity/lib-react";
 
-import { ActionDescription } from "../ActionDescription";
 import { useMyTransactionState } from "../Transaction";
 
 import { TroveEditor } from "./TroveEditor";
@@ -179,12 +178,6 @@ export const TroveManager: React.FC<TroveManagerProps> = ({ collateral, debt }) 
   );
 
   const { dispatchEvent } = useTroveView();
-
-  const handleCancel = useCallback(() => {
-    dispatchEvent("CANCEL_ADJUST_TROVE_PRESSED");
-  }, [dispatchEvent]);
-
-  const openingNewTrove = original.isEmpty;
 
   const myTransactionState = useMyTransactionState(transactionIdMatcher);
 

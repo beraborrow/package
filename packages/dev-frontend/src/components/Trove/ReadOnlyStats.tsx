@@ -68,13 +68,13 @@ export const ReadOnlyStats: React.FC = () => {
         {/* <Box> */}
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           <DisabledEditableRow
-            label="SEI TVL"
+            label="iBGT TVL"
             inputId="trove-tvl"
             amount={"$" + Decimal.from(total.collateral.mul(price)).shorten()}
             unit=""
           />
           <DisabledEditableRow
-            label="Minted SAI"
+            label="Minted NECT"
             inputId="trove-minted-sai"
             amount={total.debt.shorten() + " / " + lusdInStabilityPool.shorten()}
             unit=""

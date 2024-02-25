@@ -1,23 +1,16 @@
-import React, { useState, useCallback } from "react";
-import { Heading, Box, Card, Input } from "theme-ui";
-import { useStabilityView } from "./context/StabilityViewContext";
+import React, { useState } from "react";
+import { Input } from "theme-ui";
 
 import {
   Decimal,
   Decimalish,
   StabilityDeposit,
   LiquityStoreState,
-  Difference
 } from "@liquity/lib-base";
 
 import { useLiquitySelector } from "@liquity/lib-react";
 
-import { COIN, GT } from "../../strings";
-
-import { Icon } from "../Icon";
-import { EditableRow, StaticRow } from "../Trove/Editor";
-import { LoadingOverlay } from "../LoadingOverlay";
-import { InfoIcon } from "../InfoIcon";
+import { StaticRow } from "../Trove/Editor";
 
 const select = ({ lusdBalance, lusdInStabilityPool }: LiquityStoreState) => ({
   lusdBalance,
@@ -34,7 +27,6 @@ type StabilityDepositEditorProps = {
 export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
   originalDeposit,
   editedLUSD,
-  changePending,
   dispatch,
   children
 }) => {

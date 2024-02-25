@@ -4,9 +4,7 @@ import { useLiquitySelector } from "@liquity/lib-react";
 import { LiquityStoreState } from "@liquity/lib-base";
 import { DisabledEditableRow } from "./Editor";
 import { useTroveView } from "./context/TroveViewContext";
-import { Icon } from "../Icon";
 import { COIN } from "../../strings";
-import { CollateralRatio } from "./CollateralRatio";
 
 const select = ({ trove, price }: LiquityStoreState) => ({ trove, price });
 

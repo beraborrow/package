@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Button, Flex } from "theme-ui";
 
 import { Decimal, Decimalish, LiquityStoreState } from "@liquity/lib-base";
@@ -95,10 +95,6 @@ export const StabilityDepositManager: React.FC = () => {
   const [{ originalDeposit, editedLUSD, changePending }, dispatch] = useLiquityReducer(reduce, init);
   const validationContext = useLiquitySelector(selectForStabilityDepositChangeValidation);
   const { dispatchEvent } = useStabilityView();
-
-  const handleCancel = useCallback(() => {
-    dispatchEvent("CANCEL_PRESSED");
-  }, [dispatchEvent]);
 
   const [validChange, description] = validateStabilityDepositChange(
     originalDeposit,
