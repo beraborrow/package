@@ -52,14 +52,14 @@ contract BeraBorrowBase is BaseMath, IBeraBorrowBase {
         return _debt.sub(NECT_GAS_COMPENSATION);
     }
 
-    // Return the amount of iBGT to be drawn from a trove's collateral and sent as gas compensation.
+    // Return the amount of ETH to be drawn from a trove's collateral and sent as gas compensation.
     function _getCollGasCompensation(uint _entireColl) internal pure returns (uint) {
         return _entireColl / PERCENT_DIVISOR;
     }
 
     function getEntireSystemColl() public view returns (uint entireSystemColl) {
-        uint activeColl = activePool.getiBGT();
-        uint liquidatedColl = defaultPool.getiBGT();
+        uint activeColl = activePool.getETH();
+        uint liquidatedColl = defaultPool.getETH();
 
         return activeColl.add(liquidatedColl);
     }

@@ -9,7 +9,7 @@ pragma solidity 0.6.11;
  * NECT in the Stability Pool:  that is, the offset debt evaporates, and an equal amount of NECT tokens in the Stability Pool is burned.
  *
  * Thus, a liquidation causes each depositor to receive a NECT loss, in proportion to their deposit as a share of total deposits.
- * They also receive an iBGT gain, as the iBGT collateral of the liquidated trove is distributed among Stability depositors,
+ * They also receive an ETH gain, as the ETH collateral of the liquidated trove is distributed among Stability depositors,
  * in the same proportion.
  *
  * When a liquidation occurs, it depletes every deposit by the same fraction: for example, a liquidation that depletes 40%
@@ -18,7 +18,7 @@ pragma solidity 0.6.11;
  * A deposit that has experienced a series of liquidations is termed a "compounded deposit": each liquidation depletes the deposit,
  * multiplying it by some factor in range ]0,1[
  *
- * Please see the implementation spec in the proof document, which closely follows on from the compounded deposit / iBGT gain derivations:
+ * Please see the implementation spec in the proof document, which closely follows on from the compounded deposit / ETH gain derivations:
  * https://github.com/beraborrow/beraborrow/blob/master/papers/Scalable_Reward_Distribution_with_Compounding_Stakes.pdf
  *
  * --- POLLEN ISSUANCE TO STABILITY POOL DEPOSITORS ---
@@ -37,7 +37,7 @@ interface IStabilityPool {
 
     // --- Events ---
     
-    event StabilityPooliBGTBalanceUpdated(uint _newBalance);
+    event StabilityPoolETHBalanceUpdated(uint _newBalance);
     event StabilityPoolNECTBalanceUpdated(uint _newBalance);
 
     event BorrowerOperationsAddressChanged(address _newBorrowerOperationsAddress);
@@ -63,10 +63,10 @@ interface IStabilityPool {
     event UserDepositChanged(address indexed _depositor, uint _newDeposit);
     event FrontEndStakeChanged(address indexed _frontEnd, uint _newFrontEndStake, address _depositor);
 
-    event iBGTGainWithdrawn(address indexed _depositor, uint _iBGT, uint _NECTLoss);
+    event ETHGainWithdrawn(address indexed _depositor, uint _ETH, uint _NECTLoss);
     event POLLENPaidToDepositor(address indexed _depositor, uint _POLLEN);
     event POLLENPaidToFrontEnd(address indexed _frontEnd, uint _POLLEN);
-    event iBGTSent(address _to, uint _amount);
+    event EtherSent(address _to, uint _amount);
 
     // --- Functions ---
 
@@ -92,7 +92,7 @@ interface IStabilityPool {
      * ---
      * - Triggers a POLLEN issuance, based on time passed since the last issuance. The POLLEN issuance is shared between *all* depositors and front ends
      * - Tags the deposit with the provided front end tag param, if it's a new deposit
-     * - Sends depositor's accumulated gains (POLLEN, iBGT) to depositor
+     * - Sends depositor's accumulated gains (POLLEN, ETH) to depositor
      * - Sends the tagged front end's accumulated POLLEN gains to the tagged front end
      * - Increases deposit and tagged front end's stake, and takes new snapshots for each.
      */
@@ -105,7 +105,7 @@ interface IStabilityPool {
      * ---
      * - Triggers a POLLEN issuance, based on time passed since the last issuance. The POLLEN issuance is shared between *all* depositors and front ends
      * - Removes the deposit's front end tag if it is a full withdrawal
-     * - Sends all depositor's accumulated gains (POLLEN, iBGT) to depositor
+     * - Sends all depositor's accumulated gains (POLLEN, ETH) to depositor
      * - Sends the tagged front end's accumulated POLLEN gains to the tagged front end
      * - Decreases deposit and tagged front end's stake, and takes new snapshots for each.
      *
@@ -117,16 +117,16 @@ interface IStabilityPool {
      * Initial checks:
      * - User has a non zero deposit
      * - User has an open trove
-     * - User has some iBGT gain
+     * - User has some ETH gain
      * ---
      * - Triggers a POLLEN issuance, based on time passed since the last issuance. The POLLEN issuance is shared between *all* depositors and front ends
      * - Sends all depositor's POLLEN gain to  depositor
      * - Sends all tagged front end's POLLEN gain to the tagged front end
-     * - Transfers the depositor's entire iBGT gain from the Stability Pool to the caller's trove
+     * - Transfers the depositor's entire ETH gain from the Stability Pool to the caller's trove
      * - Leaves their compounded deposit in the Stability Pool
      * - Updates snapshots for deposit and tagged front end stake
      */
-    function withdrawiBGTGainToTrove(address _upperHint, address _lowerHint) external;
+    function withdrawETHGainToTrove(address _upperHint, address _lowerHint) external;
 
     /*
      * Initial checks:
@@ -143,16 +143,16 @@ interface IStabilityPool {
      * - Caller is TroveManager
      * ---
      * Cancels out the specified debt against the NECT contained in the Stability Pool (as far as possible)
-     * and transfers the Trove's iBGT collateral from ActivePool to StabilityPool.
+     * and transfers the Trove's ETH collateral from ActivePool to StabilityPool.
      * Only called by liquidation functions in the TroveManager.
      */
     function offset(uint _debt, uint _coll) external;
 
     /*
-     * Returns the total amount of iBGT held by the pool, accounted in an internal variable instead of `balance`,
-     * to exclude edge cases like iBGT received from a self-destruct.
+     * Returns the total amount of ETH held by the pool, accounted in an internal variable instead of `balance`,
+     * to exclude edge cases like ETH received from a self-destruct.
      */
-    function getiBGT() external view returns (uint);
+    function getETH() external view returns (uint);
 
     /*
      * Returns NECT held in the pool. Changes when users deposit/withdraw, and when Trove debt is offset.
@@ -160,9 +160,9 @@ interface IStabilityPool {
     function getTotalNECTDeposits() external view returns (uint);
 
     /*
-     * Calculates the iBGT gain earned by the deposit since its last snapshots were taken.
+     * Calculates the ETH gain earned by the deposit since its last snapshots were taken.
      */
-    function getDepositoriBGTGain(address _depositor) external view returns (uint);
+    function getDepositorETHGain(address _depositor) external view returns (uint);
 
     /*
      * Calculate the POLLEN gain earned by a deposit since its last snapshots were taken.
@@ -191,7 +191,7 @@ interface IStabilityPool {
 
     /*
      * Fallback function
-     * Only callable by Active Pool, it just accounts for iBGT received
+     * Only callable by Active Pool, it just accounts for ETH received
      * receive() external payable;
      */
 }

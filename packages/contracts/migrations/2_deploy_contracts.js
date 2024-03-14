@@ -6,7 +6,7 @@ const DefaultPool = artifacts.require("./DefaultPool.sol")
 const StabilityPool = artifacts.require("./StabilityPool.sol")
 const TroveManager = artifacts.require("./TroveManager.sol")
 const PriceFeed = artifacts.require("./PriceFeed.sol")
-const LUSDToken = artifacts.require("./LUSDToken.sol")
+const NECTToken = artifacts.require("./NECTToken.sol")
 const FunctionCaller = artifacts.require("./FunctionCaller.sol")
 const BorrowerOperations = artifacts.require("./BorrowerOperations.sol")
 
@@ -23,7 +23,7 @@ module.exports = function(deployer) {
   deployer.deploy(ActivePool)
   deployer.deploy(StabilityPool)
   deployer.deploy(DefaultPool)
-  deployer.deploy(LUSDToken)
+  deployer.deploy(NECTToken)
   deployer.deploy(FunctionCaller)
 
   deployer.then(async () => {
@@ -34,13 +34,13 @@ module.exports = function(deployer) {
     const activePool = await ActivePool.deployed()
     const stabilityPool = await StabilityPool.deployed()
     const defaultPool = await DefaultPool.deployed()
-    const lusdToken = await LUSDToken.deployed()
+    const nectToken = await NECTToken.deployed()
     const functionCaller = await FunctionCaller.deployed()
 
-    const liquityContracts = {
+    const beraborrowContracts = {
       borrowerOperations,
       priceFeed,
-      lusdToken,
+      nectToken,
       sortedTroves,
       troveManager,
       activePool,
@@ -50,12 +50,12 @@ module.exports = function(deployer) {
     }
 
     // Grab contract addresses
-    const liquityAddresses = getAddresses(liquityContracts)
+    const beraborrowAddresses = getAddresses(beraborrowContracts)
     console.log('deploy_contracts.js - Deployed contract addresses: \n')
-    console.log(liquityAddresses)
+    console.log(beraborrowAddresses)
     console.log('\n')
 
     // Connect contracts to each other
-    await connectContracts(liquityContracts, liquityAddresses)
+    await connectContracts(beraborrowContracts, beraborrowAddresses)
   })
 }

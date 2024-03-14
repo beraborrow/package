@@ -7,7 +7,7 @@ import "../StabilityPool.sol";
 contract StabilityPoolTester is StabilityPool {
     
     function unprotectedPayable() external payable {
-        iBGT = iBGT.add(msg.value);
+        ETH = ETH.add(msg.value);
     }
 
     function setCurrentScale(uint128 _currentScale) external {

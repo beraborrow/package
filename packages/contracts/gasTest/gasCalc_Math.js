@@ -2,13 +2,13 @@ const fs = require('fs')
 const deploymentHelper = require("../utils/deploymentHelpers.js")
 const testHelpers = require("../utils/testHelpers.js")
 const TroveManagerTester = artifacts.require("./TroveManagerTester.sol")
-const LiquityMathTester = artifacts.require("./LiquityMathTester.sol")
+const BeraBorrowMathTester = artifacts.require("./BeraBorrowMathTester.sol")
 
 const th = testHelpers.TestHelper
 
 const timeValues = testHelpers.TimeValues
 
-/* Script that logs gas costs for Liquity math functions. */
+/* Script that logs gas costs for BeraBorrow math functions. */
 contract('Gas costs for math functions', async accounts => {
   
   const bountyAddress = accounts[998]
@@ -22,16 +22,16 @@ contract('Gas costs for math functions', async accounts => {
     troveManagerTester = await TroveManagerTester.new()
     TroveManagerTester.setAsDeployed(troveManagerTester)
 
-    mathTester = await LiquityMathTester.new()
-    LiquityMathTester.setAsDeployed(mathTester)
+    mathTester = await BeraBorrowMathTester.new()
+    BeraBorrowMathTester.setAsDeployed(mathTester)
   })
 
   beforeEach(async () => {
-    contracts = await deploymentHelper.deployLiquityCore()
-    const LQTYContracts = await deploymentHelper.deployLQTYContracts(bountyAddress, lpRewardsAddress)
+    contracts = await deploymentHelper.deployBeraBorrowCore()
+    const POLLENContracts = await deploymentHelper.deployPOLLENContracts(bountyAddress, lpRewardsAddress)
 
     priceFeed = contracts.priceFeedTestnet
-    lusdToken = contracts.lusdToken
+    nectToken = contracts.nectToken
     sortedTroves = contracts.sortedTroves
     troveManager = contracts.troveManager
     activePool = contracts.activePool
@@ -40,14 +40,14 @@ contract('Gas costs for math functions', async accounts => {
     borrowerOperations = contracts.borrowerOperations
     hintHelpers = contracts.hintHelpers
 
-    gtStaking = LQTYContracts.gtStaking
-    lqtyToken = LQTYContracts.lqtyToken
-    communityIssuance = LQTYContracts.communityIssuance
-    lockupContractFactory = LQTYContracts.lockupContractFactory
+    gtStaking = POLLENContracts.gtStaking
+    pollenToken = POLLENContracts.pollenToken
+    communityIssuance = POLLENContracts.communityIssuance
+    lockupContractFactory = POLLENContracts.lockupContractFactory
 
-    await deploymentHelper.connectCoreContracts(contracts, LQTYContracts)
-    await deploymentHelper.connectLQTYContracts(LQTYContracts)
-    await deploymentHelper.connectLQTYContractsToCore(LQTYContracts, contracts)
+    await deploymentHelper.connectCoreContracts(contracts, POLLENContracts)
+    await deploymentHelper.connectPOLLENContracts(POLLENContracts)
+    await deploymentHelper.connectPOLLENContractsToCore(POLLENContracts, contracts)
   })
 
   // performs n runs of exponentiation on a random base

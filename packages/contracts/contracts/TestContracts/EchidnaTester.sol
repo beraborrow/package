@@ -134,40 +134,40 @@ contract EchidnaTester {
 
     // Borrower Operations
 
-    function getAdjustediBGT(uint actorBalance, uint _iBGT, uint ratio) internal view returns (uint) {
+    function getAdjustedETH(uint actorBalance, uint _ETH, uint ratio) internal view returns (uint) {
         uint price = priceFeedTestnet.getPrice();
         require(price > 0);
-        uint miniBGT = ratio.mul(NECT_GAS_COMPENSATION).div(price);
-        require(actorBalance > miniBGT);
-        uint iBGT = miniBGT + _iBGT % (actorBalance - miniBGT);
-        return iBGT;
+        uint minETH = ratio.mul(NECT_GAS_COMPENSATION).div(price);
+        require(actorBalance > minETH);
+        uint ETH = minETH + _ETH % (actorBalance - minETH);
+        return ETH;
     }
 
-    function getAdjustedNECT(uint iBGT, uint _NECTAmount, uint ratio) internal view returns (uint) {
+    function getAdjustedNECT(uint ETH, uint _NECTAmount, uint ratio) internal view returns (uint) {
         uint price = priceFeedTestnet.getPrice();
         uint NECTAmount = _NECTAmount;
         uint compositeDebt = NECTAmount.add(NECT_GAS_COMPENSATION);
-        uint ICR = BeraBorrowMath._computeCR(iBGT, compositeDebt, price);
+        uint ICR = BeraBorrowMath._computeCR(ETH, compositeDebt, price);
         if (ICR < ratio) {
-            compositeDebt = iBGT.mul(price).div(ratio);
+            compositeDebt = ETH.mul(price).div(ratio);
             NECTAmount = compositeDebt.sub(NECT_GAS_COMPENSATION);
         }
         return NECTAmount;
     }
 
-    function openTroveExt(uint _i, uint _iBGT, uint _NECTAmount) public payable {
+    function openTroveExt(uint _i, uint _ETH, uint _NECTAmount) public payable {
         uint actor = _i % NUMBER_OF_ACTORS;
         EchidnaProxy echidnaProxy = echidnaProxies[actor];
         uint actorBalance = address(echidnaProxy).balance;
 
         // we pass in CCR instead of MCR in case it’s the first one
-        uint iBGT = getAdjustediBGT(actorBalance, _iBGT, CCR);
-        uint NECTAmount = getAdjustedNECT(iBGT, _NECTAmount, CCR);
+        uint ETH = getAdjustedETH(actorBalance, _ETH, CCR);
+        uint NECTAmount = getAdjustedNECT(ETH, _NECTAmount, CCR);
 
-        //console.log('iBGT', iBGT);
+        //console.log('ETH', ETH);
         //console.log('NECTAmount', NECTAmount);
 
-        echidnaProxy.openTrovePrx(iBGT, NECTAmount, address(0), address(0), 0);
+        echidnaProxy.openTrovePrx(ETH, NECTAmount, address(0), address(0), 0);
 
         numberOfTroves = troveManager.getTroveOwnersCount();
         assert(numberOfTroves > 0);
@@ -175,24 +175,24 @@ contract EchidnaTester {
         //assert(numberOfTroves == 0);
     }
 
-    function openTroveRawExt(uint _i, uint _iBGT, uint _NECTAmount, address _upperHint, address _lowerHint, uint _maxFee) public payable {
+    function openTroveRawExt(uint _i, uint _ETH, uint _NECTAmount, address _upperHint, address _lowerHint, uint _maxFee) public payable {
         uint actor = _i % NUMBER_OF_ACTORS;
-        echidnaProxies[actor].openTrovePrx(_iBGT, _NECTAmount, _upperHint, _lowerHint, _maxFee);
+        echidnaProxies[actor].openTrovePrx(_ETH, _NECTAmount, _upperHint, _lowerHint, _maxFee);
     }
 
-    function addCollExt(uint _i, uint _iBGT) external payable {
+    function addCollExt(uint _i, uint _ETH) external payable {
         uint actor = _i % NUMBER_OF_ACTORS;
         EchidnaProxy echidnaProxy = echidnaProxies[actor];
         uint actorBalance = address(echidnaProxy).balance;
 
-        uint iBGT = getAdjustediBGT(actorBalance, _iBGT, MCR);
+        uint ETH = getAdjustedETH(actorBalance, _ETH, MCR);
 
-        echidnaProxy.addCollPrx(iBGT, address(0), address(0));
+        echidnaProxy.addCollPrx(ETH, address(0), address(0));
     }
 
-    function addCollRawExt(uint _i, uint _iBGT, address _upperHint, address _lowerHint) external payable {
+    function addCollRawExt(uint _i, uint _ETH, address _upperHint, address _lowerHint) external payable {
         uint actor = _i % NUMBER_OF_ACTORS;
-        echidnaProxies[actor].addCollPrx(_iBGT, _upperHint, _lowerHint);
+        echidnaProxies[actor].addCollPrx(_ETH, _upperHint, _lowerHint);
     }
 
     function withdrawCollExt(uint _i, uint _amount, address _upperHint, address _lowerHint) external {
@@ -215,24 +215,24 @@ contract EchidnaTester {
         echidnaProxies[actor].closeTrovePrx();
     }
 
-    function adjustTroveExt(uint _i, uint _iBGT, uint _collWithdrawal, uint _debtChange, bool _isDebtIncrease) external payable {
+    function adjustTroveExt(uint _i, uint _ETH, uint _collWithdrawal, uint _debtChange, bool _isDebtIncrease) external payable {
         uint actor = _i % NUMBER_OF_ACTORS;
         EchidnaProxy echidnaProxy = echidnaProxies[actor];
         uint actorBalance = address(echidnaProxy).balance;
 
-        uint iBGT = getAdjustediBGT(actorBalance, _iBGT, MCR);
+        uint ETH = getAdjustedETH(actorBalance, _ETH, MCR);
         uint debtChange = _debtChange;
         if (_isDebtIncrease) {
             // TODO: add current amount already withdrawn:
-            debtChange = getAdjustedNECT(iBGT, uint(_debtChange), MCR);
+            debtChange = getAdjustedNECT(ETH, uint(_debtChange), MCR);
         }
         // TODO: collWithdrawal, debtChange
-        echidnaProxy.adjustTrovePrx(iBGT, _collWithdrawal, debtChange, _isDebtIncrease, address(0), address(0), 0);
+        echidnaProxy.adjustTrovePrx(ETH, _collWithdrawal, debtChange, _isDebtIncrease, address(0), address(0), 0);
     }
 
-    function adjustTroveRawExt(uint _i, uint _iBGT, uint _collWithdrawal, uint _debtChange, bool _isDebtIncrease, address _upperHint, address _lowerHint, uint _maxFee) external payable {
+    function adjustTroveRawExt(uint _i, uint _ETH, uint _collWithdrawal, uint _debtChange, bool _isDebtIncrease, address _upperHint, address _lowerHint, uint _maxFee) external payable {
         uint actor = _i % NUMBER_OF_ACTORS;
-        echidnaProxies[actor].adjustTrovePrx(_iBGT, _collWithdrawal, _debtChange, _isDebtIncrease, _upperHint, _lowerHint, _maxFee);
+        echidnaProxies[actor].adjustTrovePrx(_ETH, _collWithdrawal, _debtChange, _isDebtIncrease, _upperHint, _lowerHint, _maxFee);
     }
 
     // Pool Manager
@@ -352,7 +352,7 @@ contract EchidnaTester {
         return true;
     }
 
-    function echidna_iBGT_balances() public view returns(bool) {
+    function echidna_ETH_balances() public view returns(bool) {
         if (address(troveManager).balance > 0) {
             return false;
         }
@@ -361,15 +361,15 @@ contract EchidnaTester {
             return false;
         }
 
-        if (address(activePool).balance != activePool.getiBGT()) {
+        if (address(activePool).balance != activePool.getETH()) {
             return false;
         }
 
-        if (address(defaultPool).balance != defaultPool.getiBGT()) {
+        if (address(defaultPool).balance != defaultPool.getETH()) {
             return false;
         }
 
-        if (address(stabilityPool).balance != stabilityPool.getiBGT()) {
+        if (address(stabilityPool).balance != stabilityPool.getETH()) {
             return false;
         }
 

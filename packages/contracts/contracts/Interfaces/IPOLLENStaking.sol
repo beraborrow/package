@@ -13,12 +13,12 @@ interface IPOLLENStaking {
     event ActivePoolAddressSet(address _activePoolAddress);
 
     event StakeChanged(address indexed staker, uint newStake);
-    event StakingGainsWithdrawn(address indexed staker, uint NECTGain, uint iBGTGain);
-    event F_iBGTUpdated(uint _F_iBGT);
+    event StakingGainsWithdrawn(address indexed staker, uint NECTGain, uint ETHGain);
+    event F_ETHUpdated(uint _F_ETH);
     event F_NECTUpdated(uint _F_NECT);
     event TotalPOLLENStakedUpdated(uint _totalPOLLENStaked);
-    event iBGTSent(address _account, uint _amount);
-    event StakerSnapshotsUpdated(address _staker, uint _F_iBGT, uint _F_NECT);
+    event EtherSent(address _account, uint _amount);
+    event StakerSnapshotsUpdated(address _staker, uint _F_ETH, uint _F_NECT);
 
     // --- Functions ---
 
@@ -35,11 +35,11 @@ interface IPOLLENStaking {
 
     function unstake(uint _POLLENamount) external;
 
-    function increaseF_iBGT(uint _iBGTFee) external; 
+    function increaseF_ETH(uint _ETHFee) external; 
 
     function increaseF_NECT(uint _POLLENFee) external;  
 
-    function getPendingiBGTGain(address _user) external view returns (uint);
+    function getPendingETHGain(address _user) external view returns (uint);
 
     function getPendingNECTGain(address _user) external view returns (uint);
 }

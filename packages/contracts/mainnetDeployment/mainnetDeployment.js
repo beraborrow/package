@@ -20,8 +20,8 @@ async function mainnetDeploy(configParams) {
   console.log(`deployer address: ${deployerWallet.address}`)
   assert.equal(deployerWallet.address, configParams.beraborrowAddrs.DEPLOYER)
   // assert.equal(account2Wallet.address, configParams.beneficiaries.ACCOUNT_2)
-  let deployeriBGTBalance = await ethers.provider.getBalance(deployerWallet.address)
-  console.log(`deployeriBGTBalance before: ${deployeriBGTBalance}`)
+  let deployerETHBalance = await ethers.provider.getBalance(deployerWallet.address)
+  console.log(`deployerETHBalance before: ${deployerETHBalance}`)
 
   // Get UniswapV2Factory instance at its deployed address
   const uniswapV2Factory = new ethers.Contract(
@@ -34,33 +34,33 @@ async function mainnetDeploy(configParams) {
   const uniAllPairsLength = await uniswapV2Factory.allPairsLength()
   console.log(`Uniswap Factory number of pairs: ${uniAllPairsLength}`)
 
-  deployeriBGTBalance = await ethers.provider.getBalance(deployerWallet.address)
-  console.log(`deployer's iBGT balance before deployments: ${deployeriBGTBalance}`)
+  deployerETHBalance = await ethers.provider.getBalance(deployerWallet.address)
+  console.log(`deployer's ETH balance before deployments: ${deployerETHBalance}`)
 
   // Deploy core logic contracts
   const beraborrowCore = await mdh.deployBeraBorrowCoreMainnet(configParams.externalAddrs.TELLOR_MASTER, deploymentState)
   await mdh.logContractObjects(beraborrowCore)
 
-  // Check Uniswap Pair NECT-iBGT pair before pair creation
-  let NECTiBGTPairAddr = await uniswapV2Factory.getPair(beraborrowCore.nectToken.address, configParams.externalAddrs.iBGT_ERC20)
-  let iBGTNECTPairAddr = await uniswapV2Factory.getPair(configParams.externalAddrs.iBGT_ERC20, beraborrowCore.nectToken.address)
-  assert.equal(NECTiBGTPairAddr, iBGTNECTPairAddr)
+  // Check Uniswap Pair NECT-ETH pair before pair creation
+  let NECTWETHPairAddr = await uniswapV2Factory.getPair(beraborrowCore.nectToken.address, configParams.externalAddrs.WETH_ERC20)
+  let WETHNECTPairAddr = await uniswapV2Factory.getPair(configParams.externalAddrs.WETH_ERC20, beraborrowCore.nectToken.address)
+  assert.equal(NECTWETHPairAddr, WETHNECTPairAddr)
 
 
-  if (NECTiBGTPairAddr == th.ZERO_ADDRESS) {
-    // Deploy Unipool for NECT-iBGT
+  if (NECTWETHPairAddr == th.ZERO_ADDRESS) {
+    // Deploy Unipool for NECT-WETH
     await mdh.sendAndWaitForTransaction(uniswapV2Factory.createPair(
-      configParams.externalAddrs.iBGT_ERC20,
+      configParams.externalAddrs.WETH_ERC20,
       beraborrowCore.nectToken.address,
       { gasPrice }
     ))
 
-    // Check Uniswap Pair NECT-iBGT pair after pair creation (forwards and backwards should have same address)
-    NECTiBGTPairAddr = await uniswapV2Factory.getPair(beraborrowCore.nectToken.address, configParams.externalAddrs.iBGT_ERC20)
-    assert.notEqual(NECTiBGTPairAddr, th.ZERO_ADDRESS)
-    iBGTNECTPairAddr = await uniswapV2Factory.getPair(configParams.externalAddrs.iBGT_ERC20, beraborrowCore.nectToken.address)
-    console.log(`NECT-iBGT pair contract address after Uniswap pair creation: ${NECTiBGTPairAddr}`)
-    assert.equal(iBGTNECTPairAddr, NECTiBGTPairAddr)
+    // Check Uniswap Pair NECT-WETH pair after pair creation (forwards and backwards should have same address)
+    NECTWETHPairAddr = await uniswapV2Factory.getPair(beraborrowCore.nectToken.address, configParams.externalAddrs.WETH_ERC20)
+    assert.notEqual(NECTWETHPairAddr, th.ZERO_ADDRESS)
+    WETHNECTPairAddr = await uniswapV2Factory.getPair(configParams.externalAddrs.WETH_ERC20, beraborrowCore.nectToken.address)
+    console.log(`NECT-WETH pair contract address after Uniswap pair creation: ${NECTWETHPairAddr}`)
+    assert.equal(WETHNECTPairAddr, NECTWETHPairAddr)
   }
 
   // Deploy Unipool
@@ -75,16 +75,16 @@ async function mainnetDeploy(configParams) {
   )
 
   // Connect all core contracts up
-  await mdh.connectCoreContractsMainnet(beraborrowCore, POLLENContracts, configParams.externalAddrs.CHAINLINK_iBGTUSD_PROXY)
+  await mdh.connectCoreContractsMainnet(beraborrowCore, POLLENContracts, configParams.externalAddrs.CHAINLINK_ETHUSD_PROXY)
   await mdh.connectPOLLENContractsMainnet(POLLENContracts)
   await mdh.connectPOLLENContractsToCoreMainnet(POLLENContracts, beraborrowCore)
 
   // Deploy a read-only multi-trove getter
   const multiTroveGetter = await mdh.deployMultiTroveGetterMainnet(beraborrowCore, deploymentState)
 
-  // Connect Unipool to POLLENToken and the NECT-iBGT pair address, with a 6 week duration
+  // Connect Unipool to POLLENToken and the NECT-WETH pair address, with a 6 week duration
   const LPRewardsDuration = timeVals.SECONDS_IN_SIX_WEEKS
-  await mdh.connectUnipoolMainnet(unipool, POLLENContracts, NECTiBGTPairAddr, LPRewardsDuration)
+  await mdh.connectUnipoolMainnet(unipool, POLLENContracts, NECTWETHPairAddr, LPRewardsDuration)
 
   // Log POLLEN and Unipool addresses
   await mdh.logContractObjects(POLLENContracts)
@@ -129,7 +129,7 @@ async function mainnetDeploy(configParams) {
 
     const pollenTokenAddr = POLLENContracts.pollenToken.address
     // verify
-    if (configParams.iBGTERSCAN_BASE_URL) {
+    if (configParams.ETHERSCAN_BASE_URL) {
       await mdh.verifyContract(investor, deploymentState, [pollenTokenAddr, investorAddr, oneYearFromDeployment])
     }
   }
@@ -149,7 +149,7 @@ async function mainnetDeploy(configParams) {
   // Check chainlink proxy price ---
 
   const chainlinkProxy = new ethers.Contract(
-    configParams.externalAddrs.CHAINLINK_iBGTUSD_PROXY,
+    configParams.externalAddrs.CHAINLINK_ETHUSD_PROXY,
     ChainlinkAggregatorV3Interface,
     deployerWallet
   )
@@ -159,7 +159,7 @@ async function mainnetDeploy(configParams) {
   console.log(`current Chainlink price: ${chainlinkPrice}`)
 
   // Check Tellor price directly (through our TellorCaller)
-  let tellorPriceResponse = await beraborrowCore.tellorCaller.getTellorCurrentValue(1) // id == 1: the iBGT-USD request ID
+  let tellorPriceResponse = await beraborrowCore.tellorCaller.getTellorCurrentValue(1) // id == 1: the ETH-USD request ID
   console.log(`current Tellor price: ${tellorPriceResponse[1]}`)
   console.log(`current Tellor timestamp: ${tellorPriceResponse[2]}`)
 
@@ -229,7 +229,7 @@ async function mainnetDeploy(configParams) {
   // // Check PriceFeed's & TellorCaller's stored addresses
   // const priceFeedCLAddress = await beraborrowCore.priceFeed.priceAggregator()
   // const priceFeedTellorCallerAddress = await beraborrowCore.priceFeed.tellorCaller()
-  // assert.equal(priceFeedCLAddress, configParams.externalAddrs.CHAINLINK_iBGTUSD_PROXY)
+  // assert.equal(priceFeedCLAddress, configParams.externalAddrs.CHAINLINK_ETHUSD_PROXY)
   // assert.equal(priceFeedTellorCallerAddress, beraborrowCore.tellorCaller.address)
 
   // // Check Tellor address
@@ -238,9 +238,9 @@ async function mainnetDeploy(configParams) {
 
   // // --- Unipool ---
 
-  // // Check Unipool's NECT-iBGT Uniswap Pair address
+  // // Check Unipool's NECT-ETH Uniswap Pair address
   // const unipoolUniswapPairAddr = await unipool.uniToken()
-  // console.log(`Unipool's stored NECT-iBGT Uniswap Pair address: ${unipoolUniswapPairAddr}`)
+  // console.log(`Unipool's stored NECT-ETH Uniswap Pair address: ${unipoolUniswapPairAddr}`)
 
   // console.log("SYSTEM GLOBAL VARS CHECKS")
   // // --- Sorted Troves ---
@@ -257,13 +257,13 @@ async function mainnetDeploy(configParams) {
   // th.logBN('system liquidation reserve', liqReserve)
   // th.logBN('system min net debt      ', minNetDebt)
 
-  // // --- Make first NECT-iBGT liquidity provision ---
+  // // --- Make first NECT-ETH liquidity provision ---
 
   // // Open trove if not yet opened
   // const troveStatus = await beraborrowCore.troveManager.getTroveStatus(deployerWallet.address)
   // if (troveStatus.toString() != '1') {
   //   let _3kNECTWithdrawal = th.dec(3000, 18) // 3000 NECT
-  //   let _3iBGTcoll = th.dec(3, 'ether') // 3 iBGT
+  //   let _3ETHcoll = th.dec(3, 'ether') // 3 ETH
   //   console.log('Opening trove...')
   //   await mdh.sendAndWaitForTransaction(
   //     beraborrowCore.borrowerOperations.openTrove(
@@ -271,7 +271,7 @@ async function mainnetDeploy(configParams) {
   //       _3kNECTWithdrawal,
   //       th.ZERO_ADDRESS,
   //       th.ZERO_ADDRESS,
-  //       { value: _3iBGTcoll, gasPrice }
+  //       { value: _3ETHcoll, gasPrice }
   //     )
   //   )
   // } else {
@@ -291,24 +291,24 @@ async function mainnetDeploy(configParams) {
   // let deployerNECTBal = await beraborrowCore.nectToken.balanceOf(deployerWallet.address)
   // th.logBN("deployer's NECT balance", deployerNECTBal)
 
-  // // Check Uniswap pool has NECT and iBGT tokens
-  const NECTiBGTPair = await new ethers.Contract(
-    NECTiBGTPairAddr,
+  // // Check Uniswap pool has NECT and WETH tokens
+  const NECTETHPair = await new ethers.Contract(
+    NECTWETHPairAddr,
     UniswapV2Pair.abi,
     deployerWallet
   )
 
-  // const token0Addr = await NECTiBGTPair.token0()
-  // const token1Addr = await NECTiBGTPair.token1()
-  // console.log(`NECT-iBGT Pair token 0: ${th.squeezeAddr(token0Addr)},
+  // const token0Addr = await NECTETHPair.token0()
+  // const token1Addr = await NECTETHPair.token1()
+  // console.log(`NECT-ETH Pair token 0: ${th.squeezeAddr(token0Addr)},
   //       NECTToken contract addr: ${th.squeezeAddr(beraborrowCore.nectToken.address)}`)
-  // console.log(`NECT-iBGT Pair token 1: ${th.squeezeAddr(token1Addr)},
-  //       iBGT ERC20 contract addr: ${th.squeezeAddr(configParams.externalAddrs.iBGT_ERC20)}`)
+  // console.log(`NECT-ETH Pair token 1: ${th.squeezeAddr(token1Addr)},
+  //       WETH ERC20 contract addr: ${th.squeezeAddr(configParams.externalAddrs.WETH_ERC20)}`)
 
-  // // Check initial NECT-iBGT pair reserves before provision
-  // let reserves = await NECTiBGTPair.getReserves()
-  // th.logBN("NECT-iBGT Pair's NECT reserves before provision", reserves[0])
-  // th.logBN("NECT-iBGT Pair's iBGT reserves before provision", reserves[1])
+  // // Check initial NECT-ETH pair reserves before provision
+  // let reserves = await NECTETHPair.getReserves()
+  // th.logBN("NECT-ETH Pair's NECT reserves before provision", reserves[0])
+  // th.logBN("NECT-ETH Pair's ETH reserves before provision", reserves[1])
 
   // // Get the UniswapV2Router contract
   // const uniswapV2Router02 = new ethers.Contract(
@@ -317,8 +317,8 @@ async function mainnetDeploy(configParams) {
   //   deployerWallet
   // )
 
-  // // --- Provide liquidity to NECT-iBGT pair if not yet done so ---
-  // let deployerLPTokenBal = await NECTiBGTPair.balanceOf(deployerWallet.address)
+  // // --- Provide liquidity to NECT-ETH pair if not yet done so ---
+  // let deployerLPTokenBal = await NECTETHPair.balanceOf(deployerWallet.address)
   // if (deployerLPTokenBal.toString() == '0') {
   //   console.log('Providing liquidity to Uniswap...')
   //   // Give router an allowance for NECT
@@ -329,12 +329,12 @@ async function mainnetDeploy(configParams) {
   //   th.logBN("router's spending allowance for deployer's NECT", routerNECTAllowanceFromDeployer)
 
   //   // Get amounts for liquidity provision
-  //   const LP_iBGT = dec(1, 'ether')
+  //   const LP_ETH = dec(1, 'ether')
 
-  //   // Convert 8-digit CL price to 18 and multiply by iBGT amount
+  //   // Convert 8-digit CL price to 18 and multiply by ETH amount
   //   const NECTAmount = toBigNum(chainlinkPrice)
   //     .mul(toBigNum(dec(1, 10)))
-  //     .mul(toBigNum(LP_iBGT))
+  //     .mul(toBigNum(LP_ETH))
   //     .div(toBigNum(dec(1, 18)))
 
   //   const minNECTAmount = NECTAmount.sub(toBigNum(dec(100, 18)))
@@ -343,13 +343,13 @@ async function mainnetDeploy(configParams) {
   //   now = (await ethers.provider.getBlock(latestBlock)).timestamp
   //   let tenMinsFromNow = now + (60 * 60 * 10)
 
-  //   // Provide liquidity to NECT-iBGT pair
+  //   // Provide liquidity to NECT-ETH pair
   //   await mdh.sendAndWaitForTransaction(
-  //     uniswapV2Router02.addLiquidityiBGT(
+  //     uniswapV2Router02.addLiquidityETH(
   //       beraborrowCore.nectToken.address, // address of NECT token
   //       NECTAmount, // NECT provision
   //       minNECTAmount, // minimum NECT provision
-  //       LP_iBGT, // minimum iBGT provision
+  //       LP_ETH, // minimum ETH provision
   //       deployerWallet.address, // address to send LP tokens to
   //       tenMinsFromNow, // deadline for this tx
   //       {
@@ -362,10 +362,10 @@ async function mainnetDeploy(configParams) {
   // } else {
   //   console.log('Liquidity already provided to Uniswap')
   // }
-  // // Check NECT-iBGT reserves after liquidity provision:
-  // reserves = await NECTiBGTPair.getReserves()
-  // th.logBN("NECT-iBGT Pair's NECT reserves after provision", reserves[0])
-  // th.logBN("NECT-iBGT Pair's iBGT reserves after provision", reserves[1])
+  // // Check NECT-ETH reserves after liquidity provision:
+  // reserves = await NECTETHPair.getReserves()
+  // th.logBN("NECT-ETH Pair's NECT reserves after provision", reserves[0])
+  // th.logBN("NECT-ETH Pair's ETH reserves after provision", reserves[1])
 
 
 
@@ -373,11 +373,11 @@ async function mainnetDeploy(configParams) {
   // console.log("CHECK LP STAKING EARNS POLLEN")
 
   // // Check deployer's LP tokens
-  // deployerLPTokenBal = await NECTiBGTPair.balanceOf(deployerWallet.address)
+  // deployerLPTokenBal = await NECTETHPair.balanceOf(deployerWallet.address)
   // th.logBN("deployer's LP token balance", deployerLPTokenBal)
 
   // // Stake LP tokens in Unipool
-  // console.log(`NECTiBGTPair addr: ${NECTiBGTPair.address}`)
+  // console.log(`NECTETHPair addr: ${NECTETHPair.address}`)
   // console.log(`Pair addr stored in Unipool: ${await unipool.uniToken()}`)
 
   // earnedPOLLEN = await unipool.earned(deployerWallet.address)
@@ -388,7 +388,7 @@ async function mainnetDeploy(configParams) {
   //   console.log('Staking to Unipool...')
   //   // Deployer approves Unipool
   //   await mdh.sendAndWaitForTransaction(
-  //     NECTiBGTPair.approve(unipool.address, deployerLPTokenBal, { gasPrice })
+  //     NECTETHPair.approve(unipool.address, deployerLPTokenBal, { gasPrice })
   //   )
 
   //   await mdh.sendAndWaitForTransaction(unipool.stake(1, { gasPrice }))
@@ -492,11 +492,11 @@ async function mainnetDeploy(configParams) {
   // if (trove2Status.toString() != '1') {
   //   console.log("Acct 2 opens a trove ...")
   //   let _2kNECTWithdrawal = th.dec(2000, 18) // 2000 NECT
-  //   let _1pt5_iBGTcoll = th.dec(15, 17) // 1.5 iBGT
+  //   let _1pt5_ETHcoll = th.dec(15, 17) // 1.5 ETH
   //   const borrowerOpsEthersFactory = await ethers.getContractFactory("BorrowerOperations", account2Wallet)
   //   const borrowerOpsAcct2 = await new ethers.Contract(beraborrowCore.borrowerOperations.address, borrowerOpsEthersFactory.interface, account2Wallet)
 
-  //   await mdh.sendAndWaitForTransaction(borrowerOpsAcct2.openTrove(th._100pct, _2kNECTWithdrawal, th.ZERO_ADDRESS, th.ZERO_ADDRESS, { value: _1pt5_iBGTcoll, gasPrice, gasLimit: 1000000 }))
+  //   await mdh.sendAndWaitForTransaction(borrowerOpsAcct2.openTrove(th._100pct, _2kNECTWithdrawal, th.ZERO_ADDRESS, th.ZERO_ADDRESS, { value: _1pt5_ETHcoll, gasPrice, gasLimit: 1000000 }))
   // } else {
   //   console.log('Acct 2 already has an active trove')
   // }
@@ -528,10 +528,10 @@ async function mainnetDeploy(configParams) {
 
   // // --- System stats  ---
 
-  // Uniswap NECT-iBGT pool size
-  reserves = await NECTiBGTPair.getReserves()
-  th.logBN("NECT-iBGT Pair's current NECT reserves", reserves[0])
-  th.logBN("NECT-iBGT Pair's current iBGT reserves", reserves[1])
+  // Uniswap NECT-ETH pool size
+  reserves = await NECTETHPair.getReserves()
+  th.logBN("NECT-ETH Pair's current NECT reserves", reserves[0])
+  th.logBN("NECT-ETH Pair's current ETH reserves", reserves[1])
 
   // Number of troves
   const numTroves = await beraborrowCore.troveManager.getTroveOwnersCount()
@@ -567,7 +567,7 @@ async function mainnetDeploy(configParams) {
 
   // total LP tokens staked in Unipool
   const totalLPTokensStaked = await unipool.totalSupply()
-  th.logBN("Total LP (NECT-iBGT) tokens staked in unipool", totalLPTokensStaked)
+  th.logBN("Total LP (NECT-ETH) tokens staked in unipool", totalLPTokensStaked)
 
   // --- State variables ---
 
@@ -580,9 +580,9 @@ async function mainnetDeploy(configParams) {
   th.logBN("Snapshot of total trove stakes before last liq. ", totalStakesSnapshot)
   th.logBN("Snapshot of total trove collateral before last liq. ", totalCollateralSnapshot)
 
-  const L_iBGT = await beraborrowCore.troveManager.L_iBGT()
+  const L_ETH = await beraborrowCore.troveManager.L_ETH()
   const L_NECTDebt = await beraborrowCore.troveManager.L_NECTDebt()
-  th.logBN("L_iBGT", L_iBGT)
+  th.logBN("L_ETH", L_ETH)
   th.logBN("L_NECTDebt", L_NECTDebt)
 
   // StabilityPool
@@ -601,9 +601,9 @@ async function mainnetDeploy(configParams) {
   // POLLENStaking
   console.log("POLLENStaking state variables:")
   const F_NECT = await POLLENContracts.pollenStaking.F_NECT()
-  const F_iBGT = await POLLENContracts.pollenStaking.F_iBGT()
+  const F_ETH = await POLLENContracts.pollenStaking.F_ETH()
   th.logBN("F_NECT", F_NECT)
-  th.logBN("F_iBGT", F_iBGT)
+  th.logBN("F_ETH", F_ETH)
 
 
   // CommunityIssuance
@@ -612,7 +612,7 @@ async function mainnetDeploy(configParams) {
   th.logBN("Total POLLEN issued to depositors / front ends", totalPOLLENIssued)
 
 
-  // TODO: Uniswap *POLLEN-iBGT* pool size (check it's deployed?)
+  // TODO: Uniswap *POLLEN-ETH* pool size (check it's deployed?)
 
 
 

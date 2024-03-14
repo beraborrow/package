@@ -2,7 +2,7 @@ const UniswapV2Router02 = {
     "abi": [
       {
         "inputs": [],
-        "name": "iBGT",
+        "name": "WETH",
         "outputs": [
           {
             "internalType": "address",

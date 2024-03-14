@@ -2,10 +2,10 @@
 
 pragma solidity 0.6.11;
 
-import "../pollen/pollenStaking.sol";
+import "../POLLEN/POLLENStaking.sol";
 
 
-contract pollenStakingTester is pollenStaking {
+contract POLLENStakingTester is POLLENStaking {
     function requireCallerIsTroveManager() external view {
         _requireCallerIsTroveManager();
     }

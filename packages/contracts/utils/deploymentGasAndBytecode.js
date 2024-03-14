@@ -2,26 +2,26 @@
 const SortedTroves = artifacts.require("./SortedTroves.sol")
 const TroveManager = artifacts.require("./TroveManager.sol")
 const PriceFeed = artifacts.require("./PriceFeed.sol")
-const LUSDToken = artifacts.require("./LUSDToken.sol")
+const NECTToken = artifacts.require("./NECTToken.sol")
 const ActivePool = artifacts.require("./ActivePool.sol");
 const DefaultPool = artifacts.require("./DefaultPool.sol");
 const StabilityPool = artifacts.require("./StabilityPool.sol")
 const FunctionCaller = artifacts.require("./FunctionCaller.sol")
 const BorrowerOperations = artifacts.require("./BorrowerOperations.sol")
 
-const LQTYStaking = artifacts.require("./LQTY/LQTYStaking.sol")
-const LQTYToken = artifacts.require("./LQTY/LQTYToken.sol")
-const LockupContractFactory = artifacts.require("./LQTY/LockupContractFactory.sol")
-const CommunityIssuance = artifacts.require("./LQTY/CommunityIssuance.sol")
+const POLLENStaking = artifacts.require("./POLLEN/POLLENStaking.sol")
+const POLLENToken = artifacts.require("./POLLEN/POLLENToken.sol")
+const LockupContractFactory = artifacts.require("./POLLEN/LockupContractFactory.sol")
+const CommunityIssuance = artifacts.require("./POLLEN/CommunityIssuance.sol")
 const HintHelpers = artifacts.require("./HintHelpers.sol")
 
-const CommunityIssuanceTester = artifacts.require("./LQTY/CommunityIssuanceTester.sol")
+const CommunityIssuanceTester = artifacts.require("./POLLEN/CommunityIssuanceTester.sol")
 const ActivePoolTester = artifacts.require("./ActivePoolTester.sol")
 const DefaultPoolTester = artifacts.require("./DefaultPoolTester.sol")
-const LiquityMathTester = artifacts.require("./LiquityMathTester.sol")
+const BeraBorrowMathTester = artifacts.require("./BeraBorrowMathTester.sol")
 const BorrowerOperationsTester = artifacts.require("./BorrowerOperationsTester.sol")
 const TroveManagerTester = artifacts.require("./TroveManagerTester.sol")
-const LUSDTokenTester = artifacts.require("./LUSDTokenTester.sol")
+const NECTTokenTester = artifacts.require("./NECTTokenTester.sol")
 
 const { TestHelper: th } = require("../utils/testHelpers.js")
 
@@ -31,7 +31,7 @@ const ARBITRARY_ADDRESS = "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419"   // plac
 const coreContractABIs = [
   BorrowerOperations,
   PriceFeed,
-  LUSDToken,
+  NECTToken,
   SortedTroves,
   TroveManager,
   ActivePool,
@@ -41,9 +41,9 @@ const coreContractABIs = [
   HintHelpers,
 ]
 
-const LQTYContractABIs = [
-  LQTYStaking,
-  LQTYToken,
+const POLLENContractABIs = [
+  POLLENStaking,
+  POLLENToken,
   LockupContractFactory,
   CommunityIssuance
 ]
@@ -52,10 +52,10 @@ const TesterContractABIs  = [
   CommunityIssuanceTester,
   ActivePoolTester,
   DefaultPoolTester,
-  LiquityMathTester,
+  BeraBorrowMathTester,
   BorrowerOperationsTester,
   TroveManagerTester,
-  LUSDTokenTester,
+  NECTTokenTester,
 ]
 
 const getGasFromContractDeployment = async (contractObject, name) => {
@@ -108,20 +108,20 @@ const logContractBytecodeLengths = (contractABIs) => {
 
 // Run script: log deployment gas costs and bytecode lengths for all contracts
 async function main() {
-  const coreContracts = await dh.deployLiquityCoreHardhat()
-  const LQTYContracts = await dh.deployLQTYContractsHardhat(ARBITRARY_ADDRESS, ARBITRARY_ADDRESS)
+  const coreContracts = await dh.deployBeraBorrowCoreHardhat()
+  const POLLENContracts = await dh.deployPOLLENContractsHardhat(ARBITRARY_ADDRESS, ARBITRARY_ADDRESS)
   const testerContracts = await dh.deployTesterContractsHardhat()
 
-  await dh.connectCoreContracts(coreContracts, LQTYContracts)
-  await dh.connectLQTYContracts(LQTYContracts)
-  await dh.connectLQTYContractsToCore(LQTYContracts, coreContracts)
+  await dh.connectCoreContracts(coreContracts, POLLENContracts)
+  await dh.connectPOLLENContracts(POLLENContracts)
+  await dh.connectPOLLENContractsToCore(POLLENContracts, coreContracts)
 
 
   console.log(`\n`)
-  console.log(`LQTY CONTRACTS`)
-  await logContractDeploymentCosts(LQTYContracts)
+  console.log(`POLLEN CONTRACTS`)
+  await logContractDeploymentCosts(POLLENContracts)
   console.log(`\n`)
-  logContractBytecodeLengths(LQTYContractABIs)
+  logContractBytecodeLengths(POLLENContractABIs)
   console.log(`\n`)
 
   console.log(`CORE CONTRACTS`)

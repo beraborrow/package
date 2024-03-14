@@ -11,12 +11,12 @@ import "../Interfaces/IStabilityPool.sol";
 import "../Interfaces/IPriceFeed.sol";
 import "../Interfaces/IPOLLENStaking.sol";
 import "./BorrowerOperationsScript.sol";
-import "./iBGTTransferScript.sol";
+import "./ETHTransferScript.sol";
 import "./POLLENStakingScript.sol";
 import "../Dependencies/console.sol";
 
 
-contract BorrowerWrappersScript is BorrowerOperationsScript, iBGTTransferScript, POLLENStakingScript {
+contract BorrowerWrappersScript is BorrowerOperationsScript, ETHTransferScript, POLLENStakingScript {
     using SafeMath for uint;
 
     string constant public NAME = "BorrowerWrappersScript";
@@ -90,7 +90,7 @@ contract BorrowerWrappersScript is BorrowerOperationsScript, iBGTTransferScript,
         uint pollenBalanceAfter = pollenToken.balanceOf(address(this));
         uint claimedCollateral = collBalanceAfter.sub(collBalanceBefore);
 
-        // Add claimed iBGT to trove, get more NECT and stake it into the Stability Pool
+        // Add claimed ETH to trove, get more NECT and stake it into the Stability Pool
         if (claimedCollateral > 0) {
             _requireUserHasTrove(address(this));
             uint NECTAmount = _getNetNECTAmount(claimedCollateral);
