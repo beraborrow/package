@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, Heading, Text, Flex } from "theme-ui";
-import { Decimal } from "@liquity/lib-base";
+import { Decimal } from "@beraborrow/lib-base";
 import * as l from "../components/Bonds/lexicon";
 import { Statistic } from "./Statistic";
 import { TreasuryChart } from "./TreasuryChart";
@@ -32,15 +32,15 @@ export const BondStats: React.FC<BondStatsProps> = () => {
 
   return (
     <Card variant="info">
-      <Heading sx={{ fontweight: "bold" }}>LUSD bonds</Heading>
+      <Heading sx={{ fontweight: "bold" }}>NECT bonds</Heading>
 
       <Heading as="h2" sx={{ mt: 3, fontWeight: "body" }}>
-        bLUSD
+        bNECT
       </Heading>
-      <Statistic lexicon={l.BLUSD_MARKET_PRICE}>
-        <Metric value={protocolInfo.marketPrice.prettify(3)} unit="LUSD" />
+      <Statistic lexicon={l.BNECT_MARKET_PRICE}>
+        <Metric value={protocolInfo.marketPrice.prettify(3)} unit="NECT" />
       </Statistic>
-      <Statistic lexicon={l.BLUSD_FAIR_PRICE}>
+      <Statistic lexicon={l.BNECT_FAIR_PRICE}>
         <Metric
           value={
             protocolInfo.fairPrice.lower.eq(Decimal.INFINITY)
@@ -49,45 +49,45 @@ export const BondStats: React.FC<BondStatsProps> = () => {
                   2
                 )} - ${protocolInfo.fairPrice.upper.prettify(2)}`
           }
-          unit="LUSD"
+          unit="NECT"
         />
       </Statistic>
-      <Statistic lexicon={l.BLUSD_FLOOR_PRICE}>
-        <Metric value={protocolInfo.floorPriceWithoutPendingHarvests.prettify(4)} unit="LUSD" />
+      <Statistic lexicon={l.BNECT_FLOOR_PRICE}>
+        <Metric value={protocolInfo.floorPriceWithoutPendingHarvests.prettify(4)} unit="NECT" />
       </Statistic>
-      <Statistic lexicon={l.BLUSD_WIND_DOWN_PRICE}>
-        <Metric value={protocolInfo.windDownPrice.prettify(4)} unit="LUSD" />
+      <Statistic lexicon={l.BNECT_WIND_DOWN_PRICE}>
+        <Metric value={protocolInfo.windDownPrice.prettify(4)} unit="NECT" />
       </Statistic>
-      <Statistic lexicon={l.BLUSD_APR}>
+      <Statistic lexicon={l.BNECT_APR}>
         <Metric
           value={
-            protocolInfo.bLusdApr && protocolInfo.bLusdSupply.gt(0)
-              ? protocolInfo.bLusdApr.mul(100).prettify(2)
+            protocolInfo.bNectApr && protocolInfo.bNectSupply.gt(0)
+              ? protocolInfo.bNectApr.mul(100).prettify(2)
               : "N/A"
           }
           unit="%"
         />
       </Statistic>
-      <Statistic lexicon={l.BLUSD_LP_APR}>
+      <Statistic lexicon={l.BNECT_LP_APR}>
         <Metric
           value={
-            protocolInfo?.bLusdLpApr !== undefined ? protocolInfo.bLusdLpApr.prettify(2) : "N/A"
+            protocolInfo?.bNectLpApr !== undefined ? protocolInfo.bNectLpApr.prettify(2) : "N/A"
           }
           unit="%"
         />
       </Statistic>
-      <Statistic lexicon={l.BLUSD_YIELD_AMPLIFICATION}>
+      <Statistic lexicon={l.BNECT_YIELD_AMPLIFICATION}>
         <Metric
           value={
-            protocolInfo.yieldAmplification && protocolInfo.bLusdSupply.gt(0)
+            protocolInfo.yieldAmplification && protocolInfo.bNectSupply.gt(0)
               ? protocolInfo.yieldAmplification.prettify(2)
               : "N/A"
           }
           unit="x"
         />
       </Statistic>
-      <Statistic lexicon={l.BLUSD_SUPPLY}>
-        <Metric value={protocolInfo.bLusdSupply.shorten()} unit="bLUSD" />
+      <Statistic lexicon={l.BNECT_SUPPLY}>
+        <Metric value={protocolInfo.bNectSupply.shorten()} unit="bNECT" />
       </Statistic>
 
       <Heading as="h2" sx={{ mt: 3, fontWeight: "body" }}>
@@ -110,16 +110,16 @@ export const BondStats: React.FC<BondStatsProps> = () => {
         Treasury
       </Heading>
       <Statistic lexicon={l.TREASURY_PENDING}>
-        <Metric value={protocolInfo.treasury.pending.shorten()} unit="LUSD" />
+        <Metric value={protocolInfo.treasury.pending.shorten()} unit="NECT" />
       </Statistic>
       <Statistic lexicon={l.TREASURY_ACQUIRED}>
-        <Metric value={protocolInfo.treasury.reserve.shorten()} unit="LUSD" />
+        <Metric value={protocolInfo.treasury.reserve.shorten()} unit="NECT" />
       </Statistic>
       <Statistic lexicon={l.TREASURY_PERMANENT}>
-        <Metric value={protocolInfo.treasury.permanent.shorten()} unit="LUSD" />
+        <Metric value={protocolInfo.treasury.permanent.shorten()} unit="NECT" />
       </Statistic>
       <Statistic lexicon={l.TREASURY_TOTAL}>
-        <Metric value={protocolInfo.treasury.total.shorten()} unit="LUSD" />
+        <Metric value={protocolInfo.treasury.total.shorten()} unit="NECT" />
       </Statistic>
 
       <Flex mt={3}>

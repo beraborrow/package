@@ -1,20 +1,20 @@
 import { useCallback, useEffect, useReducer, useRef } from "react";
 
-import { LiquityStoreState } from "@liquity/lib-base";
+import { BeraBorrowStoreState } from "@beraborrow/lib-base";
 
 import { equals } from "../utils/equals";
 import { useLiquityStore } from "./useLiquityStore";
 
 export type LiquityStoreUpdate<T = unknown> = {
   type: "updateStore";
-  newState: LiquityStoreState<T>;
-  oldState: LiquityStoreState<T>;
-  stateChange: Partial<LiquityStoreState<T>>;
+  newState: BeraBorrowStoreState<T>;
+  oldState: BeraBorrowStoreState<T>;
+  stateChange: Partial<BeraBorrowStoreState<T>>;
 };
 
 export const useLiquityReducer = <S, A, T>(
   reduce: (state: S, action: A | LiquityStoreUpdate<T>) => S,
-  init: (storeState: LiquityStoreState<T>) => S
+  init: (storeState: BeraBorrowStoreState<T>) => S
 ): [S, (action: A | LiquityStoreUpdate<T>) => void] => {
   const store = useLiquityStore<T>();
   const oldStore = useRef(store);

@@ -163,9 +163,9 @@ contract('Gas cost tests', async accounts => {
   // it("", async () => {
   //   const message = 'openTrove(), 10 accounts, each account adds 10 ether and issues 100 NECT'
 
-  //   const amountETH = dec(10, 'ether')
+  //   const amountiBGT = dec(10, 'ether')
   //   const amountNECT = 0
-  //   const gasResults = await th.openTrove_allAccounts(_10_Accounts, contracts, amountETH, amountNECT)
+  //   const gasResults = await th.openTrove_allAccounts(_10_Accounts, contracts, amountiBGT, amountNECT)
   //   th.logGasMetrics(gasResults, message)
   //   th.logAllGasCosts(gasResults)
 
@@ -174,9 +174,9 @@ contract('Gas cost tests', async accounts => {
 
   // it("", async () => {
   //   const message = 'openTrove(), 10 accounts, each account adds 10 ether and issues less NECT than the previous one'
-  //   const amountETH = dec(10, 'ether')
+  //   const amountiBGT = dec(10, 'ether')
   //   const amountNECT = 200
-  //   const gasResults = await th.openTrove_allAccounts_decreasingNECTAmounts(_10_Accounts, contracts, amountETH, amountNECT)
+  //   const gasResults = await th.openTrove_allAccounts_decreasingNECTAmounts(_10_Accounts, contracts, amountiBGT, amountNECT)
   //   th.logGasMetrics(gasResults, message)
   //   th.logAllGasCosts(gasResults)
 
@@ -185,9 +185,9 @@ contract('Gas cost tests', async accounts => {
 
   it("", async () => {
     const message = 'openTrove(), 50 accounts, each account adds random ether and random NECT'
-    const amountETH = dec(10, 'ether')
+    const amountiBGT = dec(10, 'ether')
     const amountNECT = 0
-    const gasResults = await th.openTrove_allAccounts_randomETH_randomNECT(1, 9, _50_Accounts, contracts, 2, 100, true)
+    const gasResults = await th.openTrove_allAccounts_randomiBGT_randomNECT(1, 9, _50_Accounts, contracts, 2, 100, true)
     th.logGasMetrics(gasResults, message)
     th.logAllGasCosts(gasResults)
 
@@ -197,17 +197,17 @@ contract('Gas cost tests', async accounts => {
   // --- adjustTrove ---
 
   // it("", async () => {
-  //   const message = 'adjustTrove(). ETH/NECT Increase/Increase. 10 accounts, each account adjusts up -  1 ether and 100 NECT'
+  //   const message = 'adjustTrove(). iBGT/NECT Increase/Increase. 10 accounts, each account adjusts up -  1 ether and 100 NECT'
   //   await borrowerOperations.openTrove(_100pct, 0, accounts[999], ZERO_ADDRESS, { from: accounts[999], value: dec(100, 'ether') })
 
-  //   const amountETH = dec(10, 'ether')
+  //   const amountiBGT = dec(10, 'ether')
   //   const amountNECT = dec(100, 18)
-  //   await th.openTrove_allAccounts(_10_Accounts, contracts, amountETH, amountNECT)
+  //   await th.openTrove_allAccounts(_10_Accounts, contracts, amountiBGT, amountNECT)
 
 
-  //   const amountETH_2 = dec(1, 'ether')
+  //   const amountiBGT_2 = dec(1, 'ether')
   //   const amountNECT_2 = dec(100, 18)
-  //   const gasResults = await th.adjustTrove_allAccounts(_10_Accounts, contracts, amountETH_2, amountNECT_2)
+  //   const gasResults = await th.adjustTrove_allAccounts(_10_Accounts, contracts, amountiBGT_2, amountNECT_2)
 
   //   th.logGasMetrics(gasResults, message)
   //   th.logAllGasCosts(gasResults)
@@ -216,16 +216,16 @@ contract('Gas cost tests', async accounts => {
   // })
 
   // it("", async () => {
-  //   const message = 'adjustTrove(). ETH/NECT Decrease/Decrease. 10 accounts, each account adjusts down by 0.1 ether and 10 NECT'
+  //   const message = 'adjustTrove(). iBGT/NECT Decrease/Decrease. 10 accounts, each account adjusts down by 0.1 ether and 10 NECT'
   //   await borrowerOperations.openTrove(_100pct, 0, accounts[999], ZERO_ADDRESS, { from: accounts[999], value: dec(100, 'ether') })
 
-  //   const amountETH = dec(10, 'ether')
+  //   const amountiBGT = dec(10, 'ether')
   //   const amountNECT = dec(100, 18)
-  //   await th.openTrove_allAccounts(_10_Accounts, contracts, amountETH, amountNECT)
+  //   await th.openTrove_allAccounts(_10_Accounts, contracts, amountiBGT, amountNECT)
 
-  //   const amountETH_2 = "-100000000000000000"  // coll decrease of 0.1 ETH 
+  //   const amountiBGT_2 = "-100000000000000000"  // coll decrease of 0.1 iBGT 
   //   const amountNECT_2 = "-10000000000000000000" // debt decrease of 10 NECT 
-  //   const gasResults = await th.adjustTrove_allAccounts(_10_Accounts, contracts, amountETH_2, amountNECT_2)
+  //   const gasResults = await th.adjustTrove_allAccounts(_10_Accounts, contracts, amountiBGT_2, amountNECT_2)
 
   //   th.logGasMetrics(gasResults, message)
   //   th.logAllGasCosts(gasResults)
@@ -234,16 +234,16 @@ contract('Gas cost tests', async accounts => {
   // })
 
   // it("", async () => {
-  //   const message = 'adjustTrove(). ETH/NECT Increase/Decrease. 10 accounts, each account adjusts up by 0.1 ether and down by 10 NECT'
+  //   const message = 'adjustTrove(). iBGT/NECT Increase/Decrease. 10 accounts, each account adjusts up by 0.1 ether and down by 10 NECT'
   //   await borrowerOperations.openTrove(_100pct, 0, accounts[999], ZERO_ADDRESS, { from: accounts[999], value: dec(100, 'ether') })
 
-  //   const amountETH = dec(10, 'ether')
+  //   const amountiBGT = dec(10, 'ether')
   //   const amountNECT = dec(100, 18)
-  //   await th.openTrove_allAccounts(_10_Accounts, contracts, amountETH, amountNECT)
+  //   await th.openTrove_allAccounts(_10_Accounts, contracts, amountiBGT, amountNECT)
 
-  //   const amountETH_2 = "100000000000000000"  // coll increase of 0.1 ETH 
+  //   const amountiBGT_2 = "100000000000000000"  // coll increase of 0.1 iBGT 
   //   const amountNECT_2 = "-10000000000000000000" // debt decrease of 10 NECT 
-  //   const gasResults = await th.adjustTrove_allAccounts(_10_Accounts, contracts, amountETH_2, amountNECT_2)
+  //   const gasResults = await th.adjustTrove_allAccounts(_10_Accounts, contracts, amountiBGT_2, amountNECT_2)
 
   //   th.logGasMetrics(gasResults, message)
   //   th.logAllGasCosts(gasResults)
@@ -255,11 +255,11 @@ contract('Gas cost tests', async accounts => {
   //   const message = 'adjustTrove(). 30 accounts, each account adjusts up by random amounts. No size range transition'
   //   await borrowerOperations.openTrove(_100pct, 0, accounts[999], ZERO_ADDRESS, { from: accounts[999], value: dec(100, 'ether') })
 
-  //   const amountETH = dec(10, 'ether')
+  //   const amountiBGT = dec(10, 'ether')
   //   const amountNECT = dec(100, 18)
-  //   await th.openTrove_allAccounts(_30_Accounts, contracts, amountETH, amountNECT)
+  //   await th.openTrove_allAccounts(_30_Accounts, contracts, amountiBGT, amountNECT)
 
-  //   // Randomly add between 1-9 ETH, and withdraw 1-100 NECT
+  //   // Randomly add between 1-9 iBGT, and withdraw 1-100 NECT
   //   const gasResults = await th.adjustTrove_allAccounts_randomAmount(_30_Accounts, contracts, 1, 9, 1, 100)
 
   //   th.logGasMetrics(gasResults, message)
@@ -272,10 +272,10 @@ contract('Gas cost tests', async accounts => {
     const message = 'adjustTrove(). 40 accounts, each account adjusts up by random amounts. HAS size range transition'
     await borrowerOperations.openTrove(_100pct, 0, accounts[999], ZERO_ADDRESS, { from: accounts[999], value: dec(100, 'ether') })
 
-    const amountETH = dec(9, 'ether')
+    const amountiBGT = dec(9, 'ether')
     const amountNECT = dec(100, 18)
-    await th.openTrove_allAccounts(_40_Accounts, contracts, amountETH, amountNECT)
-    // Randomly add between 1-9 ETH, and withdraw 1-100 NECT
+    await th.openTrove_allAccounts(_40_Accounts, contracts, amountiBGT, amountNECT)
+    // Randomly add between 1-9 iBGT, and withdraw 1-100 NECT
     const gasResults = await th.adjustTrove_allAccounts_randomAmount(_40_Accounts, contracts, 1, 9, 1, 100)
 
     th.logGasMetrics(gasResults, message)
@@ -690,7 +690,7 @@ contract('Gas cost tests', async accounts => {
     await borrowerOperations.withdrawNECT(_100pct, dec(80, 18), accounts[2], ZERO_ADDRESS, { from: accounts[2] })
 
     /* Account 2 redeems 50 NECT. It is redeemed from account 0's Trove, 
-    leaving the Trove active with 30 NECT and ((200 *10 - 50 ) / 200 ) = 9.75 ETH. 
+    leaving the Trove active with 30 NECT and ((200 *10 - 50 ) / 200 ) = 9.75 iBGT. 
     
     It's ICR jumps from 2500% to 6500% and it is reinserted at the top of the list.
     */
@@ -853,7 +853,7 @@ contract('Gas cost tests', async accounts => {
     await troveManager.liquidate(accounts[998], { from: accounts[0] })
 
     /* Account 2 redeems 50 NECT. It is redeemed from account 0's Trove, 
-    leaving the Trove active with 30 NECT and ((200 *10 - 50 ) / 200 ) = 9.75 ETH. 
+    leaving the Trove active with 30 NECT and ((200 *10 - 50 ) / 200 ) = 9.75 iBGT. 
     
     It's ICR jumps from 2500% to 6500% and it is reinserted at the top of the list.
     */
@@ -1502,11 +1502,11 @@ contract('Gas cost tests', async accounts => {
     th.appendData(gasResults, message, data)
   })
 
-  // --- withdrawETHGainToTrove() ---
+  // --- withdrawiBGTGainToTrove() ---
 
-  // --- withdrawETHGainToTrove() - deposit has pending rewards ---
+  // --- withdrawiBGTGainToTrove() - deposit has pending rewards ---
   // it("", async () => {
-  //   const message = 'withdrawETHGainToTrove(), pending rewards in system. Accounts withdraw 180 NECT, provide 180 NECT, then withdraw all to SP after a liquidation'
+  //   const message = 'withdrawiBGTGainToTrove(), pending rewards in system. Accounts withdraw 180 NECT, provide 180 NECT, then withdraw all to SP after a liquidation'
   //   // 10 accts each open Trove with 10 ether, withdraw 180 NECT, and provide 130 NECT to Stability Pool
   //   await th.openTrove_allAccounts(accounts.slice(2, 12), contracts, dec(10, 'ether'), dec(130, 18))
   //   await th.provideToSP_allAccounts(accounts.slice(2, 12), stabilityPool, dec(130, 18))
@@ -1530,8 +1530,8 @@ contract('Gas cost tests', async accounts => {
 
   //   await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
-  //   // 5 active Troves withdraw their ETH gain to their trove
-  //   const gasResults = await th.withdrawETHGainToTrove_allAccounts(accounts.slice(7, 12), contracts)
+  //   // 5 active Troves withdraw their iBGT gain to their trove
+  //   const gasResults = await th.withdrawiBGTGainToTrove_allAccounts(accounts.slice(7, 12), contracts)
   //   th.logGasMetrics(gasResults, message)
   //   th.logAllGasCosts(gasResults)
 
@@ -1539,7 +1539,7 @@ contract('Gas cost tests', async accounts => {
   // })
 
   it("", async () => {
-    const message = 'withdrawETHGainToTrove(), pending rewards in system. Accounts withdraw 180 NECT, provide a random amount, then withdraw all to SP after a liquidation'
+    const message = 'withdrawiBGTGainToTrove(), pending rewards in system. Accounts withdraw 180 NECT, provide a random amount, then withdraw all to SP after a liquidation'
     // 20 accts each open Trove with 10 ether, withdraw 180 NECT, and provide 180 NECT to Stability Pool
     await th.openTrove_allAccounts(accounts.slice(2, 22), contracts, dec(10, 'ether'), dec(130, 18))
     await await th.provideToSP_allAccounts_randomAmount(1, 129, accounts.slice(2, 22), stabilityPool)
@@ -1563,8 +1563,8 @@ contract('Gas cost tests', async accounts => {
   
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
   
-    // 5 active Troves withdraw their ETH gain to their trove
-    const gasResults = await th.withdrawETHGainToTrove_allAccounts(accounts.slice(2, 22), contracts)
+    // 5 active Troves withdraw their iBGT gain to their trove
+    const gasResults = await th.withdrawiBGTGainToTrove_allAccounts(accounts.slice(2, 22), contracts)
     th.logGasMetrics(gasResults, message)
     th.logAllGasCosts(gasResults)
 
@@ -1933,7 +1933,7 @@ contract('Gas cost tests', async accounts => {
 
   // pure offset
   it("", async () => {
-    const message = 'liquidate() 1 Trove Normal Mode, 30 active Troves, no ETH gain in pool, pure offset with SP'
+    const message = 'liquidate() 1 Trove Normal Mode, 30 active Troves, no iBGT gain in pool, pure offset with SP'
     // 30 accts each open Trove with 10 ether, withdraw 180 NECT, and provide 180 NECT to Stability Pool
     await th.openTrove_allAccounts(accounts.slice(100, 130), contracts, dec(10, 'ether'), 0)
     await th.withdrawNECT_allAccounts(accounts.slice(100, 130), contracts, dec(130, 18))

@@ -1,24 +1,24 @@
 import { Button } from "theme-ui";
 
-import { LiquityStoreState } from "@liquity/lib-base";
-import { useLiquitySelector } from "@liquity/lib-react";
+import { BeraBorrowStoreState } from "@beraborrow/lib-base";
+import { useLiquitySelector } from "@beraborrow/lib-react";
 
-import { useLiquity } from "../../hooks/LiquityContext";
+import { useBeraBorrow } from "../../hooks/BeraBorrowContext";
 import { useTransactionFunction } from "../Transaction";
 
-const selectLQTYStake = ({ lqtyStake }: LiquityStoreState) => lqtyStake;
+const selectPOLLENStake = ({ pollenStake }: BeraBorrowStoreState) => pollenStake;
 
 export const StakingGainsAction: React.FC = () => {
-  const { liquity } = useLiquity();
-  const { collateralGain, lusdGain } = useLiquitySelector(selectLQTYStake);
+  const { beraborrow } = useBeraBorrow();
+  const { collateralGain, nectGain } = useLiquitySelector(selectPOLLENStake);
 
   const [sendTransaction] = useTransactionFunction(
     "stake",
-    liquity.send.withdrawGainsFromStaking.bind(liquity.send)
+    beraborrow.send.withdrawGainsFromStaking.bind(beraborrow.send)
   );
 
   return (
-    <Button onClick={sendTransaction} disabled={collateralGain.isZero && lusdGain.isZero}>
+    <Button onClick={sendTransaction} disabled={collateralGain.isZero && nectGain.isZero}>
       Claim gains
     </Button>
   );

@@ -1,14 +1,14 @@
 import React from "react";
 // import { Card, Heading, Box, Flex, Button, Grid } from "theme-ui";
-import { useLiquitySelector } from "@liquity/lib-react";
-import { LiquityStoreState } from "@liquity/lib-base";
+import { useLiquitySelector } from "@beraborrow/lib-react";
+import { BeraBorrowStoreState } from "@beraborrow/lib-base";
 import { DisabledEditableRow } from "./Editor";
 // import { useTroveView } from "./context/TroveViewContext";
 // import { Icon } from "../Icon";
 // import { COIN } from "../../strings";
 // import { CollateralRatio } from "./CollateralRatio";
 
-import { Percent, Decimal } from "@liquity/lib-base";
+import { Percent, Decimal } from "@beraborrow/lib-base";
 // import { AddressZero } from "@ethersproject/constants";
 // import { useFluid } from "../../hooks/FluidContext";
 
@@ -19,20 +19,20 @@ const select = ({
     numberOfTroves,
     price,
     total,
-    lusdInStabilityPool,
+    nectInStabilityPool,
     borrowingRate,
     redemptionRate,
-    totalStakedLQTY,
+    totalStakedPOLLEN,
     frontend
-  }: LiquityStoreState) => ({
+  }: BeraBorrowStoreState) => ({
     trove,
     numberOfTroves,
     price,
     total,
-    lusdInStabilityPool,
+    nectInStabilityPool,
     borrowingRate,
     redemptionRate,
-    totalStakedLQTY,
+    totalStakedPOLLEN,
     kickbackRate: frontend.status === "registered" ? frontend.kickbackRate : null
   });
 
@@ -48,7 +48,7 @@ export const ReadOnlyStats: React.FC = () => {
     // trove,
     // numberOfTroves,
     price,
-    lusdInStabilityPool,
+    nectInStabilityPool,
     total,
     borrowingRate,
     // totalStakedFLO,
@@ -76,7 +76,7 @@ export const ReadOnlyStats: React.FC = () => {
           <DisabledEditableRow
             label="Minted NECT"
             inputId="trove-minted-sai"
-            amount={total.debt.shorten() + " / " + lusdInStabilityPool.shorten()}
+            amount={total.debt.shorten() + " / " + nectInStabilityPool.shorten()}
             unit=""
           />
           <DisabledEditableRow

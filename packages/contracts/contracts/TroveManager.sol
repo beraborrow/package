@@ -89,27 +89,27 @@ contract TroveManager is BeraBorrowBase, Ownable, CheckContract, ITroveManager {
     uint public totalCollateralSnapshot;
 
     /*
-    * L_ETH and L_NECTDebt track the sums of accumulated liquidation rewards per unit staked. During its lifetime, each stake earns:
+    * L_iBGT and L_NECTDebt track the sums of accumulated liquidation rewards per unit staked. During its lifetime, each stake earns:
     *
-    * An ETH gain of ( stake * [L_ETH - L_ETH(0)] )
+    * An iBGT gain of ( stake * [L_iBGT - L_iBGT(0)] )
     * A NECTDebt increase  of ( stake * [L_NECTDebt - L_NECTDebt(0)] )
     *
-    * Where L_ETH(0) and L_NECTDebt(0) are snapshots of L_ETH and L_NECTDebt for the active Trove taken at the instant the stake was made
+    * Where L_iBGT(0) and L_NECTDebt(0) are snapshots of L_iBGT and L_NECTDebt for the active Trove taken at the instant the stake was made
     */
-    uint public L_ETH;
+    uint public L_iBGT;
     uint public L_NECTDebt;
 
     // Map addresses with active troves to their RewardSnapshot
     mapping (address => RewardSnapshot) public rewardSnapshots;
 
-    // Object containing the ETH and NECT snapshots for a given active trove
-    struct RewardSnapshot { uint ETH; uint NECTDebt;}
+    // Object containing the iBGT and NECT snapshots for a given active trove
+    struct RewardSnapshot { uint iBGT; uint NECTDebt;}
 
     // Array of all active trove addresses - used to to compute an approximate hint off-chain, for the sorted list insertion
     address[] public TroveOwners;
 
     // Error trackers for the trove redistribution calculation
-    uint public lastETHError_Redistribution;
+    uint public lastiBGTError_Redistribution;
     uint public lastNECTDebtError_Redistribution;
 
     /*
@@ -181,9 +181,9 @@ contract TroveManager is BeraBorrowBase, Ownable, CheckContract, ITroveManager {
     struct RedemptionTotals {
         uint remainingNECT;
         uint totalNECTToRedeem;
-        uint totalETHDrawn;
-        uint ETHFee;
-        uint ETHToSendToRedeemer;
+        uint totaliBGTDrawn;
+        uint iBGTFee;
+        uint iBGTToSendToRedeemer;
         uint decayedBaseRate;
         uint price;
         uint totalNECTSupplyAtStart;
@@ -191,7 +191,7 @@ contract TroveManager is BeraBorrowBase, Ownable, CheckContract, ITroveManager {
 
     struct SingleRedemptionValues {
         uint NECTLot;
-        uint ETHLot;
+        uint iBGTLot;
         bool cancelledPartial;
     }
 
@@ -210,15 +210,15 @@ contract TroveManager is BeraBorrowBase, Ownable, CheckContract, ITroveManager {
     event POLLENStakingAddressChanged(address _pollenStakingAddress);
 
     event Liquidation(uint _liquidatedDebt, uint _liquidatedColl, uint _collGasCompensation, uint _NECTGasCompensation);
-    event Redemption(uint _attemptedNECTAmount, uint _actualNECTAmount, uint _ETHSent, uint _ETHFee);
+    event Redemption(uint _attemptedNECTAmount, uint _actualNECTAmount, uint _iBGTSent, uint _iBGTFee);
     event TroveUpdated(address indexed _borrower, uint _debt, uint _coll, uint _stake, TroveManagerOperation _operation);
     event TroveLiquidated(address indexed _borrower, uint _debt, uint _coll, TroveManagerOperation _operation);
     event BaseRateUpdated(uint _baseRate);
     event LastFeeOpTimeUpdated(uint _lastFeeOpTime);
     event TotalStakesUpdated(uint _newTotalStakes);
     event SystemSnapshotsUpdated(uint _totalStakesSnapshot, uint _totalCollateralSnapshot);
-    event LTermsUpdated(uint _L_ETH, uint _L_NECTDebt);
-    event TroveSnapshotsUpdated(uint _L_ETH, uint _L_NECTDebt);
+    event LTermsUpdated(uint _L_iBGT, uint _L_NECTDebt);
+    event TroveSnapshotsUpdated(uint _L_iBGT, uint _L_NECTDebt);
     event TroveIndexUpdated(address _borrower, uint _newIndex);
 
      enum TroveManagerOperation {
@@ -462,7 +462,7 @@ contract TroveManager is BeraBorrowBase, Ownable, CheckContract, ITroveManager {
     }
 
     /*
-    *  Get its offset coll/debt and ETH gas comp, and close the trove.
+    *  Get its offset coll/debt and iBGT gas comp, and close the trove.
     */
     function _getCappedOffsetVals
     (
@@ -521,11 +521,11 @@ contract TroveManager is BeraBorrowBase, Ownable, CheckContract, ITroveManager {
 
         require(totals.totalDebtInSequence > 0, "TroveManager: nothing to liquidate");
 
-        // Move liquidated ETH and NECT to the appropriate pools
+        // Move liquidated iBGT and NECT to the appropriate pools
         stabilityPoolCached.offset(totals.totalDebtToOffset, totals.totalCollToSendToSP);
         _redistributeDebtAndColl(contractsCache.activePool, contractsCache.defaultPool, totals.totalDebtToRedistribute, totals.totalCollToRedistribute);
         if (totals.totalCollSurplus > 0) {
-            contractsCache.activePool.sendETH(address(collSurplusPool), totals.totalCollSurplus);
+            contractsCache.activePool.sendiBGT(address(collSurplusPool), totals.totalCollSurplus);
         }
 
         // Update system snapshots
@@ -663,11 +663,11 @@ contract TroveManager is BeraBorrowBase, Ownable, CheckContract, ITroveManager {
 
         require(totals.totalDebtInSequence > 0, "TroveManager: nothing to liquidate");
 
-        // Move liquidated ETH and NECT to the appropriate pools
+        // Move liquidated iBGT and NECT to the appropriate pools
         stabilityPoolCached.offset(totals.totalDebtToOffset, totals.totalCollToSendToSP);
         _redistributeDebtAndColl(activePoolCached, defaultPoolCached, totals.totalDebtToRedistribute, totals.totalCollToRedistribute);
         if (totals.totalCollSurplus > 0) {
-            activePoolCached.sendETH(address(collSurplusPool), totals.totalCollSurplus);
+            activePoolCached.sendiBGT(address(collSurplusPool), totals.totalCollSurplus);
         }
 
         // Update system snapshots
@@ -793,21 +793,21 @@ contract TroveManager is BeraBorrowBase, Ownable, CheckContract, ITroveManager {
         return newTotals;
     }
 
-    function _sendGasCompensation(IActivePool _activePool, address _liquidator, uint _NECT, uint _ETH) internal {
+    function _sendGasCompensation(IActivePool _activePool, address _liquidator, uint _NECT, uint _iBGT) internal {
         if (_NECT > 0) {
             nectToken.returnFromPool(gasPoolAddress, _liquidator, _NECT);
         }
 
-        if (_ETH > 0) {
-            _activePool.sendETH(_liquidator, _ETH);
+        if (_iBGT > 0) {
+            _activePool.sendiBGT(_liquidator, _iBGT);
         }
     }
 
     // Move a Trove's pending debt and collateral rewards from distributions, from the Default Pool to the Active Pool
-    function _movePendingTroveRewardsToActivePool(IActivePool _activePool, IDefaultPool _defaultPool, uint _NECT, uint _ETH) internal {
+    function _movePendingTroveRewardsToActivePool(IActivePool _activePool, IDefaultPool _defaultPool, uint _NECT, uint _iBGT) internal {
         _defaultPool.decreaseNECTDebt(_NECT);
         _activePool.increaseNECTDebt(_NECT);
-        _defaultPool.sendETHToActivePool(_ETH);
+        _defaultPool.sendiBGTToActivePool(_iBGT);
     }
 
     // --- Redemption functions ---
@@ -827,12 +827,12 @@ contract TroveManager is BeraBorrowBase, Ownable, CheckContract, ITroveManager {
         // Determine the remaining amount (lot) to be redeemed, capped by the entire debt of the Trove minus the liquidation reserve
         singleRedemption.NECTLot = BeraBorrowMath._min(_maxNECTamount, Troves[_borrower].debt.sub(NECT_GAS_COMPENSATION));
 
-        // Get the ETHLot of equivalent value in USD
-        singleRedemption.ETHLot = singleRedemption.NECTLot.mul(DECIMAL_PRECISION).div(_price);
+        // Get the iBGTLot of equivalent value in USD
+        singleRedemption.iBGTLot = singleRedemption.NECTLot.mul(DECIMAL_PRECISION).div(_price);
 
-        // Decrease the debt and collateral of the current Trove according to the NECT lot and corresponding ETH to send
+        // Decrease the debt and collateral of the current Trove according to the NECT lot and corresponding iBGT to send
         uint newDebt = (Troves[_borrower].debt).sub(singleRedemption.NECTLot);
-        uint newColl = (Troves[_borrower].coll).sub(singleRedemption.ETHLot);
+        uint newColl = (Troves[_borrower].coll).sub(singleRedemption.iBGTLot);
 
         if (newDebt == NECT_GAS_COMPENSATION) {
             // No debt left in the Trove (except for the liquidation reserve), therefore the trove gets closed
@@ -874,19 +874,19 @@ contract TroveManager is BeraBorrowBase, Ownable, CheckContract, ITroveManager {
 
     /*
     * Called when a full redemption occurs, and closes the trove.
-    * The redeemer swaps (debt - liquidation reserve) NECT for (debt - liquidation reserve) worth of ETH, so the NECT liquidation reserve left corresponds to the remaining debt.
+    * The redeemer swaps (debt - liquidation reserve) NECT for (debt - liquidation reserve) worth of iBGT, so the NECT liquidation reserve left corresponds to the remaining debt.
     * In order to close the trove, the NECT liquidation reserve is burned, and the corresponding debt is removed from the active pool.
     * The debt recorded on the trove's struct is zero'd elswhere, in _closeTrove.
-    * Any surplus ETH left in the trove, is sent to the Coll surplus pool, and can be later claimed by the borrower.
+    * Any surplus iBGT left in the trove, is sent to the Coll surplus pool, and can be later claimed by the borrower.
     */
-    function _redeemCloseTrove(ContractsCache memory _contractsCache, address _borrower, uint _NECT, uint _ETH) internal {
+    function _redeemCloseTrove(ContractsCache memory _contractsCache, address _borrower, uint _NECT, uint _iBGT) internal {
         _contractsCache.nectToken.burn(gasPoolAddress, _NECT);
-        // Update Active Pool NECT, and send ETH to account
+        // Update Active Pool NECT, and send iBGT to account
         _contractsCache.activePool.decreaseNECTDebt(_NECT);
 
-        // send ETH from Active Pool to CollSurplus Pool
-        _contractsCache.collSurplusPool.accountSurplus(_borrower, _ETH);
-        _contractsCache.activePool.sendETH(address(_contractsCache.collSurplusPool), _ETH);
+        // send iBGT from Active Pool to CollSurplus Pool
+        _contractsCache.collSurplusPool.accountSurplus(_borrower, _iBGT);
+        _contractsCache.activePool.sendiBGT(address(_contractsCache.collSurplusPool), _iBGT);
     }
 
     function _isValidFirstRedemptionHint(ISortedTroves _sortedTroves, address _firstRedemptionHint, uint _price) internal view returns (bool) {
@@ -991,63 +991,63 @@ contract TroveManager is BeraBorrowBase, Ownable, CheckContract, ITroveManager {
             if (singleRedemption.cancelledPartial) break; // Partial redemption was cancelled (out-of-date hint, or new net debt < minimum), therefore we could not redeem from the last Trove
 
             totals.totalNECTToRedeem  = totals.totalNECTToRedeem.add(singleRedemption.NECTLot);
-            totals.totalETHDrawn = totals.totalETHDrawn.add(singleRedemption.ETHLot);
+            totals.totaliBGTDrawn = totals.totaliBGTDrawn.add(singleRedemption.iBGTLot);
 
             totals.remainingNECT = totals.remainingNECT.sub(singleRedemption.NECTLot);
             currentBorrower = nextUserToCheck;
         }
-        require(totals.totalETHDrawn > 0, "TroveManager: Unable to redeem any amount");
+        require(totals.totaliBGTDrawn > 0, "TroveManager: Unable to redeem any amount");
 
         // Decay the baseRate due to time passed, and then increase it according to the size of this redemption.
         // Use the saved total NECT supply value, from before it was reduced by the redemption.
-        _updateBaseRateFromRedemption(totals.totalETHDrawn, totals.price, totals.totalNECTSupplyAtStart);
+        _updateBaseRateFromRedemption(totals.totaliBGTDrawn, totals.price, totals.totalNECTSupplyAtStart);
 
-        // Calculate the ETH fee
-        totals.ETHFee = _getRedemptionFee(totals.totalETHDrawn);
+        // Calculate the iBGT fee
+        totals.iBGTFee = _getRedemptionFee(totals.totaliBGTDrawn);
 
-        _requireUserAcceptsFee(totals.ETHFee, totals.totalETHDrawn, _maxFeePercentage);
+        _requireUserAcceptsFee(totals.iBGTFee, totals.totaliBGTDrawn, _maxFeePercentage);
 
-        // Send the ETH fee to the POLLEN staking contract
-        contractsCache.activePool.sendETH(address(contractsCache.pollenStaking), totals.ETHFee);
-        contractsCache.pollenStaking.increaseF_ETH(totals.ETHFee);
+        // Send the iBGT fee to the POLLEN staking contract
+        contractsCache.activePool.sendiBGT(address(contractsCache.pollenStaking), totals.iBGTFee);
+        contractsCache.pollenStaking.increaseF_iBGT(totals.iBGTFee);
 
-        totals.ETHToSendToRedeemer = totals.totalETHDrawn.sub(totals.ETHFee);
+        totals.iBGTToSendToRedeemer = totals.totaliBGTDrawn.sub(totals.iBGTFee);
 
-        emit Redemption(_NECTamount, totals.totalNECTToRedeem, totals.totalETHDrawn, totals.ETHFee);
+        emit Redemption(_NECTamount, totals.totalNECTToRedeem, totals.totaliBGTDrawn, totals.iBGTFee);
 
-        // Burn the total NECT that is cancelled with debt, and send the redeemed ETH to msg.sender
+        // Burn the total NECT that is cancelled with debt, and send the redeemed iBGT to msg.sender
         contractsCache.nectToken.burn(msg.sender, totals.totalNECTToRedeem);
-        // Update Active Pool NECT, and send ETH to account
+        // Update Active Pool NECT, and send iBGT to account
         contractsCache.activePool.decreaseNECTDebt(totals.totalNECTToRedeem);
-        contractsCache.activePool.sendETH(msg.sender, totals.ETHToSendToRedeemer);
+        contractsCache.activePool.sendiBGT(msg.sender, totals.iBGTToSendToRedeemer);
     }
 
     // --- Helper functions ---
 
     // Return the nominal collateral ratio (ICR) of a given Trove, without the price. Takes a trove's pending coll and debt rewards from redistributions into account.
     function getNominalICR(address _borrower) public view override returns (uint) {
-        (uint currentETH, uint currentNECTDebt) = _getCurrentTroveAmounts(_borrower);
+        (uint currentiBGT, uint currentNECTDebt) = _getCurrentTroveAmounts(_borrower);
 
-        uint NICR = BeraBorrowMath._computeNominalCR(currentETH, currentNECTDebt);
+        uint NICR = BeraBorrowMath._computeNominalCR(currentiBGT, currentNECTDebt);
         return NICR;
     }
 
     // Return the current collateral ratio (ICR) of a given Trove. Takes a trove's pending coll and debt rewards from redistributions into account.
     function getCurrentICR(address _borrower, uint _price) public view override returns (uint) {
-        (uint currentETH, uint currentNECTDebt) = _getCurrentTroveAmounts(_borrower);
+        (uint currentiBGT, uint currentNECTDebt) = _getCurrentTroveAmounts(_borrower);
 
-        uint ICR = BeraBorrowMath._computeCR(currentETH, currentNECTDebt, _price);
+        uint ICR = BeraBorrowMath._computeCR(currentiBGT, currentNECTDebt, _price);
         return ICR;
     }
 
     function _getCurrentTroveAmounts(address _borrower) internal view returns (uint, uint) {
-        uint pendingETHReward = getPendingETHReward(_borrower);
+        uint pendingiBGTReward = getPendingiBGTReward(_borrower);
         uint pendingNECTDebtReward = getPendingNECTDebtReward(_borrower);
 
-        uint currentETH = Troves[_borrower].coll.add(pendingETHReward);
+        uint currentiBGT = Troves[_borrower].coll.add(pendingiBGTReward);
         uint currentNECTDebt = Troves[_borrower].debt.add(pendingNECTDebtReward);
 
-        return (currentETH, currentNECTDebt);
+        return (currentiBGT, currentNECTDebt);
     }
 
     function applyPendingRewards(address _borrower) external override {
@@ -1061,17 +1061,17 @@ contract TroveManager is BeraBorrowBase, Ownable, CheckContract, ITroveManager {
             _requireTroveIsActive(_borrower);
 
             // Compute pending rewards
-            uint pendingETHReward = getPendingETHReward(_borrower);
+            uint pendingiBGTReward = getPendingiBGTReward(_borrower);
             uint pendingNECTDebtReward = getPendingNECTDebtReward(_borrower);
 
             // Apply pending rewards to trove's state
-            Troves[_borrower].coll = Troves[_borrower].coll.add(pendingETHReward);
+            Troves[_borrower].coll = Troves[_borrower].coll.add(pendingiBGTReward);
             Troves[_borrower].debt = Troves[_borrower].debt.add(pendingNECTDebtReward);
 
             _updateTroveRewardSnapshots(_borrower);
 
             // Transfer from DefaultPool to ActivePool
-            _movePendingTroveRewardsToActivePool(_activePool, _defaultPool, pendingNECTDebtReward, pendingETHReward);
+            _movePendingTroveRewardsToActivePool(_activePool, _defaultPool, pendingNECTDebtReward, pendingiBGTReward);
 
             emit TroveUpdated(
                 _borrower,
@@ -1083,30 +1083,30 @@ contract TroveManager is BeraBorrowBase, Ownable, CheckContract, ITroveManager {
         }
     }
 
-    // Update borrower's snapshots of L_ETH and L_NECTDebt to reflect the current values
+    // Update borrower's snapshots of L_iBGT and L_NECTDebt to reflect the current values
     function updateTroveRewardSnapshots(address _borrower) external override {
         _requireCallerIsBorrowerOperations();
        return _updateTroveRewardSnapshots(_borrower);
     }
 
     function _updateTroveRewardSnapshots(address _borrower) internal {
-        rewardSnapshots[_borrower].ETH = L_ETH;
+        rewardSnapshots[_borrower].iBGT = L_iBGT;
         rewardSnapshots[_borrower].NECTDebt = L_NECTDebt;
-        emit TroveSnapshotsUpdated(L_ETH, L_NECTDebt);
+        emit TroveSnapshotsUpdated(L_iBGT, L_NECTDebt);
     }
 
-    // Get the borrower's pending accumulated ETH reward, earned by their stake
-    function getPendingETHReward(address _borrower) public view override returns (uint) {
-        uint snapshotETH = rewardSnapshots[_borrower].ETH;
-        uint rewardPerUnitStaked = L_ETH.sub(snapshotETH);
+    // Get the borrower's pending accumulated iBGT reward, earned by their stake
+    function getPendingiBGTReward(address _borrower) public view override returns (uint) {
+        uint snapshotiBGT = rewardSnapshots[_borrower].iBGT;
+        uint rewardPerUnitStaked = L_iBGT.sub(snapshotiBGT);
 
         if ( rewardPerUnitStaked == 0 || Troves[_borrower].status != Status.active) { return 0; }
 
         uint stake = Troves[_borrower].stake;
 
-        uint pendingETHReward = stake.mul(rewardPerUnitStaked).div(DECIMAL_PRECISION);
+        uint pendingiBGTReward = stake.mul(rewardPerUnitStaked).div(DECIMAL_PRECISION);
 
-        return pendingETHReward;
+        return pendingiBGTReward;
     }
     
     // Get the borrower's pending accumulated NECT reward, earned by their stake
@@ -1131,7 +1131,7 @@ contract TroveManager is BeraBorrowBase, Ownable, CheckContract, ITroveManager {
         */
         if (Troves[_borrower].status != Status.active) {return false;}
        
-        return (rewardSnapshots[_borrower].ETH < L_ETH);
+        return (rewardSnapshots[_borrower].iBGT < L_iBGT);
     }
 
     // Return the Troves entire debt and coll, including pending rewards from redistributions.
@@ -1141,16 +1141,16 @@ contract TroveManager is BeraBorrowBase, Ownable, CheckContract, ITroveManager {
         public
         view
         override
-        returns (uint debt, uint coll, uint pendingNECTDebtReward, uint pendingETHReward)
+        returns (uint debt, uint coll, uint pendingNECTDebtReward, uint pendingiBGTReward)
     {
         debt = Troves[_borrower].debt;
         coll = Troves[_borrower].coll;
 
         pendingNECTDebtReward = getPendingNECTDebtReward(_borrower);
-        pendingETHReward = getPendingETHReward(_borrower);
+        pendingiBGTReward = getPendingiBGTReward(_borrower);
 
         debt = debt.add(pendingNECTDebtReward);
-        coll = coll.add(pendingETHReward);
+        coll = coll.add(pendingiBGTReward);
     }
 
     function removeStake(address _borrower) external override {
@@ -1205,7 +1205,7 @@ contract TroveManager is BeraBorrowBase, Ownable, CheckContract, ITroveManager {
 
         /*
         * Add distributed coll and debt rewards-per-unit-staked to the running totals. Division uses a "feedback"
-        * error correction, to keep the cumulative error low in the running totals L_ETH and L_NECTDebt:
+        * error correction, to keep the cumulative error low in the running totals L_iBGT and L_NECTDebt:
         *
         * 1) Form numerators which compensate for the floor division errors that occurred the last time this
         * function was called.
@@ -1214,26 +1214,26 @@ contract TroveManager is BeraBorrowBase, Ownable, CheckContract, ITroveManager {
         * 4) Store these errors for use in the next correction when this function is called.
         * 5) Note: static analysis tools complain about this "division before multiplication", however, it is intended.
         */
-        uint ETHNumerator = _coll.mul(DECIMAL_PRECISION).add(lastETHError_Redistribution);
+        uint iBGTNumerator = _coll.mul(DECIMAL_PRECISION).add(lastiBGTError_Redistribution);
         uint NECTDebtNumerator = _debt.mul(DECIMAL_PRECISION).add(lastNECTDebtError_Redistribution);
 
         // Get the per-unit-staked terms
-        uint ETHRewardPerUnitStaked = ETHNumerator.div(totalStakes);
+        uint iBGTRewardPerUnitStaked = iBGTNumerator.div(totalStakes);
         uint NECTDebtRewardPerUnitStaked = NECTDebtNumerator.div(totalStakes);
 
-        lastETHError_Redistribution = ETHNumerator.sub(ETHRewardPerUnitStaked.mul(totalStakes));
+        lastiBGTError_Redistribution = iBGTNumerator.sub(iBGTRewardPerUnitStaked.mul(totalStakes));
         lastNECTDebtError_Redistribution = NECTDebtNumerator.sub(NECTDebtRewardPerUnitStaked.mul(totalStakes));
 
         // Add per-unit-staked terms to the running totals
-        L_ETH = L_ETH.add(ETHRewardPerUnitStaked);
+        L_iBGT = L_iBGT.add(iBGTRewardPerUnitStaked);
         L_NECTDebt = L_NECTDebt.add(NECTDebtRewardPerUnitStaked);
 
-        emit LTermsUpdated(L_ETH, L_NECTDebt);
+        emit LTermsUpdated(L_iBGT, L_NECTDebt);
 
         // Transfer coll and debt from ActivePool to DefaultPool
         _activePool.decreaseNECTDebt(_debt);
         _defaultPool.increaseNECTDebt(_debt);
-        _activePool.sendETH(address(_defaultPool), _coll);
+        _activePool.sendiBGT(address(_defaultPool), _coll);
     }
 
     function closeTrove(address _borrower) external override {
@@ -1251,7 +1251,7 @@ contract TroveManager is BeraBorrowBase, Ownable, CheckContract, ITroveManager {
         Troves[_borrower].coll = 0;
         Troves[_borrower].debt = 0;
 
-        rewardSnapshots[_borrower].ETH = 0;
+        rewardSnapshots[_borrower].iBGT = 0;
         rewardSnapshots[_borrower].NECTDebt = 0;
 
         _removeTroveOwner(_borrower, TroveOwnersArrayLength);
@@ -1264,15 +1264,15 @@ contract TroveManager is BeraBorrowBase, Ownable, CheckContract, ITroveManager {
     *
     * The calculation excludes a portion of collateral that is in the ActivePool:
     *
-    * the total ETH gas compensation from the liquidation sequence
+    * the total iBGT gas compensation from the liquidation sequence
     *
-    * The ETH as compensation must be excluded as it is always sent out at the very end of the liquidation sequence.
+    * The iBGT as compensation must be excluded as it is always sent out at the very end of the liquidation sequence.
     */
     function _updateSystemSnapshots_excludeCollRemainder(IActivePool _activePool, uint _collRemainder) internal {
         totalStakesSnapshot = totalStakes;
 
-        uint activeColl = _activePool.getETH();
-        uint liquidatedColl = defaultPool.getETH();
+        uint activeColl = _activePool.getiBGT();
+        uint liquidatedColl = defaultPool.getiBGT();
         totalCollateralSnapshot = activeColl.sub(_collRemainder).add(liquidatedColl);
 
         emit SystemSnapshotsUpdated(totalStakesSnapshot, totalCollateralSnapshot);
@@ -1332,7 +1332,7 @@ contract TroveManager is BeraBorrowBase, Ownable, CheckContract, ITroveManager {
         return _checkRecoveryMode(_price);
     }
 
-    // Check whether or not the system *would be* in Recovery Mode, given an ETH:USD price, and the entire system coll and debt.
+    // Check whether or not the system *would be* in Recovery Mode, given an iBGT:USD price, and the entire system coll and debt.
     function _checkPotentialRecoveryMode(
         uint _entireSystemColl,
         uint _entireSystemDebt,
@@ -1355,12 +1355,12 @@ contract TroveManager is BeraBorrowBase, Ownable, CheckContract, ITroveManager {
     * then,
     * 2) increases the baseRate based on the amount redeemed, as a proportion of total supply
     */
-    function _updateBaseRateFromRedemption(uint _ETHDrawn,  uint _price, uint _totalNECTSupply) internal returns (uint) {
+    function _updateBaseRateFromRedemption(uint _iBGTDrawn,  uint _price, uint _totalNECTSupply) internal returns (uint) {
         uint decayedBaseRate = _calcDecayedBaseRate();
 
-        /* Convert the drawn ETH back to NECT at face value rate (1 NECT:1 USD), in order to get
+        /* Convert the drawn iBGT back to NECT at face value rate (1 NECT:1 USD), in order to get
         * the fraction of total supply that was redeemed at face value. */
-        uint redeemedNECTFraction = _ETHDrawn.mul(_price).div(_totalNECTSupply);
+        uint redeemedNECTFraction = _iBGTDrawn.mul(_price).div(_totalNECTSupply);
 
         uint newBaseRate = decayedBaseRate.add(redeemedNECTFraction.div(BETA));
         newBaseRate = BeraBorrowMath._min(newBaseRate, DECIMAL_PRECISION); // cap baseRate at a maximum of 100%
@@ -1391,17 +1391,17 @@ contract TroveManager is BeraBorrowBase, Ownable, CheckContract, ITroveManager {
         );
     }
 
-    function _getRedemptionFee(uint _ETHDrawn) internal view returns (uint) {
-        return _calcRedemptionFee(getRedemptionRate(), _ETHDrawn);
+    function _getRedemptionFee(uint _iBGTDrawn) internal view returns (uint) {
+        return _calcRedemptionFee(getRedemptionRate(), _iBGTDrawn);
     }
 
-    function getRedemptionFeeWithDecay(uint _ETHDrawn) external view override returns (uint) {
-        return _calcRedemptionFee(getRedemptionRateWithDecay(), _ETHDrawn);
+    function getRedemptionFeeWithDecay(uint _iBGTDrawn) external view override returns (uint) {
+        return _calcRedemptionFee(getRedemptionRateWithDecay(), _iBGTDrawn);
     }
 
-    function _calcRedemptionFee(uint _redemptionRate, uint _ETHDrawn) internal pure returns (uint) {
-        uint redemptionFee = _redemptionRate.mul(_ETHDrawn).div(DECIMAL_PRECISION);
-        require(redemptionFee < _ETHDrawn, "TroveManager: Fee would eat up all returned collateral");
+    function _calcRedemptionFee(uint _redemptionRate, uint _iBGTDrawn) internal pure returns (uint) {
+        uint redemptionFee = _redemptionRate.mul(_iBGTDrawn).div(DECIMAL_PRECISION);
+        require(redemptionFee < _iBGTDrawn, "TroveManager: Fee would eat up all returned collateral");
         return redemptionFee;
     }
 

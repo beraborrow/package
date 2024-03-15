@@ -86,31 +86,6 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "_depositor",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_ETH",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_LUSDLoss",
-        "type": "uint256"
-      }
-    ],
-    "name": "ETHGainWithdrawn",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
         "indexed": false,
         "internalType": "uint128",
         "name": "_currentEpoch",
@@ -118,25 +93,6 @@
       }
     ],
     "name": "EpochUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "_to",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "EtherSent",
     "type": "event"
   },
   {
@@ -256,51 +212,13 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "_depositor",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_LQTY",
-        "type": "uint256"
-      }
-    ],
-    "name": "LQTYPaidToDepositor",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "_frontEnd",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_LQTY",
-        "type": "uint256"
-      }
-    ],
-    "name": "LQTYPaidToFrontEnd",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
         "indexed": false,
         "internalType": "address",
-        "name": "_newLUSDTokenAddress",
+        "name": "_newNECTTokenAddress",
         "type": "address"
       }
     ],
-    "name": "LUSDTokenAddressChanged",
+    "name": "NECTTokenAddressChanged",
     "type": "event"
   },
   {
@@ -320,6 +238,44 @@
       }
     ],
     "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_depositor",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_POLLEN",
+        "type": "uint256"
+      }
+    ],
+    "name": "POLLENPaidToDepositor",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_frontEnd",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_POLLEN",
+        "type": "uint256"
+      }
+    ],
+    "name": "POLLENPaidToFrontEnd",
     "type": "event"
   },
   {
@@ -409,7 +365,7 @@
         "type": "uint256"
       }
     ],
-    "name": "StabilityPoolETHBalanceUpdated",
+    "name": "StabilityPoolNECTBalanceUpdated",
     "type": "event"
   },
   {
@@ -422,7 +378,7 @@
         "type": "uint256"
       }
     ],
-    "name": "StabilityPoolLUSDBalanceUpdated",
+    "name": "StabilityPooliBGTBalanceUpdated",
     "type": "event"
   },
   {
@@ -458,6 +414,50 @@
     "type": "event"
   },
   {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_depositor",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_iBGT",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_NECTLoss",
+        "type": "uint256"
+      }
+    ],
+    "name": "iBGTGainWithdrawn",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_to",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "iBGTSent",
+    "type": "event"
+  },
+  {
     "inputs": [],
     "name": "BORROWING_FEE_FLOOR",
     "outputs": [
@@ -486,19 +486,6 @@
   {
     "inputs": [],
     "name": "DECIMAL_PRECISION",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "LUSD_GAS_COMPENSATION",
     "outputs": [
       {
         "internalType": "uint256",
@@ -543,6 +530,19 @@
         "internalType": "string",
         "name": "",
         "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "NECT_GAS_COMPENSATION",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -898,7 +898,7 @@
         "type": "address"
       }
     ],
-    "name": "getCompoundedLUSDDeposit",
+    "name": "getCompoundedNECTDeposit",
     "outputs": [
       {
         "internalType": "uint256",
@@ -917,7 +917,7 @@
         "type": "address"
       }
     ],
-    "name": "getDepositorETHGain",
+    "name": "getDepositorPOLLENGain",
     "outputs": [
       {
         "internalType": "uint256",
@@ -936,20 +936,7 @@
         "type": "address"
       }
     ],
-    "name": "getDepositorLQTYGain",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getETH",
+    "name": "getDepositoriBGTGain",
     "outputs": [
       {
         "internalType": "uint256",
@@ -994,7 +981,7 @@
         "type": "address"
       }
     ],
-    "name": "getFrontEndLQTYGain",
+    "name": "getFrontEndPOLLENGain",
     "outputs": [
       {
         "internalType": "uint256",
@@ -1007,7 +994,20 @@
   },
   {
     "inputs": [],
-    "name": "getTotalLUSDDeposits",
+    "name": "getTotalNECTDeposits",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getiBGT",
     "outputs": [
       {
         "internalType": "uint256",
@@ -1033,7 +1033,7 @@
   },
   {
     "inputs": [],
-    "name": "lastETHError_Offset",
+    "name": "lastNECTLossError_Offset",
     "outputs": [
       {
         "internalType": "uint256",
@@ -1046,7 +1046,7 @@
   },
   {
     "inputs": [],
-    "name": "lastLQTYError",
+    "name": "lastPOLLENError",
     "outputs": [
       {
         "internalType": "uint256",
@@ -1059,7 +1059,7 @@
   },
   {
     "inputs": [],
-    "name": "lastLUSDLossError_Offset",
+    "name": "lastiBGTError_Offset",
     "outputs": [
       {
         "internalType": "uint256",
@@ -1072,10 +1072,10 @@
   },
   {
     "inputs": [],
-    "name": "lusdToken",
+    "name": "nectToken",
     "outputs": [
       {
-        "internalType": "contract ILUSDToken",
+        "internalType": "contract INECTToken",
         "name": "",
         "type": "address"
       }
@@ -1177,7 +1177,7 @@
       },
       {
         "internalType": "address",
-        "name": "_lusdTokenAddress",
+        "name": "_nectTokenAddress",
         "type": "address"
       },
       {
@@ -1230,6 +1230,19 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "withdrawFromSP",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "_upperHint",
         "type": "address"
@@ -1240,20 +1253,7 @@
         "type": "address"
       }
     ],
-    "name": "withdrawETHGainToTrove",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "withdrawFromSP",
+    "name": "withdrawiBGTGainToTrove",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

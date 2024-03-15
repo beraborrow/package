@@ -13,7 +13,7 @@ import { task, HardhatUserConfig, types, extendEnvironment } from "hardhat/confi
 import { HardhatRuntimeEnvironment, NetworkUserConfig } from "hardhat/types";
 import "@nomiclabs/hardhat-ethers";
 
-import { Decimal } from "@liquity/lib-base";
+import { Decimal } from "@beraborrow/lib-base";
 
 import { deployAndSetupContracts, deployTellorCaller, setSilent } from "./utils/deploy";
 import { _connectToContracts, _LiquityDeploymentJSON, _priceFeedIsTestnet } from "./src/contracts";
@@ -97,7 +97,7 @@ const wethAddresses = {
   rinkeby: "0xc778417E063141139Fce010982780140Aa0cD5Ab",
   goerli: "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
   kovan: "0xd0A1E359811322d97991E03f863a0C30C2cF029C",
-  sepolia: "0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14"
+  sepolia: "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9"
 };
 
 const hasWETH = (network: string): network is keyof typeof wethAddresses => network in wethAddresses;
@@ -207,7 +207,7 @@ task("deploy", "Deploys the contracts to the network")
   )
   .addOptionalParam(
     "createUniswapPair",
-    "Create a real Uniswap v2 WETH-LUSD pair instead of a mock ERC20 token",
+    "Create a real Uniswap v2 WETH-NECT pair instead of a mock ERC20 token",
     undefined,
     types.boolean
   )

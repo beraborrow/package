@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import { Flex, Button, Input } from "theme-ui";
 import {
-  LiquityStoreState,
+  BeraBorrowStoreState,
   Decimal,
   Trove,
-  LUSD_LIQUIDATION_RESERVE,
+  NECT_LIQUIDATION_RESERVE,
   // Difference
-} from "@liquity/lib-base";
-import { useLiquitySelector } from "@liquity/lib-react";
+} from "@beraborrow/lib-base";
+import { useLiquitySelector } from "@beraborrow/lib-react";
 
 import { useStableTroveChange } from "../../hooks/useStableTroveChange";
 import { useMyTransactionState } from "../Transaction";
@@ -19,7 +19,7 @@ import {
   validateTroveChange
 } from "./validation/validateTroveChange";
 
-const selector = (state: LiquityStoreState) => {
+const selector = (state: BeraBorrowStoreState) => {
   const { trove, fees, price, accountBalance } = state;
   return {
     trove,
@@ -36,8 +36,8 @@ const GAS_ROOM_ETH = Decimal.from(0.1);
 const feeFrom = (original: Trove, edited: Trove, borrowingRate: Decimal): Decimal => {
   const change = original.whatChanged(edited, borrowingRate);
 
-  if (change && change.type !== "invalidCreation" && change.params.borrowLUSD) {
-    return change.params.borrowLUSD.mul(borrowingRate);
+  if (change && change.type !== "invalidCreation" && change.params.borrowNECT) {
+    return change.params.borrowNECT.mul(borrowingRate);
   } else {
     return Decimal.ZERO;
   }
@@ -83,7 +83,7 @@ export const Borrow: React.FC = () => {
   const fee = isDebtIncrease
     ? feeFrom(trove, new Trove(trove.collateral, trove.debt.add(debtIncreaseAmount)), borrowingRate)
     : Decimal.ZERO;
-  const totalDebt = netDebt.add(LUSD_LIQUIDATION_RESERVE).add(fee);
+  const totalDebt = netDebt.add(NECT_LIQUIDATION_RESERVE).add(fee);
   const maxBorrowingRate = borrowingRate.add(0.005);
   const updatedTrove = isDirty ? new Trove(collateral, totalDebt) : trove;
   const availableEth = accountBalance.gt(GAS_ROOM_ETH)
@@ -111,10 +111,10 @@ export const Borrow: React.FC = () => {
   const onCollateralRatioChange = (e: any) => {
     if (isNaN(Number(e.target.value))) return
     if (Number(e.target.value) <= 0) {
-      setCollateral(Decimal.from(netDebt.add(LUSD_LIQUIDATION_RESERVE).add(fee).mulDiv(1.1, price)))
+      setCollateral(Decimal.from(netDebt.add(NECT_LIQUIDATION_RESERVE).add(fee).mulDiv(1.1, price)))
       return
     }
-    setCollateral(Decimal.from(netDebt.add(LUSD_LIQUIDATION_RESERVE).add(fee).mulDiv(Number(e.target.value)/100, price)))
+    setCollateral(Decimal.from(netDebt.add(NECT_LIQUIDATION_RESERVE).add(fee).mulDiv(Number(e.target.value)/100, price)))
   }
 
   const onNetDebtChange = (e: any) => {
@@ -298,7 +298,7 @@ export const Borrow: React.FC = () => {
             </div>
             <div className="flex flex-row justify-between text-lg font-normal mb-[14px]">
                 <div>+ Liquidation reserve</div>
-                <div>{`${LUSD_LIQUIDATION_RESERVE}`} NECT</div>
+                <div>{`${NECT_LIQUIDATION_RESERVE}`} NECT</div>
             </div>
             <div className="my-[14px] h-0 w-full border-t border-dark-gray" />
             <div className="flex flex-row justify-between text-lg font-normal mb-[14px]">

@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Decimal, StabilityDeposit, StabilityDepositChange } from "@liquity/lib-base";
+import { Decimal, StabilityDeposit, StabilityDepositChange } from "@beraborrow/lib-base";
 
 import { COIN, GT } from "../../strings";
 import { ActionDescription, Amount } from "../ActionDescription";
@@ -15,15 +15,15 @@ export const StabilityActionDescription: React.FC<StabilityActionDescriptionProp
   change
 }) => {
   const collateralGain = originalDeposit.collateralGain.nonZero?.prettify(4).concat(" ETH");
-  const lqtyReward = originalDeposit.lqtyReward.nonZero?.prettify().concat(" ", GT);
+  const pollenReward = originalDeposit.pollenReward.nonZero?.prettify().concat(" ", GT);
 
   return (
     <ActionDescription>
-      {change.depositLUSD ? (
+      {change.depositNECT ? (
         <>
           You are depositing{" "}
           <Amount>
-            {change.depositLUSD.prettify()} {COIN}
+            {change.depositNECT.prettify()} {COIN}
           </Amount>{" "}
           in the Stability Pool
         </>
@@ -31,21 +31,21 @@ export const StabilityActionDescription: React.FC<StabilityActionDescriptionProp
         <>
           You are withdrawing{" "}
           <Amount>
-            {change.withdrawLUSD.prettify()} {COIN}
+            {change.withdrawNECT.prettify()} {COIN}
           </Amount>{" "}
           to your wallet
         </>
       )}
-      {(collateralGain || lqtyReward) && (
+      {(collateralGain || pollenReward) && (
         <>
           {" "}
           and claiming at least{" "}
-          {collateralGain && lqtyReward ? (
+          {collateralGain && pollenReward ? (
             <>
-              <Amount>{collateralGain}</Amount> and <Amount>{lqtyReward}</Amount>
+              <Amount>{collateralGain}</Amount> and <Amount>{pollenReward}</Amount>
             </>
           ) : (
-            <Amount>{collateralGain ?? lqtyReward}</Amount>
+            <Amount>{collateralGain ?? pollenReward}</Amount>
           )}
         </>
       )}

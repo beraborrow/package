@@ -1,4 +1,4 @@
-import { Decimal } from "@liquity/lib-base";
+import { Decimal } from "@beraborrow/lib-base";
 import { BigNumber } from "ethers";
 import { lambertW0 } from "lambert-w-function";
 
@@ -24,8 +24,8 @@ const dateWithoutHours = (timestamp: number) => new Date(new Date(timestamp).toD
 
 // Decimal type doesn't support negatives so use number instead
 const getReturn = (accrued: Decimal, deposit: Decimal, marketPrice: Decimal): number => {
-  const accruedLusdValue = accrued.mul(marketPrice);
-  return parseFloat(accruedLusdValue.toString()) - parseFloat(deposit.toString());
+  const accruedNectValue = accrued.mul(marketPrice);
+  return parseFloat(accruedNectValue.toString()) - parseFloat(deposit.toString());
 };
 
 const dummyTokenUri =
@@ -52,7 +52,7 @@ const getBreakEvenPeriodInDays = (
   return alphaAccrualFactor.div(effectivePremium.sub(Decimal.ONE));
 };
 
-const getFutureBLusdAccrualFactor = (
+const getFutureBNectAccrualFactor = (
   floorPrice: Decimal,
   daysInFuture: Decimal,
   alphaAccrualFactor: Decimal,
@@ -80,21 +80,21 @@ const getFutureDateInDays = (days: number): Date => {
 };
 
 const getFloorPrice = (
-  bammLusdDebt: Decimal,
-  totalLusdInCurve: Decimal,
-  pendingLusd: Decimal,
-  permanentLusd: Decimal,
-  bLusdSupply: Decimal
+  bammNectDebt: Decimal,
+  totalNectInCurve: Decimal,
+  pendingNect: Decimal,
+  permanentNect: Decimal,
+  bNectSupply: Decimal
 ): Decimal => {
-  return bammLusdDebt.add(totalLusdInCurve).sub(pendingLusd).sub(permanentLusd).div(bLusdSupply);
+  return bammNectDebt.add(totalNectInCurve).sub(pendingNect).sub(permanentNect).div(bNectSupply);
 };
 
 const getAverageBondAgeInSeconds = (
   totalWeightedStartTimes: Decimal,
-  pendingBucketLusd: Decimal
+  pendingBucketNect: Decimal
 ): Decimal => {
   const averageStartTimeMs =
-    Math.round(parseFloat(totalWeightedStartTimes.div(pendingBucketLusd).toString())) * 1000;
+    Math.round(parseFloat(totalWeightedStartTimes.div(pendingBucketNect).toString())) * 1000;
   const averageBondAgeInSeconds = Decimal.from(Date.now() - averageStartTimeMs).div(1000);
 
   return averageBondAgeInSeconds;
@@ -182,7 +182,7 @@ export {
   dateWithoutHours,
   getReturn,
   getTokenUri,
-  getFutureBLusdAccrualFactor,
+  getFutureBNectAccrualFactor,
   getBreakEvenPeriodInDays,
   getRebondPeriodInDays,
   getAverageBondAgeInSeconds,

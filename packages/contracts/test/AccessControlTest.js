@@ -75,10 +75,10 @@ contract('Access Control: BeraBorrow functions with the caller restricted to Ber
   })
 
   describe('BorrowerOperations', async accounts => { 
-    it("moveETHGainToTrove(): reverts when called by an account that is not StabilityPool", async () => {
+    it("moveiBGTGainToTrove(): reverts when called by an account that is not StabilityPool", async () => {
       // Attempt call from alice
       try {
-        const tx1= await borrowerOperations.moveETHGainToTrove(bob, bob, bob, { from: bob })
+        const tx1= await borrowerOperations.moveiBGTGainToTrove(bob, bob, bob, { from: bob })
       } catch (err) {
          assert.include(err.message, "revert")
         // assert.include(err.message, "BorrowerOps: Caller is not Stability Pool")
@@ -221,11 +221,11 @@ contract('Access Control: BeraBorrow functions with the caller restricted to Ber
   })
 
   describe('ActivePool', async accounts => {
-    // sendETH
-    it("sendETH(): reverts when called by an account that is not BO nor TroveM nor SP", async () => {
+    // sendiBGT
+    it("sendiBGT(): reverts when called by an account that is not BO nor TroveM nor SP", async () => {
       // Attempt call from alice
       try {
-        const txAlice = await activePool.sendETH(alice, 100, { from: alice })
+        const txAlice = await activePool.sendiBGT(alice, 100, { from: alice })
         
       } catch (err) {
         assert.include(err.message, "revert")
@@ -271,11 +271,11 @@ contract('Access Control: BeraBorrow functions with the caller restricted to Ber
   })
 
   describe('DefaultPool', async accounts => {
-    // sendETHToActivePool
-    it("sendETHToActivePool(): reverts when called by an account that is not TroveManager", async () => {
+    // sendiBGTToActivePool
+    it("sendiBGTToActivePool(): reverts when called by an account that is not TroveManager", async () => {
       // Attempt call from alice
       try {
-        const txAlice = await defaultPool.sendETHToActivePool(100, { from: alice })
+        const txAlice = await defaultPool.sendiBGTToActivePool(100, { from: alice })
         
       } catch (err) {
         assert.include(err.message, "revert")

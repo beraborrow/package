@@ -1,12 +1,12 @@
 import React, { useCallback } from "react";
 import { Card, Heading, Box, Button, Flex } from "theme-ui";
 import { CollateralSurplusAction } from "../CollateralSurplusAction";
-import { LiquityStoreState } from "@liquity/lib-base";
-import { useLiquitySelector } from "@liquity/lib-react";
+import { BeraBorrowStoreState } from "@beraborrow/lib-base";
+import { useLiquitySelector } from "@beraborrow/lib-react";
 import { useTroveView } from "./context/TroveViewContext";
 import { InfoMessage } from "../InfoMessage";
 
-const select = ({ collateralSurplusBalance }: LiquityStoreState) => ({
+const select = ({ collateralSurplusBalance }: BeraBorrowStoreState) => ({
   hasSurplusCollateral: !collateralSurplusBalance.isZero
 });
 
@@ -25,7 +25,7 @@ export const LiquidatedTrove: React.FC = () => {
         <InfoMessage title="Your Trove has been liquidated.">
           {hasSurplusCollateral
             ? "Please reclaim your remaining collateral before opening a new Trove."
-            : "You can borrow LUSD by opening a Trove."}
+            : "You can borrow NECT by opening a Trove."}
         </InfoMessage>
 
         <Flex variant="layout.actions">

@@ -113,7 +113,7 @@ contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async 
         price,
       } = await setup()
 
-      const spEthBefore = await stabilityPool.getETH()
+      const spiBgtBefore = await stabilityPool.getiBGT()
       const spNectBefore = await stabilityPool.getTotalNECTDeposits()
 
       const tx = await troveManager.batchLiquidateTroves([alice, carol])
@@ -126,7 +126,7 @@ contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async 
       assert.equal((await troveManager.Troves(alice))[3], '3')
       assert.equal((await troveManager.Troves(carol))[3], '3')
 
-      const spEthAfter = await stabilityPool.getETH()
+      const spiBgtAfter = await stabilityPool.getiBGT()
       const spNectAfter = await stabilityPool.getTotalNECTDeposits()
 
       // liquidate collaterals with the gas compensation fee subtracted
@@ -134,9 +134,9 @@ contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async 
       const expectedCollateralLiquidatedC = th.applyLiquidationFee(C_coll)
       // Stability Pool gains
       const expectedGainInNECT = expectedCollateralLiquidatedA.mul(price).div(mv._1e18BN).sub(A_totalDebt)
-      const realGainInNECT = spEthAfter.sub(spEthBefore).mul(price).div(mv._1e18BN).sub(spNectBefore.sub(spNectAfter))
+      const realGainInNECT = spiBgtAfter.sub(spiBgtBefore).mul(price).div(mv._1e18BN).sub(spNectBefore.sub(spNectAfter))
 
-      assert.equal(spEthAfter.sub(spEthBefore).toString(), expectedCollateralLiquidatedA.toString(), 'Stability Pool ETH doesn’t match')
+      assert.equal(spiBgtAfter.sub(spiBgtBefore).toString(), expectedCollateralLiquidatedA.toString(), 'Stability Pool iBGT doesn’t match')
       assert.equal(spNectBefore.sub(spNectAfter).toString(), A_totalDebt.toString(), 'Stability Pool NECT doesn’t match')
       assert.equal(realGainInNECT.toString(), expectedGainInNECT.toString(), 'Stability Pool gains don’t match')
     })

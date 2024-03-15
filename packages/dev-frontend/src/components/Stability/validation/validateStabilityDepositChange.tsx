@@ -1,9 +1,9 @@
 import {
   Decimal,
-  LiquityStoreState,
+  BeraBorrowStoreState,
   StabilityDeposit,
   StabilityDepositChange
-} from "@liquity/lib-base";
+} from "@beraborrow/lib-base";
 
 import { COIN } from "../../../strings";
 import { Amount } from "../../ActionDescription";
@@ -12,12 +12,12 @@ import { StabilityActionDescription } from "../StabilityActionDescription";
 
 export const selectForStabilityDepositChangeValidation = ({
   trove,
-  lusdBalance,
+  nectBalance,
   ownFrontend,
   haveUndercollateralizedTroves
-}: LiquityStoreState) => ({
+}: BeraBorrowStoreState) => ({
   trove,
-  lusdBalance,
+  nectBalance,
   haveOwnFrontend: ownFrontend.status === "registered",
   haveUndercollateralizedTroves
 });
@@ -28,9 +28,9 @@ type StabilityDepositChangeValidationContext = ReturnType<
 
 export const validateStabilityDepositChange = (
   originalDeposit: StabilityDeposit,
-  editedLUSD: Decimal,
+  editedNECT: Decimal,
   {
-    lusdBalance,
+    nectBalance,
     haveOwnFrontend,
     haveUndercollateralizedTroves
   }: StabilityDepositChangeValidationContext
@@ -38,7 +38,7 @@ export const validateStabilityDepositChange = (
   validChange: StabilityDepositChange<Decimal> | undefined,
   description: JSX.Element | undefined
 ] => {
-  const change = originalDeposit.whatChanged(editedLUSD);
+  const change = originalDeposit.whatChanged(editedNECT);
 
   if (haveOwnFrontend) {
     return [
@@ -53,24 +53,24 @@ export const validateStabilityDepositChange = (
     return [undefined, undefined];
   }
 
-  if (change.depositLUSD?.gt(lusdBalance)) {
+  if (change.depositNECT?.gt(nectBalance)) {
     return [
       undefined,
       <ErrorDescription>
         The amount you're trying to deposit exceeds your balance by{" "}
         <Amount>
-          {change.depositLUSD.sub(lusdBalance).prettify()} {COIN}
+          {change.depositNECT.sub(nectBalance).prettify()} {COIN}
         </Amount>
         .
       </ErrorDescription>
     ];
   }
 
-  if (change.withdrawLUSD && haveUndercollateralizedTroves) {
+  if (change.withdrawNECT && haveUndercollateralizedTroves) {
     return [
       undefined,
       <ErrorDescription>
-        You're not allowed to withdraw LUSD from your Stability Deposit when there are
+        You're not allowed to withdraw NECT from your Stability Deposit when there are
         undercollateralized Troves. Please liquidate those Troves or try again later.
       </ErrorDescription>
     ];

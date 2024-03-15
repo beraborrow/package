@@ -3,14 +3,14 @@ import { AddressZero } from "@ethersproject/constants";
 
 import {
   Decimal,
-  LiquityStoreState,
-  LiquityStoreBaseState,
+  BeraBorrowStoreState,
+  BeraBorrowStoreBaseState,
   TroveWithPendingRedistribution,
   StabilityDeposit,
-  LQTYStake,
-  LiquityStore,
+  POLLENStake,
+  BeraBorrowStore,
   Fees
-} from "@liquity/lib-base";
+} from "@beraborrow/lib-base";
 
 import { decimalify, promiseAllValues } from "./_utils";
 import { ReadableEthersLiquity } from "./ReadableEthersLiquity";
@@ -18,7 +18,7 @@ import { EthersLiquityConnection, _getProvider } from "./EthersLiquityConnection
 import { EthersCallOverrides, EthersProvider } from "./types";
 
 /**
- * Extra state added to {@link @liquity/lib-base#LiquityStoreState} by
+ * Extra state added to {@link @beraborrow/lib-base#BeraBorrowStoreState} by
  * {@link BlockPolledLiquityStore}.
  *
  * @public
@@ -43,19 +43,19 @@ export interface BlockPolledLiquityStoreExtraState {
 
 /**
  * The type of {@link BlockPolledLiquityStore}'s
- * {@link @liquity/lib-base#LiquityStore.state | state}.
+ * {@link @beraborrow/lib-base#BeraBorrowStore.state | state}.
  *
  * @public
  */
-export type BlockPolledLiquityStoreState = LiquityStoreState<BlockPolledLiquityStoreExtraState>;
+export type BlockPolledLiquityStoreState = BeraBorrowStoreState<BlockPolledLiquityStoreExtraState>;
 
 /**
- * Ethers-based {@link @liquity/lib-base#LiquityStore} that updates state whenever there's a new
+ * Ethers-based {@link @beraborrow/lib-base#BeraBorrowStore} that updates state whenever there's a new
  * block.
  *
  * @public
  */
-export class BlockPolledLiquityStore extends LiquityStore<BlockPolledLiquityStoreExtraState> {
+export class BlockPolledLiquityStore extends BeraBorrowStore<BlockPolledLiquityStoreExtraState> {
   readonly connection: EthersLiquityConnection;
 
   private readonly _readable: ReadableEthersLiquity;
@@ -86,18 +86,18 @@ export class BlockPolledLiquityStore extends LiquityStore<BlockPolledLiquityStor
 
   private async _get(
     blockTag?: number
-  ): Promise<[baseState: LiquityStoreBaseState, extraState: BlockPolledLiquityStoreExtraState]> {
+  ): Promise<[baseState: BeraBorrowStoreBaseState, extraState: BlockPolledLiquityStoreExtraState]> {
     const { userAddress, frontendTag } = this.connection;
 
     const {
       blockTimestamp,
       _feesFactory,
-      calculateRemainingLQTY,
+      calculateRemainingPOLLEN,
       ...baseState
     } = await promiseAllValues({
       blockTimestamp: this._readable._getBlockTimestamp(blockTag),
       _feesFactory: this._readable._getFeesFactory({ blockTag }),
-      calculateRemainingLQTY: this._readable._getRemainingLiquidityMiningLQTYRewardCalculator({
+      calculateRemainingPOLLEN: this._readable._getRemainingLiquidityMiningPOLLENRewardCalculator({
         blockTag
       }),
 
@@ -105,11 +105,11 @@ export class BlockPolledLiquityStore extends LiquityStore<BlockPolledLiquityStor
       numberOfTroves: this._readable.getNumberOfTroves({ blockTag }),
       totalRedistributed: this._readable.getTotalRedistributed({ blockTag }),
       total: this._readable.getTotal({ blockTag }),
-      lusdInStabilityPool: this._readable.getLUSDInStabilityPool({ blockTag }),
-      totalStakedLQTY: this._readable.getTotalStakedLQTY({ blockTag }),
+      nectInStabilityPool: this._readable.getNECTInStabilityPool({ blockTag }),
+      totalStakedPOLLEN: this._readable.getTotalStakedPOLLEN({ blockTag }),
       _riskiestTroveBeforeRedistribution: this._getRiskiestTroveBeforeRedistribution({ blockTag }),
       totalStakedUniTokens: this._readable.getTotalStakedUniTokens({ blockTag }),
-      remainingStabilityPoolLQTYReward: this._readable.getRemainingStabilityPoolLQTYReward({
+      remainingStabilityPoolPOLLENReward: this._readable.getRemainingStabilityPoolPOLLENReward({
         blockTag
       }),
 
@@ -120,12 +120,12 @@ export class BlockPolledLiquityStore extends LiquityStore<BlockPolledLiquityStor
       ...(userAddress
         ? {
             accountBalance: this._provider.getBalance(userAddress, blockTag).then(decimalify),
-            lusdBalance: this._readable.getLUSDBalance(userAddress, { blockTag }),
-            lqtyBalance: this._readable.getLQTYBalance(userAddress, { blockTag }),
+            nectBalance: this._readable.getNECTBalance(userAddress, { blockTag }),
+            pollenBalance: this._readable.getPOLLENBalance(userAddress, { blockTag }),
             uniTokenBalance: this._readable.getUniTokenBalance(userAddress, { blockTag }),
             uniTokenAllowance: this._readable.getUniTokenAllowance(userAddress, { blockTag }),
             liquidityMiningStake: this._readable.getLiquidityMiningStake(userAddress, { blockTag }),
-            liquidityMiningLQTYReward: this._readable.getLiquidityMiningLQTYReward(userAddress, {
+            liquidityMiningPOLLENReward: this._readable.getLiquidityMiningPOLLENReward(userAddress, {
               blockTag
             }),
             collateralSurplusBalance: this._readable.getCollateralSurplusBalance(userAddress, {
@@ -135,17 +135,17 @@ export class BlockPolledLiquityStore extends LiquityStore<BlockPolledLiquityStor
               blockTag
             }),
             stabilityDeposit: this._readable.getStabilityDeposit(userAddress, { blockTag }),
-            lqtyStake: this._readable.getLQTYStake(userAddress, { blockTag }),
+            pollenStake: this._readable.getPOLLENStake(userAddress, { blockTag }),
             ownFrontend: this._readable.getFrontendStatus(userAddress, { blockTag })
           }
         : {
             accountBalance: Decimal.ZERO,
-            lusdBalance: Decimal.ZERO,
-            lqtyBalance: Decimal.ZERO,
+            nectBalance: Decimal.ZERO,
+            pollenBalance: Decimal.ZERO,
             uniTokenBalance: Decimal.ZERO,
             uniTokenAllowance: Decimal.ZERO,
             liquidityMiningStake: Decimal.ZERO,
-            liquidityMiningLQTYReward: Decimal.ZERO,
+            liquidityMiningPOLLENReward: Decimal.ZERO,
             collateralSurplusBalance: Decimal.ZERO,
             troveBeforeRedistribution: new TroveWithPendingRedistribution(
               AddressZero,
@@ -158,7 +158,7 @@ export class BlockPolledLiquityStore extends LiquityStore<BlockPolledLiquityStor
               Decimal.ZERO,
               AddressZero
             ),
-            lqtyStake: new LQTYStake(),
+            pollenStake: new POLLENStake(),
             ownFrontend: { status: "unregistered" as const }
           })
     });
@@ -167,7 +167,7 @@ export class BlockPolledLiquityStore extends LiquityStore<BlockPolledLiquityStor
       {
         ...baseState,
         _feesInNormalMode: _feesFactory(blockTimestamp, false),
-        remainingLiquidityMiningLQTYReward: calculateRemainingLQTY(blockTimestamp)
+        remainingLiquidityMiningPOLLENReward: calculateRemainingPOLLEN(blockTimestamp)
       },
       {
         blockTag,

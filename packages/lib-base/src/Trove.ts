@@ -5,19 +5,19 @@ import { Decimal, Decimalish } from "./Decimal";
 import {
   MINIMUM_COLLATERAL_RATIO,
   CRITICAL_COLLATERAL_RATIO,
-  LUSD_LIQUIDATION_RESERVE,
+  NECT_LIQUIDATION_RESERVE,
   MINIMUM_BORROWING_RATE
 } from "./constants";
 
 /** @internal */ export type _CollateralDeposit<T> = { depositCollateral: T };
 /** @internal */ export type _CollateralWithdrawal<T> = { withdrawCollateral: T };
-/** @internal */ export type _LUSDBorrowing<T> = { borrowLUSD: T };
-/** @internal */ export type _LUSDRepayment<T> = { repayLUSD: T };
+/** @internal */ export type _NECTBorrowing<T> = { borrowNECT: T };
+/** @internal */ export type _NECTRepayment<T> = { repayNECT: T };
 
 /** @internal */ export type _NoCollateralDeposit = Partial<_CollateralDeposit<undefined>>;
 /** @internal */ export type _NoCollateralWithdrawal = Partial<_CollateralWithdrawal<undefined>>;
-/** @internal */ export type _NoLUSDBorrowing = Partial<_LUSDBorrowing<undefined>>;
-/** @internal */ export type _NoLUSDRepayment = Partial<_LUSDRepayment<undefined>>;
+/** @internal */ export type _NoNECTBorrowing = Partial<_NECTBorrowing<undefined>>;
+/** @internal */ export type _NoNECTRepayment = Partial<_NECTRepayment<undefined>>;
 
 /** @internal */
 export type _CollateralChange<T> =
@@ -29,14 +29,14 @@ export type _NoCollateralChange = _NoCollateralDeposit & _NoCollateralWithdrawal
 
 /** @internal */
 export type _DebtChange<T> =
-  | (_LUSDBorrowing<T> & _NoLUSDRepayment)
-  | (_LUSDRepayment<T> & _NoLUSDBorrowing);
+  | (_NECTBorrowing<T> & _NoNECTRepayment)
+  | (_NECTRepayment<T> & _NoNECTBorrowing);
 
 /** @internal */
-export type _NoDebtChange = _NoLUSDBorrowing & _NoLUSDRepayment;
+export type _NoDebtChange = _NoNECTBorrowing & _NoNECTRepayment;
 
 /**
- * Parameters of an {@link TransactableLiquity.openTrove | openTrove()} transaction.
+ * Parameters of an {@link TransactableBeraBorrow.openTrove | openTrove()} transaction.
  *
  * @remarks
  * The type parameter `T` specifies the allowed value type(s) of the particular `TroveCreationParams`
@@ -59,9 +59,9 @@ export type _NoDebtChange = _NoLUSDBorrowing & _NoLUSDRepayment;
  *   </tr>
  *
  *   <tr>
- *     <td> borrowLUSD </td>
+ *     <td> borrowNECT </td>
  *     <td> T </td>
- *     <td> The amount of LUSD that's borrowed. </td>
+ *     <td> The amount of NECT that's borrowed. </td>
  *   </tr>
  *
  * </table>
@@ -70,11 +70,11 @@ export type _NoDebtChange = _NoLUSDBorrowing & _NoLUSDRepayment;
  */
 export type TroveCreationParams<T = unknown> = _CollateralDeposit<T> &
   _NoCollateralWithdrawal &
-  _LUSDBorrowing<T> &
-  _NoLUSDRepayment;
+  _NECTBorrowing<T> &
+  _NoNECTRepayment;
 
 /**
- * Parameters of a {@link TransactableLiquity.closeTrove | closeTrove()} transaction.
+ * Parameters of a {@link TransactableBeraBorrow.closeTrove | closeTrove()} transaction.
  *
  * @remarks
  * The type parameter `T` specifies the allowed value type(s) of the particular `TroveClosureParams`
@@ -97,9 +97,9 @@ export type TroveCreationParams<T = unknown> = _CollateralDeposit<T> &
  *   </tr>
  *
  *   <tr>
- *     <td> repayLUSD? </td>
+ *     <td> repayNECT? </td>
  *     <td> T </td>
- *     <td> <i>(Optional)</i> The amount of LUSD that's repaid. </td>
+ *     <td> <i>(Optional)</i> The amount of NECT that's repaid. </td>
  *   </tr>
  *
  * </table>
@@ -108,11 +108,11 @@ export type TroveCreationParams<T = unknown> = _CollateralDeposit<T> &
  */
 export type TroveClosureParams<T> = _CollateralWithdrawal<T> &
   _NoCollateralDeposit &
-  Partial<_LUSDRepayment<T>> &
-  _NoLUSDBorrowing;
+  Partial<_NECTRepayment<T>> &
+  _NoNECTBorrowing;
 
 /**
- * Parameters of an {@link TransactableLiquity.adjustTrove | adjustTrove()} transaction.
+ * Parameters of an {@link TransactableBeraBorrow.adjustTrove | adjustTrove()} transaction.
  *
  * @remarks
  * The type parameter `T` specifies the allowed value type(s) of the particular
@@ -121,7 +121,7 @@ export type TroveClosureParams<T> = _CollateralWithdrawal<T> &
  * Even though all properties are optional, a valid `TroveAdjustmentParams` object must define at
  * least one.
  *
- * Defining both `depositCollateral` and `withdrawCollateral`, or both `borrowLUSD` and `repayLUSD`
+ * Defining both `depositCollateral` and `withdrawCollateral`, or both `borrowNECT` and `repayNECT`
  * at the same time is disallowed, and will result in a type-checking error.
  *
  * <h2>Properties</h2>
@@ -147,15 +147,15 @@ export type TroveClosureParams<T> = _CollateralWithdrawal<T> &
  *   </tr>
  *
  *   <tr>
- *     <td> borrowLUSD? </td>
+ *     <td> borrowNECT? </td>
  *     <td> T </td>
- *     <td> <i>(Optional)</i> The amount of LUSD that's borrowed. </td>
+ *     <td> <i>(Optional)</i> The amount of NECT that's borrowed. </td>
  *   </tr>
  *
  *   <tr>
- *     <td> repayLUSD? </td>
+ *     <td> repayNECT? </td>
  *     <td> T </td>
- *     <td> <i>(Optional)</i> The amount of LUSD that's repaid. </td>
+ *     <td> <i>(Optional)</i> The amount of NECT that's repaid. </td>
  *   </tr>
  *
  * </table>
@@ -257,7 +257,7 @@ type AllowedKey<T> = Exclude<
 
 const allowedTroveCreationKeys: AllowedKey<TroveCreationParams>[] = [
   "depositCollateral",
-  "borrowLUSD"
+  "borrowNECT"
 ];
 
 function checkAllowedTroveCreationKeys<T>(
@@ -302,8 +302,8 @@ export const _normalizeTroveCreation = (
 const allowedTroveAdjustmentKeys: AllowedKey<TroveAdjustmentParams>[] = [
   "depositCollateral",
   "withdrawCollateral",
-  "borrowLUSD",
-  "repayLUSD"
+  "borrowNECT",
+  "repayNECT"
 ];
 
 function checkAllowedTroveAdjustmentKeys<T>(
@@ -339,21 +339,21 @@ const collateralChangeFrom = <T>({
 };
 
 const debtChangeFrom = <T>({
-  borrowLUSD,
-  repayLUSD
+  borrowNECT,
+  repayNECT
 }: Partial<Record<AllowedKey<TroveAdjustmentParams>, T>>): _DebtChange<T> | undefined => {
-  if (borrowLUSD !== undefined && repayLUSD !== undefined) {
+  if (borrowNECT !== undefined && repayNECT !== undefined) {
     throw new Error(
-      "TroveAdjustmentParams: 'borrowLUSD' and 'repayLUSD' can't be present at the same time"
+      "TroveAdjustmentParams: 'borrowNECT' and 'repayNECT' can't be present at the same time"
     );
   }
 
-  if (borrowLUSD !== undefined) {
-    return { borrowLUSD };
+  if (borrowNECT !== undefined) {
+    return { borrowNECT };
   }
 
-  if (repayLUSD !== undefined) {
-    return { repayLUSD };
+  if (repayNECT !== undefined) {
+    return { repayNECT };
   }
 };
 
@@ -410,7 +410,7 @@ export class Trove {
   /** Amount of native currency (e.g. Ether) collateralized. */
   readonly collateral: Decimal;
 
-  /** Amount of LUSD owed. */
+  /** Amount of NECT owed. */
   readonly debt: Decimal;
 
   /** @internal */
@@ -424,17 +424,17 @@ export class Trove {
   }
 
   /**
-   * Amount of LUSD that must be repaid to close this Trove.
+   * Amount of NECT that must be repaid to close this Trove.
    *
    * @remarks
    * This doesn't include the liquidation reserve, which is refunded in case of normal closure.
    */
   get netDebt(): Decimal {
-    if (this.debt.lt(LUSD_LIQUIDATION_RESERVE)) {
-      throw new Error(`netDebt should not be used when debt < ${LUSD_LIQUIDATION_RESERVE}`);
+    if (this.debt.lt(NECT_LIQUIDATION_RESERVE)) {
+      throw new Error(`netDebt should not be used when debt < ${NECT_LIQUIDATION_RESERVE}`);
     }
 
-    return this.debt.sub(LUSD_LIQUIDATION_RESERVE);
+    return this.debt.sub(NECT_LIQUIDATION_RESERVE);
   }
 
   /** @internal */
@@ -465,12 +465,12 @@ export class Trove {
    * given price.
    *
    * @example
-   * Can be used to check whether the Liquity protocol is in recovery mode by using it on the return
-   * value of {@link ReadableLiquity.getTotal | getTotal()}. For example:
+   * Can be used to check whether the BeraBorrow protocol is in recovery mode by using it on the return
+   * value of {@link ReadableBeraBorrow.getTotal | getTotal()}. For example:
    *
    * ```typescript
-   * const total = await liquity.getTotal();
-   * const price = await liquity.getPrice();
+   * const total = await beraborrow.getTotal();
+   * const price = await beraborrow.getPrice();
    *
    * if (total.collateralRatioIsBelowCritical(price)) {
    *   // Recovery mode is active
@@ -541,8 +541,8 @@ export class Trove {
 
   private _debtChange({ debt }: Trove, borrowingRate: Decimalish): _DebtChange<Decimal> {
     return debt.gt(this.debt)
-      ? { borrowLUSD: unapplyFee(borrowingRate, debt.sub(this.debt)) }
-      : { repayLUSD: this.debt.sub(debt) };
+      ? { borrowNECT: unapplyFee(borrowingRate, debt.sub(this.debt)) }
+      : { repayNECT: this.debt.sub(debt) };
   }
 
   private _collateralChange({ collateral }: Trove): _CollateralChange<Decimal> {
@@ -569,20 +569,20 @@ export class Trove {
     }
 
     if (this.isEmpty) {
-      if (that.debt.lt(LUSD_LIQUIDATION_RESERVE)) {
+      if (that.debt.lt(NECT_LIQUIDATION_RESERVE)) {
         return invalidTroveCreation(that, "missingLiquidationReserve");
       }
 
       return troveCreation({
         depositCollateral: that.collateral,
-        borrowLUSD: unapplyFee(borrowingRate, that.netDebt)
+        borrowNECT: unapplyFee(borrowingRate, that.netDebt)
       });
     }
 
     if (that.isEmpty) {
       return troveClosure(
         this.netDebt.nonZero
-          ? { withdrawCollateral: this.collateral, repayLUSD: this.netDebt }
+          ? { withdrawCollateral: this.collateral, repayNECT: this.netDebt }
           : { withdrawCollateral: this.collateral }
       );
     }
@@ -627,11 +627,11 @@ export class Trove {
           throw new Error("Can't create onto existing Trove");
         }
 
-        const { depositCollateral, borrowLUSD } = change.params;
+        const { depositCollateral, borrowNECT } = change.params;
 
         return new Trove(
           depositCollateral,
-          LUSD_LIQUIDATION_RESERVE.add(applyFee(borrowingRate, borrowLUSD))
+          NECT_LIQUIDATION_RESERVE.add(applyFee(borrowingRate, borrowNECT))
         );
       }
 
@@ -645,13 +645,13 @@ export class Trove {
       case "adjustment": {
         const {
           setToZero,
-          params: { depositCollateral, withdrawCollateral, borrowLUSD, repayLUSD }
+          params: { depositCollateral, withdrawCollateral, borrowNECT, repayNECT }
         } = change;
 
         const collateralDecrease = withdrawCollateral ?? Decimal.ZERO;
         const collateralIncrease = depositCollateral ?? Decimal.ZERO;
-        const debtDecrease = repayLUSD ?? Decimal.ZERO;
-        const debtIncrease = borrowLUSD ? applyFee(borrowingRate, borrowLUSD) : Decimal.ZERO;
+        const debtDecrease = repayNECT ?? Decimal.ZERO;
+        const debtIncrease = borrowNECT ? applyFee(borrowingRate, borrowNECT) : Decimal.ZERO;
 
         return setToZero === "collateral"
           ? this.setCollateral(Decimal.ZERO).addDebt(debtIncrease).subtractDebt(debtDecrease)
@@ -667,7 +667,7 @@ export class Trove {
   }
 
   /**
-   * Calculate the result of an {@link TransactableLiquity.openTrove | openTrove()} transaction.
+   * Calculate the result of an {@link TransactableBeraBorrow.openTrove | openTrove()} transaction.
    *
    * @param params - Parameters of the transaction.
    * @param borrowingRate - Borrowing rate to use when calculating the Trove's debt.
@@ -677,7 +677,7 @@ export class Trove {
   }
 
   /**
-   * Calculate the parameters of an {@link TransactableLiquity.openTrove | openTrove()} transaction
+   * Calculate the parameters of an {@link TransactableBeraBorrow.openTrove | openTrove()} transaction
    * that will result in the given Trove.
    *
    * @param that - The Trove to recreate.
@@ -690,7 +690,7 @@ export class Trove {
   }
 
   /**
-   * Calculate the result of an {@link TransactableLiquity.adjustTrove | adjustTrove()} transaction
+   * Calculate the result of an {@link TransactableBeraBorrow.adjustTrove | adjustTrove()} transaction
    * on this Trove.
    *
    * @param params - Parameters of the transaction.
@@ -701,7 +701,7 @@ export class Trove {
   }
 
   /**
-   * Calculate the parameters of an {@link TransactableLiquity.adjustTrove | adjustTrove()}
+   * Calculate the parameters of an {@link TransactableBeraBorrow.adjustTrove | adjustTrove()}
    * transaction that will change this Trove into the given Trove.
    *
    * @param that - The desired result of the transaction.
@@ -734,7 +734,7 @@ export type UserTroveStatus =
  *
  * @remarks
  * The SDK uses the base {@link Trove} class as a generic container of collateral and debt, for
- * example to represent the {@link ReadableLiquity.getTotal | total collateral and debt} locked up
+ * example to represent the {@link ReadableBeraBorrow.getTotal | total collateral and debt} locked up
  * in the protocol.
  *
  * The `UserTrove` class extends `Trove` with extra information that's only available for Troves

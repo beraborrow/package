@@ -3,11 +3,11 @@ import { Event } from "@ethersproject/contracts";
 
 import {
   Decimal,
-  ObservableLiquity,
+  ObservableBeraBorrow,
   StabilityDeposit,
   Trove,
   TroveWithPendingRedistribution
-} from "@liquity/lib-base";
+} from "@beraborrow/lib-base";
 
 import { _getContracts, _requireAddress } from "./EthersLiquityConnection";
 import { ReadableEthersLiquity } from "./ReadableEthersLiquity";
@@ -37,7 +37,7 @@ const debounce = (listener: (latestBlock: number) => void) => {
 };
 
 /** @alpha */
-export class ObservableEthersLiquity implements ObservableLiquity {
+export class ObservableEthersLiquity implements ObservableBeraBorrow {
   private readonly _readable: ReadableEthersLiquity;
 
   constructor(readable: ReadableEthersLiquity) {
@@ -48,7 +48,7 @@ export class ObservableEthersLiquity implements ObservableLiquity {
     onTotalRedistributedChanged: (totalRedistributed: Trove) => void
   ): () => void {
     const { activePool, defaultPool } = _getContracts(this._readable.connection);
-    const etherSent = activePool.filters.EtherSent();
+    const etherSent = activePool.filters.iBGTSent();
 
     const redistributionListener = debounce((blockTag: number) => {
       this._readable.getTotalRedistributed({ blockTag }).then(onTotalRedistributedChanged);
@@ -138,10 +138,10 @@ export class ObservableEthersLiquity implements ObservableLiquity {
 
     const { activePool, stabilityPool } = _getContracts(this._readable.connection);
     const { UserDepositChanged } = stabilityPool.filters;
-    const { EtherSent } = activePool.filters;
+    const { iBGTSent } = activePool.filters;
 
     const userDepositChanged = UserDepositChanged(address);
-    const etherSent = EtherSent();
+    const etherSent = iBGTSent();
 
     const depositListener = debounce((blockTag: number) => {
       this._readable.getStabilityDeposit(address, { blockTag }).then(onStabilityDepositChanged);
@@ -164,46 +164,46 @@ export class ObservableEthersLiquity implements ObservableLiquity {
     };
   }
 
-  watchLUSDInStabilityPool(
-    onLUSDInStabilityPoolChanged: (lusdInStabilityPool: Decimal) => void
+  watchNECTInStabilityPool(
+    onNECTInStabilityPoolChanged: (nectInStabilityPool: Decimal) => void
   ): () => void {
-    const { lusdToken, stabilityPool } = _getContracts(this._readable.connection);
-    const { Transfer } = lusdToken.filters;
+    const { nectToken, stabilityPool } = _getContracts(this._readable.connection);
+    const { Transfer } = nectToken.filters;
 
-    const transferLUSDFromStabilityPool = Transfer(stabilityPool.address);
-    const transferLUSDToStabilityPool = Transfer(null, stabilityPool.address);
+    const transferNECTFromStabilityPool = Transfer(stabilityPool.address);
+    const transferNECTToStabilityPool = Transfer(null, stabilityPool.address);
 
-    const stabilityPoolLUSDFilters = [transferLUSDFromStabilityPool, transferLUSDToStabilityPool];
+    const stabilityPoolNECTFilters = [transferNECTFromStabilityPool, transferNECTToStabilityPool];
 
-    const stabilityPoolLUSDListener = debounce((blockTag: number) => {
-      this._readable.getLUSDInStabilityPool({ blockTag }).then(onLUSDInStabilityPoolChanged);
+    const stabilityPoolNECTListener = debounce((blockTag: number) => {
+      this._readable.getNECTInStabilityPool({ blockTag }).then(onNECTInStabilityPoolChanged);
     });
 
-    stabilityPoolLUSDFilters.forEach(filter => lusdToken.on(filter, stabilityPoolLUSDListener));
+    stabilityPoolNECTFilters.forEach(filter => nectToken.on(filter, stabilityPoolNECTListener));
 
     return () =>
-      stabilityPoolLUSDFilters.forEach(filter =>
-        lusdToken.removeListener(filter, stabilityPoolLUSDListener)
+      stabilityPoolNECTFilters.forEach(filter =>
+        nectToken.removeListener(filter, stabilityPoolNECTListener)
       );
   }
 
-  watchLUSDBalance(onLUSDBalanceChanged: (balance: Decimal) => void, address?: string): () => void {
+  watchNECTBalance(onNECTBalanceChanged: (balance: Decimal) => void, address?: string): () => void {
     address ??= _requireAddress(this._readable.connection);
 
-    const { lusdToken } = _getContracts(this._readable.connection);
-    const { Transfer } = lusdToken.filters;
-    const transferLUSDFromUser = Transfer(address);
-    const transferLUSDToUser = Transfer(null, address);
+    const { nectToken } = _getContracts(this._readable.connection);
+    const { Transfer } = nectToken.filters;
+    const transferNECTFromUser = Transfer(address);
+    const transferNECTToUser = Transfer(null, address);
 
-    const lusdTransferFilters = [transferLUSDFromUser, transferLUSDToUser];
+    const nectTransferFilters = [transferNECTFromUser, transferNECTToUser];
 
-    const lusdTransferListener = debounce((blockTag: number) => {
-      this._readable.getLUSDBalance(address, { blockTag }).then(onLUSDBalanceChanged);
+    const nectTransferListener = debounce((blockTag: number) => {
+      this._readable.getNECTBalance(address, { blockTag }).then(onNECTBalanceChanged);
     });
 
-    lusdTransferFilters.forEach(filter => lusdToken.on(filter, lusdTransferListener));
+    nectTransferFilters.forEach(filter => nectToken.on(filter, nectTransferListener));
 
     return () =>
-      lusdTransferFilters.forEach(filter => lusdToken.removeListener(filter, lusdTransferListener));
+      nectTransferFilters.forEach(filter => nectToken.removeListener(filter, nectTransferListener));
   }
 }

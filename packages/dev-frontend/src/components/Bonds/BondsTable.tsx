@@ -6,7 +6,7 @@ import * as lexicon from "./lexicon";
 import { Empty } from "./views/idle/Empty";
 import { Link } from "../Link";
 import { useBondView } from "./context/BondViewContext";
-import { Decimal } from "@liquity/lib-base";
+import { Decimal } from "@beraborrow/lib-base";
 import { InfiniteEstimate } from "./views/InfiniteEstimation";
 
 const {
@@ -119,9 +119,9 @@ export const BondsTable: React.FC = () => {
               );
               return (
                 <React.Fragment key={idx}>
-                  <Text>{bond.deposit.shorten()} LUSD</Text>
-                  <Text>{bond.accrued.shorten()} bLUSD</Text>
-                  <Text>{bond.marketValue.shorten()} LUSD</Text>
+                  <Text>{bond.deposit.shorten()} NECT</Text>
+                  <Text>{bond.accrued.shorten()} bNECT</Text>
+                  <Text>{bond.marketValue.shorten()} NECT</Text>
                   <Text>
                     <InfiniteEstimate estimate={breakEvenDays} />
                   </Text>

@@ -279,7 +279,7 @@ class TestHelper {
   // the mainnet contract PriceFeed uses fetchPrice, which is non-view and writes to storage.
 
   // To checkRecoveryMode / getTCR from the BeraBorrow mainnet contracts, pass a price value - this can be the lastGoodPrice
-  // stored in BeraBorrow, or the current Chainlink ETHUSD price, etc.
+  // stored in BeraBorrow, or the current Chainlink iBGTUSD price, etc.
 
 
   static async checkRecoveryMode(contracts) {
@@ -373,10 +373,10 @@ class TestHelper {
 
         const NECTAmount = redemptionTx.logs[i].args[0]
         const totalNECTRedeemed = redemptionTx.logs[i].args[1]
-        const totalETHDrawn = redemptionTx.logs[i].args[2]
-        const ETHFee = redemptionTx.logs[i].args[3]
+        const totaliBGTDrawn = redemptionTx.logs[i].args[2]
+        const iBGTFee = redemptionTx.logs[i].args[3]
 
-        return [NECTAmount, totalNECTRedeemed, totalETHDrawn, ETHFee]
+        return [NECTAmount, totalNECTRedeemed, totaliBGTDrawn, iBGTFee]
       }
     }
     throw ("The transaction logs do not contain a redemption event")
@@ -482,9 +482,9 @@ class TestHelper {
     // console.log(`account: ${account}`)
     const rawColl = (await contracts.troveManager.Troves(account))[1]
     const rawDebt = (await contracts.troveManager.Troves(account))[0]
-    const pendingETHReward = await contracts.troveManager.getPendingETHReward(account)
+    const pendingiBGTReward = await contracts.troveManager.getPendingiBGTReward(account)
     const pendingNECTDebtReward = await contracts.troveManager.getPendingNECTDebtReward(account)
-    const entireColl = rawColl.add(pendingETHReward)
+    const entireColl = rawColl.add(pendingiBGTReward)
     const entireDebt = rawDebt.add(pendingNECTDebtReward)
 
     return { entireColl, entireDebt }
@@ -527,14 +527,14 @@ class TestHelper {
     return { newColl, newDebt }
   }
 
-  static async getCollAndDebtFromAdjustment(contracts, account, ETHChange, NECTChange) {
+  static async getCollAndDebtFromAdjustment(contracts, account, iBGTChange, NECTChange) {
     const { entireColl, entireDebt } = await this.getEntireCollAndDebt(contracts, account)
 
     // const coll = (await contracts.troveManager.Troves(account))[1]
     // const debt = (await contracts.troveManager.Troves(account))[0]
 
     const fee = NECTChange.gt(this.toBN('0')) ? await contracts.troveManager.getBorrowingFee(NECTChange) : this.toBN('0')
-    const newColl = entireColl.add(ETHChange)
+    const newColl = entireColl.add(iBGTChange)
     const newDebt = entireDebt.add(NECTChange).add(fee)
 
     return { newColl, newDebt }
@@ -543,26 +543,26 @@ class TestHelper {
  
   // --- BorrowerOperations gas functions ---
 
-  static async openTrove_allAccounts(accounts, contracts, ETHAmount, NECTAmount) {
+  static async openTrove_allAccounts(accounts, contracts, iBGTAmount, NECTAmount) {
     const gasCostList = []
     const totalDebt = await this.getOpenTroveTotalDebt(contracts, NECTAmount)
 
     for (const account of accounts) {
-      const {upperHint, lowerHint} = await this.getBorrowerOpsListHint(contracts, ETHAmount, totalDebt)
+      const {upperHint, lowerHint} = await this.getBorrowerOpsListHint(contracts, iBGTAmount, totalDebt)
 
-      const tx = await contracts.borrowerOperations.openTrove(this._100pct, NECTAmount, upperHint, lowerHint, { from: account, value: ETHAmount })
+      const tx = await contracts.borrowerOperations.openTrove(this._100pct, NECTAmount, upperHint, lowerHint, { from: account, value: iBGTAmount })
       const gas = this.gasUsed(tx)
       gasCostList.push(gas)
     }
     return this.getGasMetrics(gasCostList)
   }
 
-  static async openTrove_allAccounts_randomETH(minETH, maxETH, accounts, contracts, NECTAmount) {
+  static async openTrove_allAccounts_randomiBGT(miniBGT, maxiBGT, accounts, contracts, NECTAmount) {
     const gasCostList = []
     const totalDebt = await this.getOpenTroveTotalDebt(contracts, NECTAmount)
 
     for (const account of accounts) {
-      const randCollAmount = this.randAmountInWei(minETH, maxETH)
+      const randCollAmount = this.randAmountInWei(miniBGT, maxiBGT)
       const {upperHint, lowerHint} = await this.getBorrowerOpsListHint(contracts, randCollAmount, totalDebt)
 
       const tx = await contracts.borrowerOperations.openTrove(this._100pct, NECTAmount, upperHint, lowerHint, { from: account, value: randCollAmount })
@@ -572,11 +572,11 @@ class TestHelper {
     return this.getGasMetrics(gasCostList)
   }
 
-  static async openTrove_allAccounts_randomETH_ProportionalNECT(minETH, maxETH, accounts, contracts, proportion) {
+  static async openTrove_allAccounts_randomiBGT_ProportionalNECT(miniBGT, maxiBGT, accounts, contracts, proportion) {
     const gasCostList = []
   
     for (const account of accounts) {
-      const randCollAmount = this.randAmountInWei(minETH, maxETH)
+      const randCollAmount = this.randAmountInWei(miniBGT, maxiBGT)
       const proportionalNECT = (web3.utils.toBN(proportion)).mul(web3.utils.toBN(randCollAmount))
       const totalDebt = await this.getOpenTroveTotalDebt(contracts, proportionalNECT)
 
@@ -589,7 +589,7 @@ class TestHelper {
     return this.getGasMetrics(gasCostList)
   }
 
-  static async openTrove_allAccounts_randomETH_randomNECT(minETH, maxETH, accounts, contracts, minNECTProportion, maxNECTProportion, logging = false) {
+  static async openTrove_allAccounts_randomiBGT_randomNECT(miniBGT, maxiBGT, accounts, contracts, minNECTProportion, maxNECTProportion, logging = false) {
     const gasCostList = []
     const price = await contracts.priceFeedTestnet.getPrice()
     const _1e18 = web3.utils.toBN('1000000000000000000')
@@ -597,7 +597,7 @@ class TestHelper {
     let i = 0
     for (const account of accounts) {
 
-      const randCollAmount = this.randAmountInWei(minETH, maxETH)
+      const randCollAmount = this.randAmountInWei(miniBGT, maxiBGT)
       // console.log(`randCollAmount ${randCollAmount }`)
       const randNECTProportion = this.randAmountInWei(minNECTProportion, maxNECTProportion)
       const proportionalNECT = (web3.utils.toBN(randNECTProportion)).mul(web3.utils.toBN(randCollAmount).div(_1e18))
@@ -618,15 +618,15 @@ class TestHelper {
     return this.getGasMetrics(gasCostList)
   }
 
-  static async openTrove_allAccounts_randomNECT(minNECT, maxNECT, accounts, contracts, ETHAmount) {
+  static async openTrove_allAccounts_randomNECT(minNECT, maxNECT, accounts, contracts, iBGTAmount) {
     const gasCostList = []
 
     for (const account of accounts) {
       const randNECTAmount = this.randAmountInWei(minNECT, maxNECT)
       const totalDebt = await this.getOpenTroveTotalDebt(contracts, randNECTAmount)
-      const {upperHint, lowerHint} = await this.getBorrowerOpsListHint(contracts, ETHAmount, totalDebt)
+      const {upperHint, lowerHint} = await this.getBorrowerOpsListHint(contracts, iBGTAmount, totalDebt)
 
-      const tx = await contracts.borrowerOperations.openTrove(this._100pct, randNECTAmount, upperHint, lowerHint, { from: account, value: ETHAmount })
+      const tx = await contracts.borrowerOperations.openTrove(this._100pct, randNECTAmount, upperHint, lowerHint, { from: account, value: iBGTAmount })
       const gas = this.gasUsed(tx)
       gasCostList.push(gas)
     }
@@ -644,7 +644,7 @@ class TestHelper {
     return this.getGasMetrics(gasCostList)
   }
 
-  static async openTrove_allAccounts_decreasingNECTAmounts(accounts, contracts, ETHAmount, maxNECTAmount) {
+  static async openTrove_allAccounts_decreasingNECTAmounts(accounts, contracts, iBGTAmount, maxNECTAmount) {
     const gasCostList = []
 
     let i = 0
@@ -652,9 +652,9 @@ class TestHelper {
       const NECTAmount = (maxNECTAmount - i).toString()
       const NECTAmountWei = web3.utils.toWei(NECTAmount, 'ether')
       const totalDebt = await this.getOpenTroveTotalDebt(contracts, NECTAmountWei)
-      const {upperHint, lowerHint} = await this.getBorrowerOpsListHint(contracts, ETHAmount, totalDebt)
+      const {upperHint, lowerHint} = await this.getBorrowerOpsListHint(contracts, iBGTAmount, totalDebt)
 
-      const tx = await contracts.borrowerOperations.openTrove(this._100pct, NECTAmountWei, upperHint, lowerHint, { from: account, value: ETHAmount })
+      const tx = await contracts.borrowerOperations.openTrove(this._100pct, NECTAmountWei, upperHint, lowerHint, { from: account, value: iBGTAmount })
       const gas = this.gasUsed(tx)
       gasCostList.push(gas)
       i += 1
@@ -739,16 +739,16 @@ class TestHelper {
     }
   }
 
-  static async adjustTrove_allAccounts(accounts, contracts, ETHAmount, NECTAmount) {
+  static async adjustTrove_allAccounts(accounts, contracts, iBGTAmount, NECTAmount) {
     const gasCostList = []
 
     for (const account of accounts) {
       let tx;
 
-      let ETHChangeBN = this.toBN(ETHAmount)
+      let iBGTChangeBN = this.toBN(iBGTAmount)
       let NECTChangeBN = this.toBN(NECTAmount)
 
-      const { newColl, newDebt } = await this.getCollAndDebtFromAdjustment(contracts, account, ETHChangeBN, NECTChangeBN)
+      const { newColl, newDebt } = await this.getCollAndDebtFromAdjustment(contracts, account, iBGTChangeBN, NECTChangeBN)
       const {upperHint, lowerHint} = await this.getBorrowerOpsListHint(contracts, newColl, newDebt)
 
       const zero = this.toBN('0')
@@ -756,13 +756,13 @@ class TestHelper {
       let isDebtIncrease = NECTChangeBN.gt(zero)
       NECTChangeBN = NECTChangeBN.abs() 
 
-      // Add ETH to trove
-      if (ETHChangeBN.gt(zero)) {
-        tx = await contracts.borrowerOperations.adjustTrove(this._100pct, 0, NECTChangeBN, isDebtIncrease, upperHint, lowerHint, { from: account, value: ETHChangeBN })
-      // Withdraw ETH from trove
-      } else if (ETHChangeBN.lt(zero)) {
-        ETHChangeBN = ETHChangeBN.neg()
-        tx = await contracts.borrowerOperations.adjustTrove(this._100pct, ETHChangeBN, NECTChangeBN, isDebtIncrease, upperHint, lowerHint, { from: account })
+      // Add iBGT to trove
+      if (iBGTChangeBN.gt(zero)) {
+        tx = await contracts.borrowerOperations.adjustTrove(this._100pct, 0, NECTChangeBN, isDebtIncrease, upperHint, lowerHint, { from: account, value: iBGTChangeBN })
+      // Withdraw iBGT from trove
+      } else if (iBGTChangeBN.lt(zero)) {
+        iBGTChangeBN = iBGTChangeBN.neg()
+        tx = await contracts.borrowerOperations.adjustTrove(this._100pct, iBGTChangeBN, NECTChangeBN, isDebtIncrease, upperHint, lowerHint, { from: account })
       }
 
       const gas = this.gasUsed(tx)
@@ -771,16 +771,16 @@ class TestHelper {
     return this.getGasMetrics(gasCostList)
   }
 
-  static async adjustTrove_allAccounts_randomAmount(accounts, contracts, ETHMin, ETHMax, NECTMin, NECTMax) {
+  static async adjustTrove_allAccounts_randomAmount(accounts, contracts, iBGTMin, iBGTMax, NECTMin, NECTMax) {
     const gasCostList = []
 
     for (const account of accounts) {
       let tx;
   
-      let ETHChangeBN = this.toBN(this.randAmountInWei(ETHMin, ETHMax))
+      let iBGTChangeBN = this.toBN(this.randAmountInWei(iBGTMin, iBGTMax))
       let NECTChangeBN = this.toBN(this.randAmountInWei(NECTMin, NECTMax))
 
-      const { newColl, newDebt } = await this.getCollAndDebtFromAdjustment(contracts, account, ETHChangeBN, NECTChangeBN)
+      const { newColl, newDebt } = await this.getCollAndDebtFromAdjustment(contracts, account, iBGTChangeBN, NECTChangeBN)
       const {upperHint, lowerHint} = await this.getBorrowerOpsListHint(contracts, newColl, newDebt)
 
       const zero = this.toBN('0')
@@ -788,17 +788,17 @@ class TestHelper {
       let isDebtIncrease = NECTChangeBN.gt(zero)
       NECTChangeBN = NECTChangeBN.abs() 
 
-      // Add ETH to trove
-      if (ETHChangeBN.gt(zero)) {
-        tx = await contracts.borrowerOperations.adjustTrove(this._100pct, 0, NECTChangeBN, isDebtIncrease, upperHint, lowerHint, { from: account, value: ETHChangeBN })
-      // Withdraw ETH from trove
-      } else if (ETHChangeBN.lt(zero)) {
-        ETHChangeBN = ETHChangeBN.neg()
-        tx = await contracts.borrowerOperations.adjustTrove(this._100pct, ETHChangeBN, NECTChangeBN, isDebtIncrease, lowerHint,  upperHint,{ from: account })
+      // Add iBGT to trove
+      if (iBGTChangeBN.gt(zero)) {
+        tx = await contracts.borrowerOperations.adjustTrove(this._100pct, 0, NECTChangeBN, isDebtIncrease, upperHint, lowerHint, { from: account, value: iBGTChangeBN })
+      // Withdraw iBGT from trove
+      } else if (iBGTChangeBN.lt(zero)) {
+        iBGTChangeBN = iBGTChangeBN.neg()
+        tx = await contracts.borrowerOperations.adjustTrove(this._100pct, iBGTChangeBN, NECTChangeBN, isDebtIncrease, lowerHint,  upperHint,{ from: account })
       }
 
       const gas = this.gasUsed(tx)
-      // console.log(`ETH change: ${ETHChangeBN},  NECTChange: ${NECTChangeBN}, gas: ${gas} `)
+      // console.log(`iBGT change: ${iBGTChangeBN},  NECTChange: ${NECTChangeBN}, gas: ${gas} `)
 
       gasCostList.push(gas)
     }
@@ -1057,18 +1057,18 @@ class TestHelper {
     return this.getGasMetrics(gasCostList)
   }
 
-  static async withdrawETHGainToTrove_allAccounts(accounts, contracts) {
+  static async withdrawiBGTGainToTrove_allAccounts(accounts, contracts) {
     const gasCostList = []
     for (const account of accounts) {
 
       let {entireColl, entireDebt } = await this.getEntireCollAndDebt(contracts, account)
       console.log(`entireColl: ${entireColl}`)
       console.log(`entireDebt: ${entireDebt}`)
-      const ETHGain = await contracts.stabilityPool.getDepositorETHGain(account)
-      const newColl = entireColl.add(ETHGain)
+      const iBGTGain = await contracts.stabilityPool.getDepositoriBGTGain(account)
+      const newColl = entireColl.add(iBGTGain)
       const {upperHint, lowerHint} = await this.getBorrowerOpsListHint(contracts, newColl, entireDebt)
 
-      const tx = await contracts.stabilityPool.withdrawETHGainToTrove(upperHint, lowerHint, { from: account })
+      const tx = await contracts.stabilityPool.withdrawiBGTGainToTrove(upperHint, lowerHint, { from: account })
       const gas = this.gasUsed(tx)
       gasCostList.push(gas)
     }

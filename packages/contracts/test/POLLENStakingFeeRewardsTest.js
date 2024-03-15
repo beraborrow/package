@@ -17,10 +17,10 @@ const ZERO = th.toBN('0')
 
 const GAS_PRICE = 10000000
 
-/* NOTE: These tests do not test for specific ETH and NECT gain values. They only test that the 
+/* NOTE: These tests do not test for specific iBGT and NECT gain values. They only test that the 
  * gains are non-zero, occur when they should, and are in correct proportion to the user's stake. 
  *
- * Specific ETH/NECT gain values will depend on the final fee schedule used, and the final choices for
+ * Specific iBGT/NECT gain values will depend on the final fee schedule used, and the final choices for
  * parameters BETA and MINUTE_DECAY_FACTOR in the TroveManager, which are still TBD based on economic
  * modelling.
  * 
@@ -86,7 +86,7 @@ contract('POLLENStaking revenue share tests', async accounts => {
     await assertRevert(pollenStaking.stake(0, {from: A}), "POLLENStaking: Amount must be non-zero")
   })
 
-  it("ETH fee per POLLEN staked increases when a redemption fee is triggered and totalStakes > 0", async () => {
+  it("iBGT fee per POLLEN staked increases when a redemption fee is triggered and totalStakes > 0", async () => {
     await openTrove({ extraNECTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
     await openTrove({ extraNECTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
     await openTrove({ extraNECTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
@@ -104,9 +104,9 @@ contract('POLLENStaking revenue share tests', async accounts => {
     await pollenToken.approve(pollenStaking.address, dec(100, 18), {from: A})
     await pollenStaking.stake(dec(100, 18), {from: A})
 
-    // Check ETH fee per unit staked is zero
-    const F_ETH_Before = await pollenStaking.F_ETH()
-    assert.equal(F_ETH_Before, '0')
+    // Check iBGT fee per unit staked is zero
+    const F_iBGT_Before = await pollenStaking.F_iBGT()
+    assert.equal(F_iBGT_Before, '0')
 
     const B_BalBeforeREdemption = await nectToken.balanceOf(B)
     // B redeems
@@ -115,20 +115,20 @@ contract('POLLENStaking revenue share tests', async accounts => {
     const B_BalAfterRedemption = await nectToken.balanceOf(B)
     assert.isTrue(B_BalAfterRedemption.lt(B_BalBeforeREdemption))
 
-    // check ETH fee emitted in event is non-zero
-    const emittedETHFee = toBN((await th.getEmittedRedemptionValues(redemptionTx))[3])
-    assert.isTrue(emittedETHFee.gt(toBN('0')))
+    // check iBGT fee emitted in event is non-zero
+    const emittediBGTFee = toBN((await th.getEmittedRedemptionValues(redemptionTx))[3])
+    assert.isTrue(emittediBGTFee.gt(toBN('0')))
 
-    // Check ETH fee per unit staked has increased by correct amount
-    const F_ETH_After = await pollenStaking.F_ETH()
+    // Check iBGT fee per unit staked has increased by correct amount
+    const F_iBGT_After = await pollenStaking.F_iBGT()
 
     // Expect fee per unit staked = fee/100, since there is 100 NECT totalStaked
-    const expected_F_ETH_After = emittedETHFee.div(toBN('100')) 
+    const expected_F_iBGT_After = emittediBGTFee.div(toBN('100')) 
 
-    assert.isTrue(expected_F_ETH_After.eq(F_ETH_After))
+    assert.isTrue(expected_F_iBGT_After.eq(F_iBGT_After))
   })
 
-  it("ETH fee per POLLEN staked doesn't change when a redemption fee is triggered and totalStakes == 0", async () => {
+  it("iBGT fee per POLLEN staked doesn't change when a redemption fee is triggered and totalStakes == 0", async () => {
     await openTrove({ extraNECTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
     await openTrove({ extraNECTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
     await openTrove({ extraNECTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
@@ -141,9 +141,9 @@ contract('POLLENStaking revenue share tests', async accounts => {
     // multisig transfers POLLEN to staker A
     await pollenToken.transfer(A, dec(100, 18), {from: multisig, gasPrice: GAS_PRICE})
 
-    // Check ETH fee per unit staked is zero
-    const F_ETH_Before = await pollenStaking.F_ETH()
-    assert.equal(F_ETH_Before, '0')
+    // Check iBGT fee per unit staked is zero
+    const F_iBGT_Before = await pollenStaking.F_iBGT()
+    assert.equal(F_iBGT_Before, '0')
 
     const B_BalBeforeREdemption = await nectToken.balanceOf(B)
     // B redeems
@@ -152,13 +152,13 @@ contract('POLLENStaking revenue share tests', async accounts => {
     const B_BalAfterRedemption = await nectToken.balanceOf(B)
     assert.isTrue(B_BalAfterRedemption.lt(B_BalBeforeREdemption))
 
-    // check ETH fee emitted in event is non-zero
-    const emittedETHFee = toBN((await th.getEmittedRedemptionValues(redemptionTx))[3])
-    assert.isTrue(emittedETHFee.gt(toBN('0')))
+    // check iBGT fee emitted in event is non-zero
+    const emittediBGTFee = toBN((await th.getEmittedRedemptionValues(redemptionTx))[3])
+    assert.isTrue(emittediBGTFee.gt(toBN('0')))
 
-    // Check ETH fee per unit staked has not increased 
-    const F_ETH_After = await pollenStaking.F_ETH()
-    assert.equal(F_ETH_After, '0')
+    // Check iBGT fee per unit staked has not increased 
+    const F_iBGT_After = await pollenStaking.F_iBGT()
+    assert.equal(F_iBGT_After, '0')
   })
 
   it("NECT fee per POLLEN staked increases when a redemption fee is triggered and totalStakes > 0", async () => {
@@ -179,7 +179,7 @@ contract('POLLENStaking revenue share tests', async accounts => {
     await pollenStaking.stake(dec(100, 18), {from: A})
 
     // Check NECT fee per unit staked is zero
-    const F_NECT_Before = await pollenStaking.F_ETH()
+    const F_NECT_Before = await pollenStaking.F_iBGT()
     assert.equal(F_NECT_Before, '0')
 
     const B_BalBeforeREdemption = await nectToken.balanceOf(B)
@@ -223,7 +223,7 @@ contract('POLLENStaking revenue share tests', async accounts => {
     await pollenToken.transfer(A, dec(100, 18), {from: multisig})
 
     // Check NECT fee per unit staked is zero
-    const F_NECT_Before = await pollenStaking.F_ETH()
+    const F_NECT_Before = await pollenStaking.F_iBGT()
     assert.equal(F_NECT_Before, '0')
 
     const B_BalBeforeREdemption = await nectToken.balanceOf(B)
@@ -249,7 +249,7 @@ contract('POLLENStaking revenue share tests', async accounts => {
     assert.equal(F_NECT_After, '0')
   })
 
-  it("POLLEN Staking: A single staker earns all ETH and POLLEN fees that occur", async () => {
+  it("POLLEN Staking: A single staker earns all iBGT and POLLEN fees that occur", async () => {
     await openTrove({ extraNECTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
     await openTrove({ extraNECTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
     await openTrove({ extraNECTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
@@ -273,9 +273,9 @@ contract('POLLENStaking revenue share tests', async accounts => {
     const B_BalAfterRedemption = await nectToken.balanceOf(B)
     assert.isTrue(B_BalAfterRedemption.lt(B_BalBeforeREdemption))
 
-    // check ETH fee 1 emitted in event is non-zero
-    const emittedETHFee_1 = toBN((await th.getEmittedRedemptionValues(redemptionTx_1))[3])
-    assert.isTrue(emittedETHFee_1.gt(toBN('0')))
+    // check iBGT fee 1 emitted in event is non-zero
+    const emittediBGTFee_1 = toBN((await th.getEmittedRedemptionValues(redemptionTx_1))[3])
+    assert.isTrue(emittediBGTFee_1.gt(toBN('0')))
 
     const C_BalBeforeREdemption = await nectToken.balanceOf(C)
     // C redeems
@@ -284,9 +284,9 @@ contract('POLLENStaking revenue share tests', async accounts => {
     const C_BalAfterRedemption = await nectToken.balanceOf(C)
     assert.isTrue(C_BalAfterRedemption.lt(C_BalBeforeREdemption))
  
-     // check ETH fee 2 emitted in event is non-zero
-     const emittedETHFee_2 = toBN((await th.getEmittedRedemptionValues(redemptionTx_2))[3])
-     assert.isTrue(emittedETHFee_2.gt(toBN('0')))
+     // check iBGT fee 2 emitted in event is non-zero
+     const emittediBGTFee_2 = toBN((await th.getEmittedRedemptionValues(redemptionTx_2))[3])
+     assert.isTrue(emittediBGTFee_2.gt(toBN('0')))
 
     // D draws debt
     const borrowingTx_1 = await borrowerOperations.withdrawNECT(th._100pct, dec(104, 18), D, D, {from: D})
@@ -302,27 +302,27 @@ contract('POLLENStaking revenue share tests', async accounts => {
     const emittedNECTFee_2 = toBN(th.getNECTFeeFromNECTBorrowingEvent(borrowingTx_2))
     assert.isTrue(emittedNECTFee_2.gt(toBN('0')))
 
-    const expectedTotalETHGain = emittedETHFee_1.add(emittedETHFee_2)
+    const expectedTotaliBGTGain = emittediBGTFee_1.add(emittediBGTFee_2)
     const expectedTotalNECTGain = emittedNECTFee_1.add(emittedNECTFee_2)
 
-    const A_ETHBalance_Before = toBN(await web3.eth.getBalance(A))
+    const A_iBGTBalance_Before = toBN(await web3.eth.getBalance(A))
     const A_NECTBalance_Before = toBN(await nectToken.balanceOf(A))
 
     // A un-stakes
     const GAS_Used = th.gasUsed(await pollenStaking.unstake(dec(100, 18), {from: A, gasPrice: GAS_PRICE }))
 
-    const A_ETHBalance_After = toBN(await web3.eth.getBalance(A))
+    const A_iBGTBalance_After = toBN(await web3.eth.getBalance(A))
     const A_NECTBalance_After = toBN(await nectToken.balanceOf(A))
 
 
-    const A_ETHGain = A_ETHBalance_After.sub(A_ETHBalance_Before).add(toBN(GAS_Used * GAS_PRICE))
+    const A_iBGTGain = A_iBGTBalance_After.sub(A_iBGTBalance_Before).add(toBN(GAS_Used * GAS_PRICE))
     const A_NECTGain = A_NECTBalance_After.sub(A_NECTBalance_Before)
 
-    assert.isAtMost(th.getDifference(expectedTotalETHGain, A_ETHGain), 1000)
+    assert.isAtMost(th.getDifference(expectedTotaliBGTGain, A_iBGTGain), 1000)
     assert.isAtMost(th.getDifference(expectedTotalNECTGain, A_NECTGain), 1000)
   })
 
-  it("stake(): Top-up sends out all accumulated ETH and NECT gains to the staker", async () => { 
+  it("stake(): Top-up sends out all accumulated iBGT and NECT gains to the staker", async () => { 
     await openTrove({ extraNECTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
     await openTrove({ extraNECTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
     await openTrove({ extraNECTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
@@ -346,9 +346,9 @@ contract('POLLENStaking revenue share tests', async accounts => {
     const B_BalAfterRedemption = await nectToken.balanceOf(B)
     assert.isTrue(B_BalAfterRedemption.lt(B_BalBeforeREdemption))
 
-    // check ETH fee 1 emitted in event is non-zero
-    const emittedETHFee_1 = toBN((await th.getEmittedRedemptionValues(redemptionTx_1))[3])
-    assert.isTrue(emittedETHFee_1.gt(toBN('0')))
+    // check iBGT fee 1 emitted in event is non-zero
+    const emittediBGTFee_1 = toBN((await th.getEmittedRedemptionValues(redemptionTx_1))[3])
+    assert.isTrue(emittediBGTFee_1.gt(toBN('0')))
 
     const C_BalBeforeREdemption = await nectToken.balanceOf(C)
     // C redeems
@@ -357,9 +357,9 @@ contract('POLLENStaking revenue share tests', async accounts => {
     const C_BalAfterRedemption = await nectToken.balanceOf(C)
     assert.isTrue(C_BalAfterRedemption.lt(C_BalBeforeREdemption))
  
-     // check ETH fee 2 emitted in event is non-zero
-     const emittedETHFee_2 = toBN((await th.getEmittedRedemptionValues(redemptionTx_2))[3])
-     assert.isTrue(emittedETHFee_2.gt(toBN('0')))
+     // check iBGT fee 2 emitted in event is non-zero
+     const emittediBGTFee_2 = toBN((await th.getEmittedRedemptionValues(redemptionTx_2))[3])
+     assert.isTrue(emittediBGTFee_2.gt(toBN('0')))
 
     // D draws debt
     const borrowingTx_1 = await borrowerOperations.withdrawNECT(th._100pct, dec(104, 18), D, D, {from: D})
@@ -375,26 +375,26 @@ contract('POLLENStaking revenue share tests', async accounts => {
     const emittedNECTFee_2 = toBN(th.getNECTFeeFromNECTBorrowingEvent(borrowingTx_2))
     assert.isTrue(emittedNECTFee_2.gt(toBN('0')))
 
-    const expectedTotalETHGain = emittedETHFee_1.add(emittedETHFee_2)
+    const expectedTotaliBGTGain = emittediBGTFee_1.add(emittediBGTFee_2)
     const expectedTotalNECTGain = emittedNECTFee_1.add(emittedNECTFee_2)
 
-    const A_ETHBalance_Before = toBN(await web3.eth.getBalance(A))
+    const A_iBGTBalance_Before = toBN(await web3.eth.getBalance(A))
     const A_NECTBalance_Before = toBN(await nectToken.balanceOf(A))
 
     // A tops up
     const GAS_Used = th.gasUsed(await pollenStaking.stake(dec(50, 18), {from: A, gasPrice: GAS_PRICE }))
 
-    const A_ETHBalance_After = toBN(await web3.eth.getBalance(A))
+    const A_iBGTBalance_After = toBN(await web3.eth.getBalance(A))
     const A_NECTBalance_After = toBN(await nectToken.balanceOf(A))
 
-    const A_ETHGain = A_ETHBalance_After.sub(A_ETHBalance_Before).add(toBN(GAS_Used * GAS_PRICE))
+    const A_iBGTGain = A_iBGTBalance_After.sub(A_iBGTBalance_Before).add(toBN(GAS_Used * GAS_PRICE))
     const A_NECTGain = A_NECTBalance_After.sub(A_NECTBalance_Before)
 
-    assert.isAtMost(th.getDifference(expectedTotalETHGain, A_ETHGain), 1000)
+    assert.isAtMost(th.getDifference(expectedTotaliBGTGain, A_iBGTGain), 1000)
     assert.isAtMost(th.getDifference(expectedTotalNECTGain, A_NECTGain), 1000)
   })
 
-  it("getPendingETHGain(): Returns the staker's correct pending ETH gain", async () => { 
+  it("getPendingiBGTGain(): Returns the staker's correct pending iBGT gain", async () => { 
     await openTrove({ extraNECTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
     await openTrove({ extraNECTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
     await openTrove({ extraNECTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
@@ -418,9 +418,9 @@ contract('POLLENStaking revenue share tests', async accounts => {
     const B_BalAfterRedemption = await nectToken.balanceOf(B)
     assert.isTrue(B_BalAfterRedemption.lt(B_BalBeforeREdemption))
 
-    // check ETH fee 1 emitted in event is non-zero
-    const emittedETHFee_1 = toBN((await th.getEmittedRedemptionValues(redemptionTx_1))[3])
-    assert.isTrue(emittedETHFee_1.gt(toBN('0')))
+    // check iBGT fee 1 emitted in event is non-zero
+    const emittediBGTFee_1 = toBN((await th.getEmittedRedemptionValues(redemptionTx_1))[3])
+    assert.isTrue(emittediBGTFee_1.gt(toBN('0')))
 
     const C_BalBeforeREdemption = await nectToken.balanceOf(C)
     // C redeems
@@ -429,15 +429,15 @@ contract('POLLENStaking revenue share tests', async accounts => {
     const C_BalAfterRedemption = await nectToken.balanceOf(C)
     assert.isTrue(C_BalAfterRedemption.lt(C_BalBeforeREdemption))
  
-     // check ETH fee 2 emitted in event is non-zero
-     const emittedETHFee_2 = toBN((await th.getEmittedRedemptionValues(redemptionTx_2))[3])
-     assert.isTrue(emittedETHFee_2.gt(toBN('0')))
+     // check iBGT fee 2 emitted in event is non-zero
+     const emittediBGTFee_2 = toBN((await th.getEmittedRedemptionValues(redemptionTx_2))[3])
+     assert.isTrue(emittediBGTFee_2.gt(toBN('0')))
 
-    const expectedTotalETHGain = emittedETHFee_1.add(emittedETHFee_2)
+    const expectedTotaliBGTGain = emittediBGTFee_1.add(emittediBGTFee_2)
 
-    const A_ETHGain = await pollenStaking.getPendingETHGain(A)
+    const A_iBGTGain = await pollenStaking.getPendingiBGTGain(A)
 
-    assert.isAtMost(th.getDifference(expectedTotalETHGain, A_ETHGain), 1000)
+    assert.isAtMost(th.getDifference(expectedTotaliBGTGain, A_iBGTGain), 1000)
   })
 
   it("getPendingNECTGain(): Returns the staker's correct pending NECT gain", async () => { 
@@ -464,9 +464,9 @@ contract('POLLENStaking revenue share tests', async accounts => {
     const B_BalAfterRedemption = await nectToken.balanceOf(B)
     assert.isTrue(B_BalAfterRedemption.lt(B_BalBeforeREdemption))
 
-    // check ETH fee 1 emitted in event is non-zero
-    const emittedETHFee_1 = toBN((await th.getEmittedRedemptionValues(redemptionTx_1))[3])
-    assert.isTrue(emittedETHFee_1.gt(toBN('0')))
+    // check iBGT fee 1 emitted in event is non-zero
+    const emittediBGTFee_1 = toBN((await th.getEmittedRedemptionValues(redemptionTx_1))[3])
+    assert.isTrue(emittediBGTFee_1.gt(toBN('0')))
 
     const C_BalBeforeREdemption = await nectToken.balanceOf(C)
     // C redeems
@@ -475,9 +475,9 @@ contract('POLLENStaking revenue share tests', async accounts => {
     const C_BalAfterRedemption = await nectToken.balanceOf(C)
     assert.isTrue(C_BalAfterRedemption.lt(C_BalBeforeREdemption))
  
-     // check ETH fee 2 emitted in event is non-zero
-     const emittedETHFee_2 = toBN((await th.getEmittedRedemptionValues(redemptionTx_2))[3])
-     assert.isTrue(emittedETHFee_2.gt(toBN('0')))
+     // check iBGT fee 2 emitted in event is non-zero
+     const emittediBGTFee_2 = toBN((await th.getEmittedRedemptionValues(redemptionTx_2))[3])
+     assert.isTrue(emittediBGTFee_2.gt(toBN('0')))
 
     // D draws debt
     const borrowingTx_1 = await borrowerOperations.withdrawNECT(th._100pct, dec(104, 18), D, D, {from: D})
@@ -500,7 +500,7 @@ contract('POLLENStaking revenue share tests', async accounts => {
   })
 
   // - multi depositors, several rewards
-  it("POLLEN Staking: Multiple stakers earn the correct share of all ETH and POLLEN fees, based on their stake size", async () => {
+  it("POLLEN Staking: Multiple stakers earn the correct share of all iBGT and POLLEN fees, based on their stake size", async () => {
     await openTrove({ extraNECTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
     await openTrove({ extraNECTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
     await openTrove({ extraNECTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
@@ -533,13 +533,13 @@ contract('POLLENStaking revenue share tests', async accounts => {
 
     // F redeems
     const redemptionTx_1 = await th.redeemCollateralAndGetTxObject(F, contracts, dec(45, 18), gasPrice = GAS_PRICE)
-    const emittedETHFee_1 = toBN((await th.getEmittedRedemptionValues(redemptionTx_1))[3])
-    assert.isTrue(emittedETHFee_1.gt(toBN('0')))
+    const emittediBGTFee_1 = toBN((await th.getEmittedRedemptionValues(redemptionTx_1))[3])
+    assert.isTrue(emittediBGTFee_1.gt(toBN('0')))
 
      // G redeems
      const redemptionTx_2 = await th.redeemCollateralAndGetTxObject(G, contracts, dec(197, 18), gasPrice = GAS_PRICE)
-     const emittedETHFee_2 = toBN((await th.getEmittedRedemptionValues(redemptionTx_2))[3])
-     assert.isTrue(emittedETHFee_2.gt(toBN('0')))
+     const emittediBGTFee_2 = toBN((await th.getEmittedRedemptionValues(redemptionTx_2))[3])
+     assert.isTrue(emittediBGTFee_2.gt(toBN('0')))
 
     // F draws debt
     const borrowingTx_1 = await borrowerOperations.withdrawNECT(th._100pct, dec(104, 18), F, F, {from: F})
@@ -562,8 +562,8 @@ contract('POLLENStaking revenue share tests', async accounts => {
 
      // G redeems
      const redemptionTx_3 = await th.redeemCollateralAndGetTxObject(C, contracts, dec(197, 18), gasPrice = GAS_PRICE)
-     const emittedETHFee_3 = toBN((await th.getEmittedRedemptionValues(redemptionTx_3))[3])
-     assert.isTrue(emittedETHFee_3.gt(toBN('0')))
+     const emittediBGTFee_3 = toBN((await th.getEmittedRedemptionValues(redemptionTx_3))[3])
+     assert.isTrue(emittediBGTFee_3.gt(toBN('0')))
 
      // G draws debt
     const borrowingTx_3 = await borrowerOperations.withdrawNECT(th._100pct, dec(17, 18), G, G, {from: G})
@@ -573,10 +573,10 @@ contract('POLLENStaking revenue share tests', async accounts => {
     /*  
     Expected rewards:
 
-    A_ETH: (100* ETHFee_1)/600 + (100* ETHFee_2)/600 + (100*ETH_Fee_3)/650
-    B_ETH: (200* ETHFee_1)/600 + (200* ETHFee_2)/600 + (200*ETH_Fee_3)/650
-    C_ETH: (300* ETHFee_1)/600 + (300* ETHFee_2)/600 + (300*ETH_Fee_3)/650
-    D_ETH:                                             (100*ETH_Fee_3)/650
+    A_iBGT: (100* iBGTFee_1)/600 + (100* iBGTFee_2)/600 + (100*iBGT_Fee_3)/650
+    B_iBGT: (200* iBGTFee_1)/600 + (200* iBGTFee_2)/600 + (200*iBGT_Fee_3)/650
+    C_iBGT: (300* iBGTFee_1)/600 + (300* iBGTFee_2)/600 + (300*iBGT_Fee_3)/650
+    D_iBGT:                                             (100*iBGT_Fee_3)/650
 
     A_NECT: (100*NECTFee_1 )/600 + (100* NECTFee_2)/600 + (100*NECTFee_3)/650
     B_NECT: (200* NECTFee_1)/600 + (200* NECTFee_2)/600 + (200*NECTFee_3)/650
@@ -584,20 +584,20 @@ contract('POLLENStaking revenue share tests', async accounts => {
     D_NECT:                                               (100*NECTFee_3)/650
     */
 
-    // Expected ETH gains
-    const expectedETHGain_A = toBN('100').mul(emittedETHFee_1).div( toBN('600'))
-                            .add(toBN('100').mul(emittedETHFee_2).div( toBN('600')))
-                            .add(toBN('100').mul(emittedETHFee_3).div( toBN('650')))
+    // Expected iBGT gains
+    const expectediBGTGain_A = toBN('100').mul(emittediBGTFee_1).div( toBN('600'))
+                            .add(toBN('100').mul(emittediBGTFee_2).div( toBN('600')))
+                            .add(toBN('100').mul(emittediBGTFee_3).div( toBN('650')))
 
-    const expectedETHGain_B = toBN('200').mul(emittedETHFee_1).div( toBN('600'))
-                            .add(toBN('200').mul(emittedETHFee_2).div( toBN('600')))
-                            .add(toBN('200').mul(emittedETHFee_3).div( toBN('650')))
+    const expectediBGTGain_B = toBN('200').mul(emittediBGTFee_1).div( toBN('600'))
+                            .add(toBN('200').mul(emittediBGTFee_2).div( toBN('600')))
+                            .add(toBN('200').mul(emittediBGTFee_3).div( toBN('650')))
 
-    const expectedETHGain_C = toBN('300').mul(emittedETHFee_1).div( toBN('600'))
-                            .add(toBN('300').mul(emittedETHFee_2).div( toBN('600')))
-                            .add(toBN('300').mul(emittedETHFee_3).div( toBN('650')))
+    const expectediBGTGain_C = toBN('300').mul(emittediBGTFee_1).div( toBN('600'))
+                            .add(toBN('300').mul(emittediBGTFee_2).div( toBN('600')))
+                            .add(toBN('300').mul(emittediBGTFee_3).div( toBN('650')))
 
-    const expectedETHGain_D = toBN('50').mul(emittedETHFee_3).div( toBN('650'))
+    const expectediBGTGain_D = toBN('50').mul(emittediBGTFee_3).div( toBN('650'))
 
     // Expected NECT gains:
     const expectedNECTGain_A = toBN('100').mul(emittedNECTFee_1).div( toBN('600'))
@@ -615,13 +615,13 @@ contract('POLLENStaking revenue share tests', async accounts => {
     const expectedNECTGain_D = toBN('50').mul(emittedNECTFee_3).div( toBN('650'))
 
 
-    const A_ETHBalance_Before = toBN(await web3.eth.getBalance(A))
+    const A_iBGTBalance_Before = toBN(await web3.eth.getBalance(A))
     const A_NECTBalance_Before = toBN(await nectToken.balanceOf(A))
-    const B_ETHBalance_Before = toBN(await web3.eth.getBalance(B))
+    const B_iBGTBalance_Before = toBN(await web3.eth.getBalance(B))
     const B_NECTBalance_Before = toBN(await nectToken.balanceOf(B))
-    const C_ETHBalance_Before = toBN(await web3.eth.getBalance(C))
+    const C_iBGTBalance_Before = toBN(await web3.eth.getBalance(C))
     const C_NECTBalance_Before = toBN(await nectToken.balanceOf(C))
-    const D_ETHBalance_Before = toBN(await web3.eth.getBalance(D))
+    const D_iBGTBalance_Before = toBN(await web3.eth.getBalance(D))
     const D_NECTBalance_Before = toBN(await nectToken.balanceOf(D))
 
     // A-D un-stake
@@ -636,38 +636,38 @@ contract('POLLENStaking revenue share tests', async accounts => {
     assert.equal((await pollenToken.balanceOf(pollenStaking.address)), '0')
     assert.equal((await pollenStaking.totalPOLLENStaked()), '0')
 
-    // Get A-D ETH and NECT balances
-    const A_ETHBalance_After = toBN(await web3.eth.getBalance(A))
+    // Get A-D iBGT and NECT balances
+    const A_iBGTBalance_After = toBN(await web3.eth.getBalance(A))
     const A_NECTBalance_After = toBN(await nectToken.balanceOf(A))
-    const B_ETHBalance_After = toBN(await web3.eth.getBalance(B))
+    const B_iBGTBalance_After = toBN(await web3.eth.getBalance(B))
     const B_NECTBalance_After = toBN(await nectToken.balanceOf(B))
-    const C_ETHBalance_After = toBN(await web3.eth.getBalance(C))
+    const C_iBGTBalance_After = toBN(await web3.eth.getBalance(C))
     const C_NECTBalance_After = toBN(await nectToken.balanceOf(C))
-    const D_ETHBalance_After = toBN(await web3.eth.getBalance(D))
+    const D_iBGTBalance_After = toBN(await web3.eth.getBalance(D))
     const D_NECTBalance_After = toBN(await nectToken.balanceOf(D))
 
-    // Get ETH and NECT gains
-    const A_ETHGain = A_ETHBalance_After.sub(A_ETHBalance_Before).add(toBN(A_GAS_Used * GAS_PRICE))
+    // Get iBGT and NECT gains
+    const A_iBGTGain = A_iBGTBalance_After.sub(A_iBGTBalance_Before).add(toBN(A_GAS_Used * GAS_PRICE))
     const A_NECTGain = A_NECTBalance_After.sub(A_NECTBalance_Before)
-    const B_ETHGain = B_ETHBalance_After.sub(B_ETHBalance_Before).add(toBN(B_GAS_Used * GAS_PRICE))
+    const B_iBGTGain = B_iBGTBalance_After.sub(B_iBGTBalance_Before).add(toBN(B_GAS_Used * GAS_PRICE))
     const B_NECTGain = B_NECTBalance_After.sub(B_NECTBalance_Before)
-    const C_ETHGain = C_ETHBalance_After.sub(C_ETHBalance_Before).add(toBN(C_GAS_Used * GAS_PRICE))
+    const C_iBGTGain = C_iBGTBalance_After.sub(C_iBGTBalance_Before).add(toBN(C_GAS_Used * GAS_PRICE))
     const C_NECTGain = C_NECTBalance_After.sub(C_NECTBalance_Before)
-    const D_ETHGain = D_ETHBalance_After.sub(D_ETHBalance_Before).add(toBN(D_GAS_Used * GAS_PRICE))
+    const D_iBGTGain = D_iBGTBalance_After.sub(D_iBGTBalance_Before).add(toBN(D_GAS_Used * GAS_PRICE))
     const D_NECTGain = D_NECTBalance_After.sub(D_NECTBalance_Before)
 
     // Check gains match expected amounts
-    assert.isAtMost(th.getDifference(expectedETHGain_A, A_ETHGain), 1000)
+    assert.isAtMost(th.getDifference(expectediBGTGain_A, A_iBGTGain), 1000)
     assert.isAtMost(th.getDifference(expectedNECTGain_A, A_NECTGain), 1000)
-    assert.isAtMost(th.getDifference(expectedETHGain_B, B_ETHGain), 1000)
+    assert.isAtMost(th.getDifference(expectediBGTGain_B, B_iBGTGain), 1000)
     assert.isAtMost(th.getDifference(expectedNECTGain_B, B_NECTGain), 1000)
-    assert.isAtMost(th.getDifference(expectedETHGain_C, C_ETHGain), 1000)
+    assert.isAtMost(th.getDifference(expectediBGTGain_C, C_iBGTGain), 1000)
     assert.isAtMost(th.getDifference(expectedNECTGain_C, C_NECTGain), 1000)
-    assert.isAtMost(th.getDifference(expectedETHGain_D, D_ETHGain), 1000)
+    assert.isAtMost(th.getDifference(expectediBGTGain_D, D_iBGTGain), 1000)
     assert.isAtMost(th.getDifference(expectedNECTGain_D, D_NECTGain), 1000)
   })
  
-  it("unstake(): reverts if caller has ETH gains and can't receive ETH",  async () => {
+  it("unstake(): reverts if caller has iBGT gains and can't receive iBGT",  async () => {
     await openTrove({ extraNECTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })  
     await openTrove({ extraNECTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
     await openTrove({ extraNECTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
@@ -689,27 +689,27 @@ contract('POLLENStaking revenue share tests', async accounts => {
     await nonPayable.forward(pollenStaking.address, proxystakeTxData, {from: A})
 
 
-    // B makes a redemption, creating ETH gain for proxy
+    // B makes a redemption, creating iBGT gain for proxy
     const redemptionTx_1 = await th.redeemCollateralAndGetTxObject(B, contracts, dec(45, 18), gasPrice = GAS_PRICE)
     
-    const proxy_ETHGain = await pollenStaking.getPendingETHGain(nonPayable.address)
-    assert.isTrue(proxy_ETHGain.gt(toBN('0')))
+    const proxy_iBGTGain = await pollenStaking.getPendingiBGTGain(nonPayable.address)
+    assert.isTrue(proxy_iBGTGain.gt(toBN('0')))
 
-    // Expect this tx to revert: stake() tries to send nonPayable proxy's accumulated ETH gain (albeit 0),
+    // Expect this tx to revert: stake() tries to send nonPayable proxy's accumulated iBGT gain (albeit 0),
     //  A tells proxy to unstake
     const proxyUnStakeTxData = await th.getTransactionData('unstake(uint256)', ['0x56bc75e2d63100000'])  // proxy stakes 100 POLLEN
     const proxyUnstakeTxPromise = nonPayable.forward(pollenStaking.address, proxyUnStakeTxData, {from: A})
    
-    // but nonPayable proxy can not accept ETH - therefore stake() reverts.
+    // but nonPayable proxy can not accept iBGT - therefore stake() reverts.
     await assertRevert(proxyUnstakeTxPromise)
   })
 
-  it("receive(): reverts when it receives ETH from an address that is not the Active Pool",  async () => { 
-    const ethSendTxPromise1 = web3.eth.sendTransaction({to: pollenStaking.address, from: A, value: dec(1, 'ether')})
-    const ethSendTxPromise2 = web3.eth.sendTransaction({to: pollenStaking.address, from: owner, value: dec(1, 'ether')})
+  it("receive(): reverts when it receives iBGT from an address that is not the Active Pool",  async () => { 
+    const ibgtSendTxPromise1 = web3.eth.sendTransaction({to: pollenStaking.address, from: A, value: dec(1, 'ether')})
+    const ibgtSendTxPromise2 = web3.eth.sendTransaction({to: pollenStaking.address, from: owner, value: dec(1, 'ether')})
 
-    await assertRevert(ethSendTxPromise1)
-    await assertRevert(ethSendTxPromise2)
+    await assertRevert(ibgtSendTxPromise1)
+    await assertRevert(ibgtSendTxPromise2)
   })
 
   it("unstake(): reverts if user has no stake",  async () => {  

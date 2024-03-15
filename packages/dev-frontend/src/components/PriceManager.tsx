@@ -1,23 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { Card, Box, Heading, Flex, Button, Label, Input } from "theme-ui";
 
-import { Decimal, LiquityStoreState } from "@liquity/lib-base";
-import { useLiquitySelector } from "@liquity/lib-react";
+import { Decimal, BeraBorrowStoreState } from "@beraborrow/lib-base";
+import { useLiquitySelector } from "@beraborrow/lib-react";
 
-import { useLiquity } from "../hooks/LiquityContext";
+import { useBeraBorrow } from "../hooks/BeraBorrowContext";
 
 import { Icon } from "./Icon";
 import { Transaction } from "./Transaction";
 
-const selectPrice = ({ price }: LiquityStoreState) => price;
+const selectPrice = ({ price }: BeraBorrowStoreState) => price;
 
 export const PriceManager: React.FC = () => {
   const {
-    liquity: {
-      send: liquity,
+    beraborrow: {
+      send: beraborrow,
       connection: { _priceFeedIsTestnet: canSetPrice }
     }
-  } = useLiquity();
+  } = useBeraBorrow();
 
   const price = useLiquitySelector(selectPrice);
   const [editedPrice, setEditedPrice] = useState(price.toString(2));
@@ -54,7 +54,7 @@ export const PriceManager: React.FC = () => {
                   if (!editedPrice) {
                     throw new Error("Invalid price");
                   }
-                  return liquity.setPrice(Decimal.from(editedPrice), overrides);
+                  return beraborrow.setPrice(Decimal.from(editedPrice), overrides);
                 }}
               >
                 <Button variant="icon">

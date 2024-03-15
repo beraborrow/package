@@ -5,38 +5,38 @@ import { BondList } from "./BondList";
 import { useBondView } from "../../context/BondViewContext";
 import { BONDS } from "../../lexicon";
 import { InfoIcon } from "../../../InfoIcon";
-import { BLusdAmmTokenIndex, SwapPressedPayload } from "../../context/transitions";
-import { useLiquity } from "../../../../hooks/LiquityContext";
+import { BNectAmmTokenIndex, SwapPressedPayload } from "../../context/transitions";
+import { useBeraBorrow } from "../../../../hooks/BeraBorrowContext";
 import { useBondAddresses } from "../../context/BondAddressesContext";
 
 export const Idle: React.FC = () => {
-  const { liquity } = useLiquity();
-  const { LUSD_OVERRIDE_ADDRESS } = useBondAddresses();
+  const { beraborrow } = useBeraBorrow();
+  const { NECT_OVERRIDE_ADDRESS } = useBondAddresses();
 
-  const { dispatchEvent, bonds, getLusdFromFaucet, lusdBalance, hasLoaded } = useBondView();
+  const { dispatchEvent, bonds, getNectFromFaucet, nectBalance, hasLoaded } = useBondView();
   const [chain, setChain] = useState<number>();
 
   useEffect(() => {
     (async () => {
-      if (liquity.connection.signer === undefined || chain !== undefined) return;
-      const chainId = await liquity.connection.signer.getChainId();
+      if (beraborrow.connection.signer === undefined || chain !== undefined) return;
+      const chainId = await beraborrow.connection.signer.getChainId();
       setChain(chainId);
     })();
-  }, [chain, liquity.connection.signer]);
+  }, [chain, beraborrow.connection.signer]);
 
   if (!hasLoaded) return null;
 
   const hasBonds = bonds !== undefined && bonds.length > 0;
 
-  const showLusdFaucet = LUSD_OVERRIDE_ADDRESS !== null && lusdBalance?.eq(0);
+  const showNectFaucet = NECT_OVERRIDE_ADDRESS !== null && nectBalance?.eq(0);
 
   const handleManageLiquidityPressed = () => dispatchEvent("MANAGE_LIQUIDITY_PRESSED");
 
-  const handleBuyBLusdPressed = () =>
-    dispatchEvent("SWAP_PRESSED", { inputToken: BLusdAmmTokenIndex.LUSD } as SwapPressedPayload);
+  const handleBuyBNectPressed = () =>
+    dispatchEvent("SWAP_PRESSED", { inputToken: BNectAmmTokenIndex.NECT } as SwapPressedPayload);
 
-  const handleSellBLusdPressed = () =>
-    dispatchEvent("SWAP_PRESSED", { inputToken: BLusdAmmTokenIndex.BLUSD } as SwapPressedPayload);
+  const handleSellBNectPressed = () =>
+    dispatchEvent("SWAP_PRESSED", { inputToken: BNectAmmTokenIndex.BNECT } as SwapPressedPayload);
 
   return (
     <>
@@ -45,17 +45,17 @@ export const Idle: React.FC = () => {
           Manage liquidity
         </Button>
 
-        <Button variant="outline" onClick={handleBuyBLusdPressed}>
-          Buy bLUSD
+        <Button variant="outline" onClick={handleBuyBNectPressed}>
+          Buy bNECT
         </Button>
 
-        <Button variant="outline" onClick={handleSellBLusdPressed}>
-          Sell bLUSD
+        <Button variant="outline" onClick={handleSellBNectPressed}>
+          Sell bNECT
         </Button>
 
-        {showLusdFaucet && (
-          <Button variant={hasBonds ? "outline" : "primary"} onClick={() => getLusdFromFaucet()}>
-            Get 10k LUSD
+        {showNectFaucet && (
+          <Button variant={hasBonds ? "outline" : "primary"} onClick={() => getNectFromFaucet()}>
+            Get 10k NECT
           </Button>
         )}
 

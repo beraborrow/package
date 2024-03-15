@@ -1,0 +1,19 @@
+{
+  "name": "@beraborrow/chicken-bonds",
+  "version": "0.0.1",
+  "license": "MIT",
+  "scripts": {
+    "compile:nect": "yarn --cwd nect compile",
+    "deploy-fork:nect": "yarn --cwd nect deploy-fork",
+    "generate-types:nect": "yarn --cwd nect generate-types",
+    "deploy-fork": "run-s deploy-fork:*",
+    "generate-types": "run-s generate-types:*",
+    "compile": "run-s compile:*",
+    "prepare-publish": "./scripts/prepare.sh",
+    "publish:local": "./scripts/publish-local.sh",
+    "watch:nect": "yarn --cwd nect watch",
+    "watch:publish": "./scripts/watch-publish.sh",
+    "watch": "run-p watch:*"
+  },
+  "yalcSig": "007bbe44375983ab942770ca53a2039e"
+}

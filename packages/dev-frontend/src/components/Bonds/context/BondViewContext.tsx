@@ -8,12 +8,12 @@ import type {
   BondTransactionStatuses,
   ProtocolInfo,
   OptimisticBond,
-  BLusdAmmTokenIndex,
+  BNectAmmTokenIndex,
   Addresses,
-  BLusdLpRewards
+  BNectLpRewards
 } from "./transitions";
 import { PENDING_STATUS, CANCELLED_STATUS, CLAIMED_STATUS } from "../lexicon";
-import { Decimal } from "@liquity/lib-base";
+import { Decimal } from "@beraborrow/lib-base";
 
 export type BondViewContextType = {
   view: BondView;
@@ -24,39 +24,39 @@ export type BondViewContextType = {
   bonds?: Bond[];
   selectedBond?: Bond;
   optimisticBond?: OptimisticBond;
-  bLusdBalance?: Decimal;
-  lusdBalance?: Decimal;
+  bNectBalance?: Decimal;
+  nectBalance?: Decimal;
   lpTokenBalance?: Decimal;
   stakedLpTokenBalance?: Decimal;
   lpTokenSupply?: Decimal;
-  bLusdAmmBLusdBalance?: Decimal;
-  bLusdAmmLusdBalance?: Decimal;
+  bNectAmmBNectBalance?: Decimal;
+  bNectAmmNectBalance?: Decimal;
   statuses: BondTransactionStatuses;
   isInfiniteBondApproved: boolean;
   isSynchronizing: boolean;
-  getLusdFromFaucet: () => Promise<void>;
+  getNectFromFaucet: () => Promise<void>;
   simulatedProtocolInfo?: ProtocolInfo;
   setSimulatedMarketPrice: (marketPrice: Decimal) => void;
   resetSimulatedMarketPrice: () => void;
   hasFoundContracts: boolean;
-  isBLusdApprovedWithBlusdAmm: boolean;
-  isLusdApprovedWithBlusdAmm: boolean;
-  isLusdApprovedWithAmmZapper: boolean;
-  isBLusdApprovedWithAmmZapper: boolean;
-  isBLusdLpApprovedWithAmmZapper: boolean;
-  isBLusdLpApprovedWithGauge: boolean;
-  inputToken: BLusdAmmTokenIndex.BLUSD | BLusdAmmTokenIndex.LUSD;
-  isInputTokenApprovedWithBLusdAmm: boolean;
-  getExpectedSwapOutput: (inputToken: BLusdAmmTokenIndex, inputAmount: Decimal) => Promise<Decimal>;
-  getExpectedLpTokens: (bLusdAmount: Decimal, lusdAmount: Decimal) => Promise<Decimal>;
+  isBNectApprovedWithBnectAmm: boolean;
+  isNectApprovedWithBnectAmm: boolean;
+  isNectApprovedWithAmmZapper: boolean;
+  isBNectApprovedWithAmmZapper: boolean;
+  isBNectLpApprovedWithAmmZapper: boolean;
+  isBNectLpApprovedWithGauge: boolean;
+  inputToken: BNectAmmTokenIndex.BNECT | BNectAmmTokenIndex.NECT;
+  isInputTokenApprovedWithBNectAmm: boolean;
+  getExpectedSwapOutput: (inputToken: BNectAmmTokenIndex, inputAmount: Decimal) => Promise<Decimal>;
+  getExpectedLpTokens: (bNectAmount: Decimal, nectAmount: Decimal) => Promise<Decimal>;
   getExpectedWithdrawal: (
     burnLp: Decimal,
-    output: BLusdAmmTokenIndex | "both"
-  ) => Promise<Map<BLusdAmmTokenIndex, Decimal>>;
+    output: BNectAmmTokenIndex | "both"
+  ) => Promise<Map<BNectAmmTokenIndex, Decimal>>;
   isBootstrapPeriodActive?: boolean;
   hasLoaded: boolean;
   addresses: Addresses;
-  lpRewards: BLusdLpRewards | undefined;
+  lpRewards: BNectLpRewards | undefined;
 };
 
 export const BondViewContext = createContext<BondViewContextType | null>(null);

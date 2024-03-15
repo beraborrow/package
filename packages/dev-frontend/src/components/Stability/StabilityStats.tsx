@@ -1,7 +1,7 @@
 import React from "react";
 // import { Card, Heading, Box, Flex, Button, Grid } from "theme-ui";
-import { useLiquitySelector } from "@liquity/lib-react";
-import { LiquityStoreState } from "@liquity/lib-base";
+import { useLiquitySelector } from "@beraborrow/lib-react";
+import { BeraBorrowStoreState } from "@beraborrow/lib-base";
 import { DisabledEditableRow } from "../Trove/Editor";
 // import { useTroveView } from "./context/TroveViewContext";
 // import { Icon } from "../Icon";
@@ -18,22 +18,22 @@ const select = ({
     numberOfTroves,
     price,
     total,
-    lusdInStabilityPool,
+    nectInStabilityPool,
     borrowingRate,
     redemptionRate,
-    totalStakedLQTY,
+    totalStakedPOLLEN,
     frontend,
-    remainingStabilityPoolLQTYReward
-  }: LiquityStoreState) => ({
+    remainingStabilityPoolPOLLENReward
+  }: BeraBorrowStoreState) => ({
     trove,
     numberOfTroves,
     price,
     total,
-    lusdInStabilityPool,
+    nectInStabilityPool,
     borrowingRate,
     redemptionRate,
-    totalStakedLQTY,
-    remainingStabilityPoolLQTYReward,
+    totalStakedPOLLEN,
+    remainingStabilityPoolPOLLENReward,
     kickbackRate: frontend.status === "registered" ? frontend.kickbackRate : null
   });
 
@@ -48,8 +48,8 @@ export const StabilityStats: React.FC = () => {
   const {
     // trove,
     // numberOfTroves,
-    lusdInStabilityPool,
-    remainingStabilityPoolLQTYReward
+    nectInStabilityPool,
+    remainingStabilityPoolPOLLENReward
     // totalStakedFLO,
     // kickbackRate
   } = useLiquitySelector(select);
@@ -68,13 +68,13 @@ export const StabilityStats: React.FC = () => {
           <DisabledEditableRow
             label="Amount contributed to pool"
             inputId="stability-pool"
-            amount={lusdInStabilityPool.shorten()}
+            amount={nectInStabilityPool.shorten()}
             unit="NECT"
           />
           <DisabledEditableRow
             label="Rewards accumulated"
             inputId="stability-rewards"
-            amount={remainingStabilityPoolLQTYReward.prettify(0)}
+            amount={remainingStabilityPoolPOLLENReward.prettify(0)}
             unit="POLLEN"
           />
           <DisabledEditableRow

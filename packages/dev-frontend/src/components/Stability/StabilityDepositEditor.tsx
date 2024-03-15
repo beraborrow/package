@@ -5,41 +5,41 @@ import {
   Decimal,
   Decimalish,
   StabilityDeposit,
-  LiquityStoreState,
-} from "@liquity/lib-base";
+  BeraBorrowStoreState,
+} from "@beraborrow/lib-base";
 
-import { useLiquitySelector } from "@liquity/lib-react";
+import { useLiquitySelector } from "@beraborrow/lib-react";
 
 import { StaticRow } from "../Trove/Editor";
 
-const select = ({ lusdBalance, lusdInStabilityPool }: LiquityStoreState) => ({
-  lusdBalance,
-  lusdInStabilityPool
+const select = ({ nectBalance, nectInStabilityPool }: BeraBorrowStoreState) => ({
+  nectBalance,
+  nectInStabilityPool
 });
 
 type StabilityDepositEditorProps = {
   originalDeposit: StabilityDeposit;
-  editedLUSD: Decimal;
+  editedNECT: Decimal;
   changePending: boolean;
   dispatch: (action: { type: "setDeposit"; newValue: Decimalish } | { type: "revert" }) => void;
 };
 
 export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
   originalDeposit,
-  editedLUSD,
+  editedNECT,
   dispatch,
   children
 }) => {
-  const { lusdBalance, lusdInStabilityPool } = useLiquitySelector(select);
+  const { nectBalance, nectInStabilityPool } = useLiquitySelector(select);
   const [isWithdraw, setIsWithdraw] = useState<boolean>(false)
   
   const [editing, setEditing] = useState<string>();
 
-  const lusdInStabilityPoolAfterChange = lusdInStabilityPool
-    .sub(originalDeposit.currentLUSD)
-    .add(editedLUSD);
+  const nectInStabilityPoolAfterChange = nectInStabilityPool
+    .sub(originalDeposit.currentNECT)
+    .add(editedNECT);
 
-  const newPoolShare = editedLUSD.mulDiv(100, lusdInStabilityPoolAfterChange);
+  const newPoolShare = editedNECT.mulDiv(100, nectInStabilityPoolAfterChange);
 
   return (
     <>
@@ -59,11 +59,11 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
               <div>{isWithdraw ? "Withdraw": "Deposit"}</div>
               <div className="flex flex-row">
                   <div>Balance</div>
-                  <div className="ml-2 font-normal">{`${lusdBalance.prettify(4)}`} NECT</div>
+                  <div className="ml-2 font-normal">{`${nectBalance.prettify(4)}`} NECT</div>
               </div>
           </div>
           <div 
-              className={`flex flex-row items-center justify-between border ${editing !== "collateral" && editedLUSD.eq(0) ? "border-[#F45348]" : "border-[#FFEDD4]"} rounded-[180px] p-5`}
+              className={`flex flex-row items-center justify-between border ${editing !== "collateral" && editedNECT.eq(0) ? "border-[#F45348]" : "border-[#FFEDD4]"} rounded-[180px] p-5`}
               onClick={() => setEditing("collateral")}
             >
                 {
@@ -73,7 +73,7 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
                       id="trove-collateral"
                       type="number"
                       step="any"
-                      defaultValue={editedLUSD.toString(4)}
+                      defaultValue={editedNECT.toString(4)}
                       onChange={(e) => dispatch({ type: "setDeposit", newValue: e.target.value })}
                       onBlur={() => {setEditing(undefined)}}
                       variant="editor"
@@ -90,7 +90,7 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
                       }}
                     />
                   ):(
-                    <div className="opacity-60">{editedLUSD.prettify(4)}</div>
+                    <div className="opacity-60">{editedNECT.prettify(4)}</div>
                   )
                 }
                 <div className="flex flex-row items-center font-medium text-lg">
@@ -104,8 +104,8 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
           <StaticRow
             label="Rewards received"
             inputId="deposit-rewards-received"
-            amount={originalDeposit.lqtyReward.prettify()}
-            color={originalDeposit.lqtyReward.nonZero && "success"}
+            amount={originalDeposit.pollenReward.prettify()}
+            color={originalDeposit.pollenReward.nonZero && "success"}
             unit="POLLEN"
           /> : 
           newPoolShare.infinite ? (
@@ -121,7 +121,7 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
               <div 
                   className={`flex flex-row items-center justify-between border border-[#FFEDD4] rounded-[180px] p-5`}
                 >
-                    <div className="opacity-60">{editedLUSD.mulDiv(newPoolShare, 100).prettify(4)}</div>
+                    <div className="opacity-60">{editedNECT.mulDiv(newPoolShare, 100).prettify(4)}</div>
                     <div className="flex flex-row items-center font-medium text-lg">
                         {/* <span className="w-4 h-4 rounded-full bg-[#BDFAE2] mr-2" /> */}
                         NECT
@@ -144,14 +144,14 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
             <StaticRow
               label="Reward"
               inputId="deposit-reward"
-              amount={originalDeposit.lqtyReward.prettify()}
-              color={originalDeposit.lqtyReward.nonZero && "success"}
+              amount={originalDeposit.pollenReward.prettify()}
+              color={originalDeposit.pollenReward.nonZero && "success"}
               unit={GT}
               infoIcon={
                 <InfoIcon
                   tooltip={
                     <Card variant="tooltip" sx={{ width: "240px" }}>
-                      Although the LQTY rewards accrue every minute, the value on the UI only updates
+                      Although the POLLEN rewards accrue every minute, the value on the UI only updates
                       when a user transacts with the Stability Pool. Therefore you may receive more
                       rewards than is displayed when you claim or adjust your deposit.
                     </Card>

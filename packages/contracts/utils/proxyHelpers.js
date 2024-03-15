@@ -165,8 +165,8 @@ class BorrowerWrappersProxy extends Proxy {
     return this.forwardFunction(params, 'claimStakingGainsAndRecycle(uint256,address,address)')
   }
 
-  async transferETH(...params) {
-    return this.forwardFunction(params, 'transferETH(address,uint256)')
+  async transferiBGT(...params) {
+    return this.forwardFunction(params, 'transferiBGT(address,uint256)')
   }
 }
 
@@ -195,8 +195,8 @@ class TroveManagerProxy extends Proxy {
     return this.proxyFunction('totalStakes', [])
   }
 
-  async getPendingETHReward(...params) {
-    return this.proxyFunction('getPendingETHReward', params)
+  async getPendingiBGTReward(...params) {
+    return this.proxyFunction('getPendingiBGTReward', params)
   }
 
   async getPendingNECTDebtReward(...params) {
@@ -227,8 +227,8 @@ class TroveManagerProxy extends Proxy {
     return this.proxyFunction('baseRate', [])
   }
 
-  async L_ETH() {
-    return this.proxyFunction('L_ETH', [])
+  async L_iBGT() {
+    return this.proxyFunction('L_iBGT', [])
   }
 
   async L_NECTDebt() {
@@ -293,8 +293,8 @@ class StabilityPoolProxy extends Proxy {
     return this.proxyFunctionWithUser('deposits', user)
   }
 
-  async getDepositorETHGain(user) {
-    return this.proxyFunctionWithUser('getDepositorETHGain', user)
+  async getDepositoriBGTGain(user) {
+    return this.proxyFunctionWithUser('getDepositoriBGTGain', user)
   }
 }
 

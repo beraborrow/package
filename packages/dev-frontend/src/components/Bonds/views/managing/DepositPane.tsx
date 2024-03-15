@@ -1,4 +1,4 @@
-import { Decimal } from "@liquity/lib-base";
+import { Decimal } from "@beraborrow/lib-base";
 import React, { useEffect, useState } from "react";
 import { Flex, Button, Spinner, Checkbox, Label, Card, Text } from "theme-ui";
 import { Amount } from "../../../ActionDescription";
@@ -7,7 +7,7 @@ import { Icon } from "../../../Icon";
 import { InfoIcon } from "../../../InfoIcon";
 import { DisabledEditableRow, EditableRow } from "../../../Trove/Editor";
 import { useBondView } from "../../context/BondViewContext";
-import { BLusdAmmTokenIndex } from "../../context/transitions";
+import { BNectAmmTokenIndex } from "../../context/transitions";
 import { PoolDetails } from "./PoolDetails";
 import type { Address, ApprovePressedPayload } from "../../context/transitions";
 
@@ -15,51 +15,51 @@ export const DepositPane: React.FC = () => {
   const {
     dispatchEvent,
     statuses,
-    lusdBalance,
-    bLusdBalance,
-    isBLusdApprovedWithAmmZapper,
-    isLusdApprovedWithAmmZapper,
+    nectBalance,
+    bNectBalance,
+    isBNectApprovedWithAmmZapper,
+    isNectApprovedWithAmmZapper,
     getExpectedLpTokens,
     addresses,
-    bLusdAmmBLusdBalance,
-    bLusdAmmLusdBalance
+    bNectAmmBNectBalance,
+    bNectAmmNectBalance
   } = useBondView();
 
   const editingState = useState<string>();
-  const [bLusdAmount, setBLusdAmount] = useState<Decimal>(Decimal.ZERO);
-  const [lusdAmount, setLusdAmount] = useState<Decimal>(Decimal.ZERO);
+  const [bNectAmount, setBNectAmount] = useState<Decimal>(Decimal.ZERO);
+  const [nectAmount, setNectAmount] = useState<Decimal>(Decimal.ZERO);
   const [lpTokens, setLpTokens] = useState<Decimal>(Decimal.ZERO);
   const [shouldStakeInGauge, setShouldStakeInGauge] = useState(true);
   const [shouldDepositBalanced, setShouldDepositBalanced] = useState(true);
 
-  const coalescedBLusdBalance = bLusdBalance ?? Decimal.ZERO;
-  const coalescedLusdBalance = lusdBalance ?? Decimal.ZERO;
+  const coalescedBNectBalance = bNectBalance ?? Decimal.ZERO;
+  const coalescedNectBalance = nectBalance ?? Decimal.ZERO;
 
   const isApprovePending = statuses.APPROVE_SPENDER === "PENDING";
   const isManageLiquidityPending = statuses.MANAGE_LIQUIDITY === "PENDING";
-  const isBLusdBalanceInsufficient = bLusdAmount.gt(coalescedBLusdBalance);
-  const isLusdBalanceInsufficient = lusdAmount.gt(coalescedLusdBalance);
-  const isAnyBalanceInsufficient = isBLusdBalanceInsufficient || isLusdBalanceInsufficient;
+  const isBNectBalanceInsufficient = bNectAmount.gt(coalescedBNectBalance);
+  const isNectBalanceInsufficient = nectAmount.gt(coalescedNectBalance);
+  const isAnyBalanceInsufficient = isBNectBalanceInsufficient || isNectBalanceInsufficient;
 
-  const isDepositingLusd = lusdAmount.gt(0);
-  const isDepositingBLusd = bLusdAmount.gt(0);
+  const isDepositingNect = nectAmount.gt(0);
+  const isDepositingBNect = bNectAmount.gt(0);
 
-  const zapperNeedsLusdApproval = isDepositingLusd && !isLusdApprovedWithAmmZapper;
-  const zapperNeedsBLusdApproval = isDepositingBLusd && !isBLusdApprovedWithAmmZapper;
-  const isApprovalNeeded = zapperNeedsLusdApproval || zapperNeedsBLusdApproval;
+  const zapperNeedsNectApproval = isDepositingNect && !isNectApprovedWithAmmZapper;
+  const zapperNeedsBNectApproval = isDepositingBNect && !isBNectApprovedWithAmmZapper;
+  const isApprovalNeeded = zapperNeedsNectApproval || zapperNeedsBNectApproval;
 
   const poolBalanceRatio =
-    bLusdAmmBLusdBalance && bLusdAmmLusdBalance
-      ? bLusdAmmLusdBalance.div(bLusdAmmBLusdBalance)
+    bNectAmmBNectBalance && bNectAmmNectBalance
+      ? bNectAmmNectBalance.div(bNectAmmBNectBalance)
       : Decimal.ONE;
 
   const handleApprovePressed = () => {
-    const tokensNeedingApproval = new Map<BLusdAmmTokenIndex, Address>();
-    if (zapperNeedsLusdApproval) {
-      tokensNeedingApproval.set(BLusdAmmTokenIndex.LUSD, addresses.BLUSD_LP_ZAP_ADDRESS);
+    const tokensNeedingApproval = new Map<BNectAmmTokenIndex, Address>();
+    if (zapperNeedsNectApproval) {
+      tokensNeedingApproval.set(BNectAmmTokenIndex.NECT, addresses.BNECT_LP_ZAP_ADDRESS);
     }
-    if (zapperNeedsBLusdApproval) {
-      tokensNeedingApproval.set(BLusdAmmTokenIndex.BLUSD, addresses.BLUSD_LP_ZAP_ADDRESS);
+    if (zapperNeedsBNectApproval) {
+      tokensNeedingApproval.set(BNectAmmTokenIndex.BNECT, addresses.BNECT_LP_ZAP_ADDRESS);
     }
 
     dispatchEvent("APPROVE_PRESSED", { tokensNeedingApproval } as ApprovePressedPayload);
@@ -68,8 +68,8 @@ export const DepositPane: React.FC = () => {
   const handleConfirmPressed = () => {
     dispatchEvent("CONFIRM_PRESSED", {
       action: "addLiquidity",
-      bLusdAmount,
-      lusdAmount,
+      bNectAmount,
+      nectAmount,
       minLpTokens: lpTokens,
       shouldStakeInGauge
     });
@@ -85,24 +85,24 @@ export const DepositPane: React.FC = () => {
 
   const handleToggleShouldDepositBalanced = () => {
     if (!shouldDepositBalanced) {
-      setBLusdAmount(Decimal.ZERO);
-      setLusdAmount(Decimal.ZERO);
+      setBNectAmount(Decimal.ZERO);
+      setNectAmount(Decimal.ZERO);
     }
     setShouldDepositBalanced(toggle => !toggle);
   };
 
-  const handleSetAmount = (token: "bLUSD" | "LUSD", amount: Decimal) => {
+  const handleSetAmount = (token: "bNECT" | "NECT", amount: Decimal) => {
     if (shouldDepositBalanced) {
-      if (token === "bLUSD") setLusdAmount(poolBalanceRatio.mul(amount));
-      else if (token === "LUSD") setBLusdAmount(amount.div(poolBalanceRatio));
+      if (token === "bNECT") setNectAmount(poolBalanceRatio.mul(amount));
+      else if (token === "NECT") setBNectAmount(amount.div(poolBalanceRatio));
     }
 
-    if (token === "bLUSD") setBLusdAmount(amount);
-    else if (token === "LUSD") setLusdAmount(amount);
+    if (token === "bNECT") setBNectAmount(amount);
+    else if (token === "NECT") setNectAmount(amount);
   };
 
   useEffect(() => {
-    if (bLusdAmount.isZero && lusdAmount.isZero) {
+    if (bNectAmount.isZero && nectAmount.isZero) {
       setLpTokens(Decimal.ZERO);
       return;
     }
@@ -111,7 +111,7 @@ export const DepositPane: React.FC = () => {
 
     const timeoutId = setTimeout(async () => {
       try {
-        const expectedLpTokens = await getExpectedLpTokens(bLusdAmount, lusdAmount);
+        const expectedLpTokens = await getExpectedLpTokens(bNectAmount, nectAmount);
         if (cancelled) return;
         setLpTokens(expectedLpTokens);
       } catch (error) {
@@ -124,32 +124,32 @@ export const DepositPane: React.FC = () => {
       clearTimeout(timeoutId);
       cancelled = true;
     };
-  }, [bLusdAmount, lusdAmount, getExpectedLpTokens]);
+  }, [bNectAmount, nectAmount, getExpectedLpTokens]);
 
   return (
     <>
       <EditableRow
-        label="bLUSD amount"
-        inputId="deposit-blusd"
-        amount={bLusdAmount.prettify(2)}
-        unit="bLUSD"
+        label="bNECT amount"
+        inputId="deposit-bnect"
+        amount={bNectAmount.prettify(2)}
+        unit="bNECT"
         editingState={editingState}
-        editedAmount={bLusdAmount.toString()}
-        setEditedAmount={amount => handleSetAmount("bLUSD", Decimal.from(amount))}
-        maxAmount={coalescedBLusdBalance.toString()}
-        maxedOut={bLusdAmount.eq(coalescedBLusdBalance)}
+        editedAmount={bNectAmount.toString()}
+        setEditedAmount={amount => handleSetAmount("bNECT", Decimal.from(amount))}
+        maxAmount={coalescedBNectBalance.toString()}
+        maxedOut={bNectAmount.eq(coalescedBNectBalance)}
       />
 
       <EditableRow
-        label="LUSD amount"
-        inputId="deposit-lusd"
-        amount={lusdAmount.prettify(2)}
-        unit="LUSD"
+        label="NECT amount"
+        inputId="deposit-nect"
+        amount={nectAmount.prettify(2)}
+        unit="NECT"
         editingState={editingState}
-        editedAmount={lusdAmount.toString()}
-        setEditedAmount={amount => handleSetAmount("LUSD", Decimal.from(amount))}
-        maxAmount={coalescedLusdBalance.toString()}
-        maxedOut={lusdAmount.eq(coalescedLusdBalance)}
+        editedAmount={nectAmount.toString()}
+        setEditedAmount={amount => handleSetAmount("NECT", Decimal.from(amount))}
+        maxAmount={coalescedNectBalance.toString()}
+        maxedOut={nectAmount.eq(coalescedNectBalance)}
       />
 
       <Flex sx={{ justifyContent: "center", mb: 3 }}>
@@ -171,8 +171,8 @@ export const DepositPane: React.FC = () => {
             size="xs"
             tooltip={
               <Card variant="tooltip">
-                Tick this box to deposit bLUSD and LUSD-3CRV in the pool's current liquidity ratio.
-                Current ratio = 1 bLUSD : {poolBalanceRatio.prettify(2)} LUSD.
+                Tick this box to deposit bNECT and NECT-3CRV in the pool's current liquidity ratio.
+                Current ratio = 1 bNECT : {poolBalanceRatio.prettify(2)} NECT.
               </Card>
             }
           />
@@ -188,7 +188,7 @@ export const DepositPane: React.FC = () => {
             size="xs"
             tooltip={
               <Card variant="tooltip">
-                Tick this box to have your Curve LP tokens staked in the bLUSD Curve gauge. Staked LP
+                Tick this box to have your Curve LP tokens staked in the bNECT Curve gauge. Staked LP
                 tokens will earn protocol fees and Curve rewards.
               </Card>
             }
@@ -201,14 +201,14 @@ export const DepositPane: React.FC = () => {
       {isAnyBalanceInsufficient && (
         <ErrorDescription>
           Deposit exceeds your balance by{" "}
-          {isBLusdBalanceInsufficient && (
+          {isBNectBalanceInsufficient && (
             <>
-              <Amount>{bLusdAmount.sub(coalescedBLusdBalance).prettify(2)} bLUSD</Amount>
-              {isLusdBalanceInsufficient && <> and </>}
+              <Amount>{bNectAmount.sub(coalescedBNectBalance).prettify(2)} bNECT</Amount>
+              {isNectBalanceInsufficient && <> and </>}
             </>
           )}
-          {isLusdBalanceInsufficient && (
-            <Amount>{lusdAmount.sub(coalescedLusdBalance).prettify(2)} LUSD</Amount>
+          {isNectBalanceInsufficient && (
+            <Amount>{nectAmount.sub(coalescedNectBalance).prettify(2)} NECT</Amount>
           )}
         </ErrorDescription>
       )}
@@ -227,7 +227,7 @@ export const DepositPane: React.FC = () => {
             variant="primary"
             onClick={handleConfirmPressed}
             disabled={
-              (bLusdAmount.isZero && lusdAmount.isZero) ||
+              (bNectAmount.isZero && nectAmount.isZero) ||
               isAnyBalanceInsufficient ||
               isManageLiquidityPending
             }

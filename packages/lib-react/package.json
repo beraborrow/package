@@ -1,5 +1,5 @@
 {
-  "name": "@liquity/lib-react",
+  "name": "@beraborrow/lib-react",
   "version": "0.0.0-semantic-release",
   "description": "Components and hooks for React-based Liquity frontends",
   "keywords": [
@@ -8,12 +8,12 @@
     "DeFi",
     "Ethereum"
   ],
-  "homepage": "https://github.com/liquity/liquity#readme",
+  "homepage": "https://github.com/beraborrow/beraborrow#readme",
   "license": "MIT",
-  "author": "Daniel Simon <dani@liquity.org>",
+  "author": "Daniel Simon <dani@beraborrow.org>",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "repository": "https://github.com/liquity/dev",
+  "repository": "https://github.com/beraborrow/dev",
   "scripts": {
     "eslint": "eslint",
     "prepare": "run-s 'prepare:*'",
@@ -21,7 +21,7 @@
     "prepare:tsc": "tsc --project tsconfig.dist.json"
   },
   "peerDependencies": {
-    "@liquity/lib-base": "^3.0.0",
+    "@beraborrow/lib-base": "^3.0.0",
     "react": "^16.13.1"
   },
   "devDependencies": {

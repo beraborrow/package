@@ -4,9 +4,9 @@ import {
   Decimalish,
   Decimal,
   Trove,
-  LiquityStoreState,
-} from "@liquity/lib-base";
-import { useLiquitySelector } from "@liquity/lib-react";
+  BeraBorrowStoreState,
+} from "@beraborrow/lib-base";
+import { useLiquitySelector } from "@beraborrow/lib-react";
 import { useTroveView } from "./context/TroveViewContext";
 
 type TroveEditorProps = {
@@ -20,7 +20,7 @@ type TroveEditorProps = {
   ) => void;
 };
 
-const select = ({ trove, fees, price, accountBalance }: LiquityStoreState) => ({ 
+const select = ({ trove, fees, price, accountBalance }: BeraBorrowStoreState) => ({ 
   trove,
   fees,
   price,

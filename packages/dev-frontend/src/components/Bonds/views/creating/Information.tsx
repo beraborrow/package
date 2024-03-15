@@ -23,7 +23,7 @@ const InformationContainer: React.FC = ({ children }) => {
   return (
     <>
       <Heading as="h2" sx={{ pt: 2, pb: 3, px: 2 }}>
-        <Flex sx={{ justifyContent: "center" }}>Bond LUSD</Flex>
+        <Flex sx={{ justifyContent: "center" }}>Bond NECT</Flex>
         <Close
           onClick={handleDismiss}
           sx={{
@@ -50,7 +50,7 @@ export const Information: React.FC = () => {
 
   const handleUnderstandPressed = () => {
     if (hideMessageRef?.current?.checked) {
-      window.localStorage.setItem("LIQUITY.BOND_FAQ.VISISBLE", "true");
+      window.localStorage.setItem("BERABORROW.BOND_FAQ.VISISBLE", "true");
     }
     go && go(Details);
   };
@@ -59,9 +59,9 @@ export const Information: React.FC = () => {
     <InformationContainer>
       <Box sx={{ p: [2, 3] }}>
         <Paragraph sx={{ mt: 2 }}>
-          Bonds accrue a virtual balance of boosted LUSD tokens (bLUSD) over time. At any time, the
-          bonder may choose to claim their bLUSD in exchange for their LUSD, or cancel their bond to
-          recover their deposited LUSD.
+          Bonds accrue a virtual balance of boosted NECT tokens (bNECT) over time. At any time, the
+          bonder may choose to claim their bNECT in exchange for their NECT, or cancel their bond to
+          recover their deposited NECT.
         </Paragraph>
         <Paragraph sx={{ mt: 3 }}>
           Please visit the&nbsp;

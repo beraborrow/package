@@ -1,22 +1,22 @@
 import { Button } from "theme-ui";
 
-import { Decimal, LQTYStakeChange } from "@liquity/lib-base";
+import { Decimal, POLLENStakeChange } from "@beraborrow/lib-base";
 
-import { useLiquity } from "../../hooks/LiquityContext";
+import { useBeraBorrow } from "../../hooks/BeraBorrowContext";
 import { useTransactionFunction } from "../Transaction";
 
 type StakingActionProps = {
-  change: LQTYStakeChange<Decimal>;
+  change: POLLENStakeChange<Decimal>;
 };
 
 export const StakingManagerAction: React.FC<StakingActionProps> = ({ change, children }) => {
-  const { liquity } = useLiquity();
+  const { beraborrow } = useBeraBorrow();
 
   const [sendTransaction] = useTransactionFunction(
     "stake",
-    change.stakeLQTY
-      ? liquity.send.stakeLQTY.bind(liquity.send, change.stakeLQTY)
-      : liquity.send.unstakeLQTY.bind(liquity.send, change.unstakeLQTY)
+    change.stakePOLLEN
+      ? beraborrow.send.stakePOLLEN.bind(beraborrow.send, change.stakePOLLEN)
+      : beraborrow.send.unstakePOLLEN.bind(beraborrow.send, change.unstakePOLLEN)
   );
 
   return <Button onClick={sendTransaction}>{children}</Button>;

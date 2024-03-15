@@ -8,12 +8,12 @@ import {
   CRITICAL_COLLATERAL_RATIO,
   UserTrove,
   Decimal
-} from "@liquity/lib-base";
-import { BlockPolledLiquityStoreState } from "@liquity/lib-ethers";
-import { useLiquitySelector } from "@liquity/lib-react";
+} from "@beraborrow/lib-base";
+import { BlockPolledLiquityStoreState } from "@beraborrow/lib-ethers";
+import { useLiquitySelector } from "@beraborrow/lib-react";
 
 import { shortenAddress } from "../utils/shortenAddress";
-import { useLiquity } from "../hooks/LiquityContext";
+import { useBeraBorrow } from "../hooks/BeraBorrowContext";
 import { COIN } from "../strings";
 
 import { Icon } from "./Icon";
@@ -31,14 +31,14 @@ const liquidatableInRecoveryMode = (
   trove: UserTrove,
   price: Decimal,
   totalCollateralRatio: Decimal,
-  lusdInStabilityPool: Decimal
+  nectInStabilityPool: Decimal
 ) => {
   const collateralRatio = trove.collateralRatio(price);
 
   if (collateralRatio.gte(MINIMUM_COLLATERAL_RATIO) && collateralRatio.lt(totalCollateralRatio)) {
     return [
-      trove.debt.lte(lusdInStabilityPool),
-      "There's not enough LUSD in the Stability pool to cover the debt"
+      trove.debt.lte(nectInStabilityPool),
+      "There's not enough NECT in the Stability pool to cover the debt"
     ] as const;
   } else {
     return liquidatableInNormalMode(trove, price);
@@ -53,14 +53,14 @@ const select = ({
   numberOfTroves,
   price,
   total,
-  lusdInStabilityPool,
+  nectInStabilityPool,
   blockTag
 }: BlockPolledLiquityStoreState) => ({
   numberOfTroves,
   price,
   recoveryMode: total.collateralRatioIsBelowCritical(price),
   totalCollateralRatio: total.collateralRatio(price),
-  lusdInStabilityPool,
+  nectInStabilityPool,
   blockTag
 });
 
@@ -70,10 +70,10 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize }) => {
     numberOfTroves,
     recoveryMode,
     totalCollateralRatio,
-    lusdInStabilityPool,
+    nectInStabilityPool,
     price
   } = useLiquitySelector(select);
-  const { liquity } = useLiquity();
+  const { beraborrow } = useBeraBorrow();
 
   const [loading, setLoading] = useState(true);
   const [troves, setTroves] = useState<UserTrove[]>();
@@ -108,7 +108,7 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize }) => {
 
     setLoading(true);
 
-    liquity
+    beraborrow
       .getTroves(
         {
           first: pageSize,
@@ -129,7 +129,7 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize }) => {
     };
     // Omit blockTag from deps on purpose
     // eslint-disable-next-line
-  }, [liquity, clampedPage, pageSize, reload]);
+  }, [beraborrow, clampedPage, pageSize, reload]);
 
   useEffect(() => {
     forceReload();
@@ -325,11 +325,11 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize }) => {
                                   trove,
                                   price,
                                   totalCollateralRatio,
-                                  lusdInStabilityPool
+                                  nectInStabilityPool
                                 )
                               : liquidatableInNormalMode(trove, price)
                           ]}
-                          send={liquity.send.liquidate.bind(liquity.send, trove.ownerAddress)}
+                          send={beraborrow.send.liquidate.bind(beraborrow.send, trove.ownerAddress)}
                         >
                           <Button variant="dangerIcon">
                             <Icon name="trash" />

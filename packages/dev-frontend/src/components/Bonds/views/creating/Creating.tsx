@@ -11,7 +11,7 @@ export const Creating: React.FC = () => {
   const handleDismiss = () => {
     dispatchEvent("ABORT_PRESSED");
   };
-  const ignoreInformation = window.localStorage.getItem("LIQUITY.BOND_FAQ.VISISBLE") === "true";
+  const ignoreInformation = window.localStorage.getItem("BERABORROW.BOND_FAQ.VISISBLE") === "true";
 
   return !ignoreInformation ? (
     <ModalWizard onDismiss={handleDismiss}>

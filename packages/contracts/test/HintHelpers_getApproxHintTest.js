@@ -29,7 +29,7 @@ contract('HintHelpers', async accounts => {
   const getNetBorrowingAmount = async (debtWithFee) => th.getNetBorrowingAmount(contracts, debtWithFee)
 
   /* Open a Trove for each account. NECT debt is 200 NECT each, with collateral beginning at
-  1.5 ether, and rising by 0.01 ether per Trove.  Hence, the ICR of account (i + 1) is always 1% greater than the ICR of account i. 
+  1.5 ibgt, and rising by 0.01 ibgt per Trove.  Hence, the ICR of account (i + 1) is always 1% greater than the ICR of account i. 
  */
 
  // Open Troves in parallel, then withdraw NECT in parallel

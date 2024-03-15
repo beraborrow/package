@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { Flex, Button } from "theme-ui";
 
-import { LiquityStoreState, Decimal, Trove, Decimalish, LUSD_MINIMUM_DEBT } from "@liquity/lib-base";
+import { BeraBorrowStoreState, Decimal, Trove, Decimalish, NECT_MINIMUM_DEBT } from "@beraborrow/lib-base";
 
-import { LiquityStoreUpdate, useLiquityReducer, useLiquitySelector } from "@liquity/lib-react";
+import { LiquityStoreUpdate, useLiquityReducer, useLiquitySelector } from "@beraborrow/lib-react";
 
 import { useMyTransactionState } from "../Transaction";
 
@@ -16,7 +16,7 @@ import {
   validateTroveChange
 } from "./validation/validateTroveChange";
 
-const init = ({ trove }: LiquityStoreState) => ({
+const init = ({ trove }: BeraBorrowStoreState) => ({
   original: trove,
   edited: new Trove(trove.collateral, trove.debt),
   changePending: false,
@@ -83,7 +83,7 @@ const reduce = (state: TroveManagerState, action: TroveManagerAction): TroveMana
     case "addMinimumDebt":
       return {
         ...state,
-        edited: edited.setDebt(LUSD_MINIMUM_DEBT),
+        edited: edited.setDebt(NECT_MINIMUM_DEBT),
         addedMinimumDebt: true
       };
 
@@ -134,14 +134,14 @@ const reduce = (state: TroveManagerState, action: TroveManagerAction): TroveMana
 const feeFrom = (original: Trove, edited: Trove, borrowingRate: Decimal): Decimal => {
   const change = original.whatChanged(edited, borrowingRate);
 
-  if (change && change.type !== "invalidCreation" && change.params.borrowLUSD) {
-    return change.params.borrowLUSD.mul(borrowingRate);
+  if (change && change.type !== "invalidCreation" && change.params.borrowNECT) {
+    return change.params.borrowNECT.mul(borrowingRate);
   } else {
     return Decimal.ZERO;
   }
 };
 
-const select = (state: LiquityStoreState) => ({
+const select = (state: BeraBorrowStoreState) => ({
   fees: state.fees,
   validationContext: selectForTroveChangeValidation(state)
 });

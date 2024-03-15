@@ -1,12 +1,12 @@
 import React from "react";
 import { Grid } from "theme-ui";
-import { useLiquitySelector } from "@liquity/lib-react";
-import { LiquityStoreState } from "@liquity/lib-base";
+import { useLiquitySelector } from "@beraborrow/lib-react";
+import { BeraBorrowStoreState } from "@beraborrow/lib-base";
 import { DisabledEditableRow } from "./Editor";
 import { useTroveView } from "./context/TroveViewContext";
 import { COIN } from "../../strings";
 
-const select = ({ trove, price }: LiquityStoreState) => ({ trove, price });
+const select = ({ trove, price }: BeraBorrowStoreState) => ({ trove, price });
 
 export const ReadOnlyTrove: React.FC = () => {
 

@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "theme-ui";
-import { useLiquity } from "../../../hooks/LiquityContext";
+import { useBeraBorrow } from "../../../hooks/BeraBorrowContext";
 import { useTransactionFunction } from "../../Transaction";
 
 type ClaimAndMoveProps = {
@@ -8,11 +8,11 @@ type ClaimAndMoveProps = {
 };
 
 export const ClaimAndMove: React.FC<ClaimAndMoveProps> = ({ disabled, children }) => {
-  const { liquity } = useLiquity();
+  const { beraborrow } = useBeraBorrow();
 
   const [sendTransaction] = useTransactionFunction(
     "stability-deposit",
-    liquity.send.transferCollateralGainToTrove.bind(liquity.send)
+    beraborrow.send.transferCollateralGainToTrove.bind(beraborrow.send)
   );
 
   return (

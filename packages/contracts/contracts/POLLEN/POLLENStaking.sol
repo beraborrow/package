@@ -21,14 +21,14 @@ contract POLLENStaking is IPOLLENStaking, Ownable, CheckContract, BaseMath {
     mapping( address => uint) public stakes;
     uint public totalPOLLENStaked;
 
-    uint public F_ETH;  // Running sum of ETH fees per-POLLEN-staked
+    uint public F_iBGT;  // Running sum of iBGT fees per-POLLEN-staked
     uint public F_NECT; // Running sum of POLLEN fees per-POLLEN-staked
 
-    // User snapshots of F_ETH and F_NECT, taken at the point at which their latest deposit was made
+    // User snapshots of F_iBGT and F_NECT, taken at the point at which their latest deposit was made
     mapping (address => Snapshot) public snapshots; 
 
     struct Snapshot {
-        uint F_ETH_Snapshot;
+        uint F_iBGT_Snapshot;
         uint F_NECT_Snapshot;
     }
     
@@ -48,12 +48,12 @@ contract POLLENStaking is IPOLLENStaking, Ownable, CheckContract, BaseMath {
     event ActivePoolAddressSet(address _activePoolAddress);
 
     event StakeChanged(address indexed staker, uint newStake);
-    event StakingGainsWithdrawn(address indexed staker, uint NECTGain, uint ETHGain);
-    event F_ETHUpdated(uint _F_ETH);
+    event StakingGainsWithdrawn(address indexed staker, uint NECTGain, uint iBGTGain);
+    event F_iBGTUpdated(uint _F_iBGT);
     event F_NECTUpdated(uint _F_NECT);
     event TotalPOLLENStakedUpdated(uint _totalPOLLENStaked);
-    event EtherSent(address _account, uint _amount);
-    event StakerSnapshotsUpdated(address _staker, uint _F_ETH, uint _F_NECT);
+    event iBGTSent(address _account, uint _amount);
+    event StakerSnapshotsUpdated(address _staker, uint _F_iBGT, uint _F_NECT);
 
     // --- Functions ---
 
@@ -90,17 +90,17 @@ contract POLLENStaking is IPOLLENStaking, Ownable, CheckContract, BaseMath {
         _renounceOwnership();
     }
 
-    // If caller has a pre-existing stake, send any accumulated ETH and NECT gains to them. 
+    // If caller has a pre-existing stake, send any accumulated iBGT and NECT gains to them. 
     function stake(uint _POLLENamount) external override {
         _requireNonZeroAmount(_POLLENamount);
 
         uint currentStake = stakes[msg.sender];
 
-        uint ETHGain;
+        uint iBGTGain;
         uint NECTGain;
-        // Grab any accumulated ETH and NECT gains from the current stake
+        // Grab any accumulated iBGT and NECT gains from the current stake
         if (currentStake != 0) {
-            ETHGain = _getPendingETHGain(msg.sender);
+            iBGTGain = _getPendingiBGTGain(msg.sender);
             NECTGain = _getPendingNECTGain(msg.sender);
         }
     
@@ -117,23 +117,23 @@ contract POLLENStaking is IPOLLENStaking, Ownable, CheckContract, BaseMath {
         pollenToken.sendToPOLLENStaking(msg.sender, _POLLENamount);
 
         emit StakeChanged(msg.sender, newStake);
-        emit StakingGainsWithdrawn(msg.sender, NECTGain, ETHGain);
+        emit StakingGainsWithdrawn(msg.sender, NECTGain, iBGTGain);
 
-         // Send accumulated NECT and ETH gains to the caller
+         // Send accumulated NECT and iBGT gains to the caller
         if (currentStake != 0) {
             nectToken.transfer(msg.sender, NECTGain);
-            _sendETHGainToUser(ETHGain);
+            _sendiBGTGainToUser(iBGTGain);
         }
     }
 
-    // Unstake the POLLEN and send the it back to the caller, along with their accumulated NECT & ETH gains. 
+    // Unstake the POLLEN and send the it back to the caller, along with their accumulated NECT & iBGT gains. 
     // If requested amount > stake, send their entire stake.
     function unstake(uint _POLLENamount) external override {
         uint currentStake = stakes[msg.sender];
         _requireUserHasStake(currentStake);
 
-        // Grab any accumulated ETH and NECT gains from the current stake
-        uint ETHGain = _getPendingETHGain(msg.sender);
+        // Grab any accumulated iBGT and NECT gains from the current stake
+        uint iBGTGain = _getPendingiBGTGain(msg.sender);
         uint NECTGain = _getPendingNECTGain(msg.sender);
         
         _updateUserSnapshots(msg.sender);
@@ -154,23 +154,23 @@ contract POLLENStaking is IPOLLENStaking, Ownable, CheckContract, BaseMath {
             emit StakeChanged(msg.sender, newStake);
         }
 
-        emit StakingGainsWithdrawn(msg.sender, NECTGain, ETHGain);
+        emit StakingGainsWithdrawn(msg.sender, NECTGain, iBGTGain);
 
-        // Send accumulated NECT and ETH gains to the caller
+        // Send accumulated NECT and iBGT gains to the caller
         nectToken.transfer(msg.sender, NECTGain);
-        _sendETHGainToUser(ETHGain);
+        _sendiBGTGainToUser(iBGTGain);
     }
 
     // --- Reward-per-unit-staked increase functions. Called by BeraBorrow core contracts ---
 
-    function increaseF_ETH(uint _ETHFee) external override {
+    function increaseF_iBGT(uint _iBGTFee) external override {
         _requireCallerIsTroveManager();
-        uint ETHFeePerPOLLENStaked;
+        uint iBGTFeePerPOLLENStaked;
      
-        if (totalPOLLENStaked > 0) {ETHFeePerPOLLENStaked = _ETHFee.mul(DECIMAL_PRECISION).div(totalPOLLENStaked);}
+        if (totalPOLLENStaked > 0) {iBGTFeePerPOLLENStaked = _iBGTFee.mul(DECIMAL_PRECISION).div(totalPOLLENStaked);}
 
-        F_ETH = F_ETH.add(ETHFeePerPOLLENStaked); 
-        emit F_ETHUpdated(F_ETH);
+        F_iBGT = F_iBGT.add(iBGTFeePerPOLLENStaked); 
+        emit F_iBGTUpdated(F_iBGT);
     }
 
     function increaseF_NECT(uint _NECTFee) external override {
@@ -185,14 +185,14 @@ contract POLLENStaking is IPOLLENStaking, Ownable, CheckContract, BaseMath {
 
     // --- Pending reward functions ---
 
-    function getPendingETHGain(address _user) external view override returns (uint) {
-        return _getPendingETHGain(_user);
+    function getPendingiBGTGain(address _user) external view override returns (uint) {
+        return _getPendingiBGTGain(_user);
     }
 
-    function _getPendingETHGain(address _user) internal view returns (uint) {
-        uint F_ETH_Snapshot = snapshots[_user].F_ETH_Snapshot;
-        uint ETHGain = stakes[_user].mul(F_ETH.sub(F_ETH_Snapshot)).div(DECIMAL_PRECISION);
-        return ETHGain;
+    function _getPendingiBGTGain(address _user) internal view returns (uint) {
+        uint F_iBGT_Snapshot = snapshots[_user].F_iBGT_Snapshot;
+        uint iBGTGain = stakes[_user].mul(F_iBGT.sub(F_iBGT_Snapshot)).div(DECIMAL_PRECISION);
+        return iBGTGain;
     }
 
     function getPendingNECTGain(address _user) external view override returns (uint) {
@@ -208,15 +208,15 @@ contract POLLENStaking is IPOLLENStaking, Ownable, CheckContract, BaseMath {
     // --- Internal helper functions ---
 
     function _updateUserSnapshots(address _user) internal {
-        snapshots[_user].F_ETH_Snapshot = F_ETH;
+        snapshots[_user].F_iBGT_Snapshot = F_iBGT;
         snapshots[_user].F_NECT_Snapshot = F_NECT;
-        emit StakerSnapshotsUpdated(_user, F_ETH, F_NECT);
+        emit StakerSnapshotsUpdated(_user, F_iBGT, F_NECT);
     }
 
-    function _sendETHGainToUser(uint ETHGain) internal {
-        emit EtherSent(msg.sender, ETHGain);
-        (bool success, ) = msg.sender.call{value: ETHGain}("");
-        require(success, "POLLENStaking: Failed to send accumulated ETHGain");
+    function _sendiBGTGainToUser(uint iBGTGain) internal {
+        emit iBGTSent(msg.sender, iBGTGain);
+        (bool success, ) = msg.sender.call{value: iBGTGain}("");
+        require(success, "POLLENStaking: Failed to send accumulated iBGTGain");
     }
 
     // --- 'require' functions ---

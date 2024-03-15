@@ -1,6 +1,6 @@
 /** @jsxImportSource theme-ui */
 
-import { Decimal, Percent } from "@liquity/lib-base";
+import { Decimal, Percent } from "@beraborrow/lib-base";
 import React, { useEffect, useRef, useState } from "react";
 import { Flex, Button, Spinner, Heading, Close, Box, Label, Radio, Input, Link } from "theme-ui";
 import { Amount } from "../../../ActionDescription";
@@ -15,19 +15,19 @@ import {
   StaticRow
 } from "../../../Trove/Editor";
 import { useBondView } from "../../context/BondViewContext";
-import { BLusdAmmTokenIndex } from "../../context/transitions";
+import { BNectAmmTokenIndex } from "../../context/transitions";
 
-const tokenSymbol: Record<BLusdAmmTokenIndex.BLUSD | BLusdAmmTokenIndex.LUSD, string> = {
-  [BLusdAmmTokenIndex.BLUSD]: "bLUSD",
-  [BLusdAmmTokenIndex.LUSD]: "LUSD"
+const tokenSymbol: Record<BNectAmmTokenIndex.BNECT | BNectAmmTokenIndex.NECT, string> = {
+  [BNectAmmTokenIndex.BNECT]: "bNECT",
+  [BNectAmmTokenIndex.NECT]: "NECT"
 };
 
 const outputToken: Record<
-  BLusdAmmTokenIndex.BLUSD | BLusdAmmTokenIndex.LUSD,
-  BLusdAmmTokenIndex.BLUSD | BLusdAmmTokenIndex.LUSD
+  BNectAmmTokenIndex.BNECT | BNectAmmTokenIndex.NECT,
+  BNectAmmTokenIndex.BNECT | BNectAmmTokenIndex.NECT
 > = {
-  [BLusdAmmTokenIndex.BLUSD]: BLusdAmmTokenIndex.LUSD,
-  [BLusdAmmTokenIndex.LUSD]: BLusdAmmTokenIndex.BLUSD
+  [BNectAmmTokenIndex.BNECT]: BNectAmmTokenIndex.NECT,
+  [BNectAmmTokenIndex.NECT]: BNectAmmTokenIndex.BNECT
 };
 
 const marginalAmount = Decimal.ONE.div(1000);
@@ -47,16 +47,16 @@ export const SwapPane: React.FC = () => {
     dispatchEvent,
     statuses,
     inputToken,
-    lusdBalance,
-    bLusdBalance,
-    isInputTokenApprovedWithBLusdAmm,
-    bLusdAmmBLusdBalance,
-    bLusdAmmLusdBalance,
+    nectBalance,
+    bNectBalance,
+    isInputTokenApprovedWithBNectAmm,
+    bNectAmmBNectBalance,
+    bNectAmmNectBalance,
     getExpectedSwapOutput
   } = useBondView();
   const editingState = useState<string>();
   const inputTokenBalance =
-    (inputToken === BLusdAmmTokenIndex.BLUSD ? bLusdBalance : lusdBalance) ?? Decimal.ZERO;
+    (inputToken === BNectAmmTokenIndex.BNECT ? bNectBalance : nectBalance) ?? Decimal.ZERO;
   const [inputAmount, setInputAmount] = useState<Decimal>(Decimal.ZERO);
   const [outputAmount, setOutputAmount] = useState<Decimal>();
   const [exchangeRate, setExchangeRate] = useState<Decimal>();
@@ -78,7 +78,7 @@ export const SwapPane: React.FC = () => {
   const isSlippageToleranceHigh = customSlippageTolerance?.gt(0.05);
 
   // Used in dependency list of effect to recalculate output amount in case of pool changes
-  const poolState = `${bLusdAmmBLusdBalance},${bLusdAmmLusdBalance}`;
+  const poolState = `${bNectAmmBNectBalance},${bNectAmmNectBalance}`;
 
   const handleDismiss = () => {
     dispatchEvent("ABORT_PRESSED");
@@ -160,7 +160,7 @@ export const SwapPane: React.FC = () => {
     <>
       <Heading as="h2" sx={{ pt: 2, pb: 3, px: 2 }}>
         <Flex sx={{ justifyContent: "center" }}>
-          {inputToken === BLusdAmmTokenIndex.BLUSD ? <>Sell</> : <>Buy</>} bLUSD
+          {inputToken === BNectAmmTokenIndex.BNECT ? <>Sell</> : <>Buy</>} bNECT
         </Flex>
         <Close
           onClick={handleDismiss}
@@ -319,7 +319,7 @@ export const SwapPane: React.FC = () => {
         </ErrorDescription>
       )}
 
-      {(bLusdAmmBLusdBalance?.isZero || bLusdAmmLusdBalance?.isZero) && (
+      {(bNectAmmBNectBalance?.isZero || bNectAmmNectBalance?.isZero) && (
         <ErrorDescription>No liquidity in pool yet. Swap unavailable.</ErrorDescription>
       )}
 
@@ -340,7 +340,7 @@ export const SwapPane: React.FC = () => {
           Back
         </Button>
 
-        {isInputTokenApprovedWithBLusdAmm ? (
+        {isInputTokenApprovedWithBNectAmm ? (
           <Button
             variant="primary"
             onClick={handleConfirmPressed}

@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "theme-ui";
 
-import { useLiquity } from "../../../hooks/LiquityContext";
+import { useBeraBorrow } from "../../../hooks/BeraBorrowContext";
 import { useTransactionFunction } from "../../Transaction";
 
 type ClaimRewardsProps = {
@@ -9,11 +9,11 @@ type ClaimRewardsProps = {
 };
 
 export const ClaimRewards: React.FC<ClaimRewardsProps> = ({ disabled, children }) => {
-  const { liquity } = useLiquity();
+  const { beraborrow } = useBeraBorrow();
 
   const [sendTransaction] = useTransactionFunction(
     "stability-deposit",
-    liquity.send.withdrawGainsFromStabilityPool.bind(liquity.send)
+    beraborrow.send.withdrawGainsFromStabilityPool.bind(beraborrow.send)
   );
 
   return (

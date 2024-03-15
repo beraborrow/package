@@ -5,10 +5,10 @@ import { defaultAbiCoder } from "@ethersproject/abi";
 
 import "react-circular-progressbar/dist/styles.css";
 import { toast } from 'react-toastify';
-import { EthersTransactionOverrides, EthersTransactionCancelledError } from "@liquity/lib-ethers";
-import { SentLiquityTransaction, LiquityReceipt } from "@liquity/lib-base";
+import { EthersTransactionOverrides, EthersTransactionCancelledError } from "@beraborrow/lib-ethers";
+import { SentBeraBorrowTransaction, BeraBorrowReceipt } from "@beraborrow/lib-base";
 
-import { useLiquity } from "../hooks/LiquityContext";
+import { useBeraBorrow } from "../hooks/BeraBorrowContext";
 
 import { Tooltip } from "./Tooltip";
 import type { TooltipProps } from "./Tooltip";
@@ -102,9 +102,9 @@ type ButtonlikeProps = {
   onClick?: () => void;
 };
 
-type SentTransaction = SentLiquityTransaction<
+type SentTransaction = SentBeraBorrowTransaction<
   TransactionResponse,
-  LiquityReceipt<TransactionReceipt>
+  BeraBorrowReceipt<TransactionReceipt>
 >;
 
 export type TransactionFunction = (
@@ -226,7 +226,7 @@ const tryToGetRevertReason = async (provider: Provider, tx: TransactionReceipt) 
 };
 
 export const TransactionMonitor: React.FC = () => {
-  const { provider } = useLiquity();
+  const { provider } = useBeraBorrow();
   const [transactionState, setTransactionState] = useTransactionState();
 
   const id = transactionState.type !== "idle" ? transactionState.id : undefined;

@@ -85,6 +85,22 @@ module.exports = {
                 getSecret('ACCOUNT2_PRIVATEKEY', '')
             ]
         },
+        goerli: {
+            url: "https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
+            gasPrice: process.env.GAS_PRICE ? parseInt(process.env.GAS_PRICE) : 20000000000,
+            accounts: [
+                getSecret('DEPLOYER_PRIVATEKEY', ''),
+                getSecret('ACCOUNT2_PRIVATEKEY', '')
+            ]
+        },
+        bera: {
+            url: "https://artio.rpc.berachain.com/", // https://rpc.ankr.com/berachain_testnet
+            gasPrice: process.env.GAS_PRICE ? parseInt(process.env.GAS_PRICE) : 20000000000,
+            accounts: [
+                getSecret('DEPLOYER_PRIVATEKEY', ''),
+                getSecret('ACCOUNT2_PRIVATEKEY', '')
+            ]
+        },
         sepolia: {
             url: "https://ethereum-sepolia-rpc.publicnode.com",
             gasPrice: process.env.GAS_PRICE ? parseInt(process.env.GAS_PRICE) : 30000000000,
@@ -97,7 +113,8 @@ module.exports = {
     },
     etherscan: {
         apiKey: {
-            sepolia: "FAQHXR8Q49UY22ZRVPCNQFTMI5IBV8Z5XT"
+            sepolia: "FAQHXR8Q49UY22ZRVPCNQFTMI5IBV8Z5XT",
+            goerli: "FAQHXR8Q49UY22ZRVPCNQFTMI5IBV8Z5XT"
         },
         customChains: [
             {
@@ -106,6 +123,22 @@ module.exports = {
                 urls: {
                     apiURL: "https://api-sepolia.etherscan.io/api",
                     browserURL: "https://sepolia.etherscan.io/"
+                }
+            },
+            {
+                network: "bera",
+                chainId: 80085,
+                urls: {
+                    apiURL: "https://api.routescan.io/v2/network/testnet/evm/80085/etherscan",
+                    browserURL: "https://artio.beratrail.io/"
+                }
+            },
+            {
+                network: "goerli",
+                chainId: 5,
+                urls: {
+                    apiURL: "https://api-goerli.etherscan.io/api",
+                    browserURL: "https://goerli.etherscan.io/"
                 }
             }
         ]

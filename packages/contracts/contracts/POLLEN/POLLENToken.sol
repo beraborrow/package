@@ -229,6 +229,8 @@ contract POLLENToken is CheckContract, IPOLLENToken {
     // --- EIP 2612 functionality ---
 
     function domainSeparator() public view override returns (bytes32) {    
+        console.log ("_chainID()", _chainID());
+        console.log ("_CACHED_CHAIN_ID", _CACHED_CHAIN_ID);
         if (_chainID() == _CACHED_CHAIN_ID) {
             return _CACHED_DOMAIN_SEPARATOR;
         } else {
@@ -248,12 +250,12 @@ contract POLLENToken is CheckContract, IPOLLENToken {
     ) 
         external 
         override 
-    {            
+    {
         require(deadline >= now, 'POLLEN: expired deadline');
         bytes32 digest = keccak256(abi.encodePacked('\x19\x01', 
                          domainSeparator(), keccak256(abi.encode(
                          _PERMIT_TYPEHASH, owner, spender, amount, 
-                         _nonces[owner]++, deadline))));
+                         _nonces[owner], deadline))));
         address recoveredAddress = ecrecover(digest, v, r, s);
         require(recoveredAddress == owner, 'POLLEN: invalid signature');
         _approve(owner, spender, amount);

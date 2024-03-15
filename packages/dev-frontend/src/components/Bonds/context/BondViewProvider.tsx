@@ -13,15 +13,15 @@ import type {
   SwapPayload,
   ApprovePressedPayload,
   ManageLiquidityPayload,
-  BLusdLpRewards
+  BNectLpRewards
 } from "./transitions";
-import { BLusdAmmTokenIndex } from "./transitions";
+import { BNectAmmTokenIndex } from "./transitions";
 import { transitions } from "./transitions";
-import { Decimal } from "@liquity/lib-base";
-import { useLiquity } from "../../../hooks/LiquityContext";
+import { Decimal } from "@beraborrow/lib-base";
+import { useBeraBorrow } from "../../../hooks/BeraBorrowContext";
 import { api, _getProtocolInfo } from "./api";
 import { useTransaction } from "../../../hooks/useTransaction";
-import type { ERC20Faucet } from "@liquity/chicken-bonds/lusd/types";
+import type { ERC20Faucet } from "@beraborrow/chicken-bonds/nect/types";
 import { useBondContracts } from "./useBondContracts";
 import { useChainId } from "wagmi";
 import { useBondAddresses } from "./BondAddressesContext";
@@ -52,16 +52,16 @@ export const BondViewProvider: React.FC = props => {
   const [protocolInfo, setProtocolInfo] = useState<ProtocolInfo>();
   const [simulatedProtocolInfo, setSimulatedProtocolInfo] = useState<ProtocolInfo>();
   const [isInfiniteBondApproved, setIsInfiniteBondApproved] = useState(false);
-  const [lpRewards, setLpRewards] = useState<BLusdLpRewards>();
-  const [isLusdApprovedWithBlusdAmm, setIsLusdApprovedWithBlusdAmm] = useState(false);
-  const [isBLusdApprovedWithBlusdAmm, setIsBLusdApprovedWithBlusdAmm] = useState(false);
-  const [isLusdApprovedWithAmmZapper, setIsLusdApprovedWithAmmZapper] = useState(false);
-  const [isBLusdApprovedWithAmmZapper, setIsBLusdApprovedWithAmmZapper] = useState(false);
-  const [isBLusdLpApprovedWithAmmZapper, setIsBLusdLpApprovedWithAmmZapper] = useState(false);
-  const [isBLusdLpApprovedWithGauge, setIsBLusdLpApprovedWithGauge] = useState(false);
+  const [lpRewards, setLpRewards] = useState<BNectLpRewards>();
+  const [isNectApprovedWithBnectAmm, setIsNectApprovedWithBnectAmm] = useState(false);
+  const [isBNectApprovedWithBnectAmm, setIsBNectApprovedWithBnectAmm] = useState(false);
+  const [isNectApprovedWithAmmZapper, setIsNectApprovedWithAmmZapper] = useState(false);
+  const [isBNectApprovedWithAmmZapper, setIsBNectApprovedWithAmmZapper] = useState(false);
+  const [isBNectLpApprovedWithAmmZapper, setIsBNectLpApprovedWithAmmZapper] = useState(false);
+  const [isBNectLpApprovedWithGauge, setIsBNectLpApprovedWithGauge] = useState(false);
   const [isSynchronizing, setIsSynchronizing] = useState(false);
-  const [inputToken, setInputToken] = useState<BLusdAmmTokenIndex.BLUSD | BLusdAmmTokenIndex.LUSD>(
-    BLusdAmmTokenIndex.BLUSD
+  const [inputToken, setInputToken] = useState<BNectAmmTokenIndex.BNECT | BNectAmmTokenIndex.NECT>(
+    BNectAmmTokenIndex.BNECT
   );
   const [statuses, setStatuses] = useState<BondTransactionStatuses>({
     APPROVE: "IDLE",
@@ -73,21 +73,21 @@ export const BondViewProvider: React.FC = props => {
     SWAP: "IDLE",
     MANAGE_LIQUIDITY: "IDLE"
   });
-  const [bLusdBalance, setBLusdBalance] = useState<Decimal>();
-  const [lusdBalance, setLusdBalance] = useState<Decimal>();
+  const [bNectBalance, setBNectBalance] = useState<Decimal>();
+  const [nectBalance, setNectBalance] = useState<Decimal>();
   const [lpTokenBalance, setLpTokenBalance] = useState<Decimal>();
   const [stakedLpTokenBalance, setStakedLpTokenBalance] = useState<Decimal>();
 
   const [lpTokenSupply, setLpTokenSupply] = useState<Decimal>();
-  const [bLusdAmmBLusdBalance, setBLusdAmmBLusdBalance] = useState<Decimal>();
-  const [bLusdAmmLusdBalance, setBLusdAmmLusdBalance] = useState<Decimal>();
+  const [bNectAmmBNectBalance, setBNectAmmBNectBalance] = useState<Decimal>();
+  const [bNectAmmNectBalance, setBNectAmmNectBalance] = useState<Decimal>();
   const [isBootstrapPeriodActive, setIsBootstrapPeriodActive] = useState<boolean>();
-  const { account, liquity } = useLiquity();
+  const { account, beraborrow } = useBeraBorrow();
   const {
-    LUSD_OVERRIDE_ADDRESS,
-    BLUSD_AMM_ADDRESS,
-    BLUSD_LP_ZAP_ADDRESS,
-    BLUSD_AMM_STAKING_ADDRESS
+    NECT_OVERRIDE_ADDRESS,
+    BNECT_AMM_ADDRESS,
+    BNECT_LP_ZAP_ADDRESS,
+    BNECT_AMM_STAKING_ADDRESS
   } = useBondAddresses();
   const contracts = useBondContracts();
   const chainId = useChainId();
@@ -142,27 +142,27 @@ export const BondViewProvider: React.FC = props => {
     [bonds]
   );
 
-  const getLusdFromFaucet = useCallback(async () => {
-    if (contracts.lusdToken === undefined || liquity.connection.signer === undefined) return;
+  const getNectFromFaucet = useCallback(async () => {
+    if (contracts.nectToken === undefined || beraborrow.connection.signer === undefined) return;
 
     if (
-      LUSD_OVERRIDE_ADDRESS !== null &&
-      (await contracts.lusdToken.balanceOf(account)).eq(0) &&
-      "tap" in contracts.lusdToken
+      NECT_OVERRIDE_ADDRESS !== null &&
+      (await contracts.nectToken.balanceOf(account)).eq(0) &&
+      "tap" in contracts.nectToken
     ) {
       await (
-        await ((contracts.lusdToken as unknown) as ERC20Faucet)
-          .connect(liquity.connection.signer)
+        await ((contracts.nectToken as unknown) as ERC20Faucet)
+          .connect(beraborrow.connection.signer)
           .tap()
       ).wait();
       setShouldSynchronize(true);
     }
-  }, [contracts.lusdToken, account, LUSD_OVERRIDE_ADDRESS, liquity.connection.signer]);
+  }, [contracts.nectToken, account, NECT_OVERRIDE_ADDRESS, beraborrow.connection.signer]);
 
   useEffect(() => {
     (async () => {
       if (
-        contracts.lusdToken === undefined ||
+        contracts.nectToken === undefined ||
         contracts.chickenBondManager === undefined ||
         account === undefined ||
         isInfiniteBondApproved
@@ -170,101 +170,101 @@ export const BondViewProvider: React.FC = props => {
         return;
       const isApproved = await api.isInfiniteBondApproved(
         account,
-        contracts.lusdToken,
+        contracts.nectToken,
         contracts.chickenBondManager
       );
       setIsInfiniteBondApproved(isApproved);
     })();
-  }, [contracts.lusdToken, contracts.chickenBondManager, account, isInfiniteBondApproved]);
+  }, [contracts.nectToken, contracts.chickenBondManager, account, isInfiniteBondApproved]);
 
   useEffect(() => {
     (async () => {
       if (
-        BLUSD_AMM_ADDRESS === null ||
-        contracts.lusdToken === undefined ||
-        isLusdApprovedWithBlusdAmm
+        BNECT_AMM_ADDRESS === null ||
+        contracts.nectToken === undefined ||
+        isNectApprovedWithBnectAmm
       ) {
         return;
       }
       const isApproved = await (isMainnet
-        ? api.isTokenApprovedWithBLusdAmmMainnet(account, contracts.lusdToken)
-        : api.isTokenApprovedWithBLusdAmm(account, contracts.lusdToken, BLUSD_AMM_ADDRESS));
+        ? api.isTokenApprovedWithBNectAmmMainnet(account, contracts.nectToken)
+        : api.isTokenApprovedWithBNectAmm(account, contracts.nectToken, BNECT_AMM_ADDRESS));
 
-      setIsLusdApprovedWithBlusdAmm(isApproved);
+      setIsNectApprovedWithBnectAmm(isApproved);
     })();
-  }, [contracts.lusdToken, account, isLusdApprovedWithBlusdAmm, isMainnet, BLUSD_AMM_ADDRESS]);
+  }, [contracts.nectToken, account, isNectApprovedWithBnectAmm, isMainnet, BNECT_AMM_ADDRESS]);
 
   useEffect(() => {
     (async () => {
       if (
-        BLUSD_AMM_ADDRESS === null ||
-        contracts.bLusdToken === undefined ||
-        isBLusdApprovedWithBlusdAmm
+        BNECT_AMM_ADDRESS === null ||
+        contracts.bNectToken === undefined ||
+        isBNectApprovedWithBnectAmm
       ) {
         return;
       }
 
       const isApproved = await (isMainnet
-        ? api.isTokenApprovedWithBLusdAmmMainnet(account, contracts.bLusdToken)
-        : api.isTokenApprovedWithBLusdAmm(account, contracts.bLusdToken, BLUSD_AMM_ADDRESS));
+        ? api.isTokenApprovedWithBNectAmmMainnet(account, contracts.bNectToken)
+        : api.isTokenApprovedWithBNectAmm(account, contracts.bNectToken, BNECT_AMM_ADDRESS));
 
-      setIsBLusdApprovedWithBlusdAmm(isApproved);
+      setIsBNectApprovedWithBnectAmm(isApproved);
     })();
-  }, [contracts.bLusdToken, account, isBLusdApprovedWithBlusdAmm, isMainnet, BLUSD_AMM_ADDRESS]);
+  }, [contracts.bNectToken, account, isBNectApprovedWithBnectAmm, isMainnet, BNECT_AMM_ADDRESS]);
 
   useEffect(() => {
     (async () => {
       if (
-        BLUSD_LP_ZAP_ADDRESS === null ||
-        contracts.lusdToken === undefined ||
-        isLusdApprovedWithAmmZapper
+        BNECT_LP_ZAP_ADDRESS === null ||
+        contracts.nectToken === undefined ||
+        isNectApprovedWithAmmZapper
       ) {
         return;
       }
 
-      const isLusdApproved = await api.isTokenApprovedWithAmmZapper(
+      const isNectApproved = await api.isTokenApprovedWithAmmZapper(
         account,
-        contracts.lusdToken,
-        BLUSD_LP_ZAP_ADDRESS
+        contracts.nectToken,
+        BNECT_LP_ZAP_ADDRESS
       );
 
-      setIsLusdApprovedWithAmmZapper(isLusdApproved);
+      setIsNectApprovedWithAmmZapper(isNectApproved);
     })();
-  }, [contracts.lusdToken, account, isLusdApprovedWithAmmZapper, BLUSD_LP_ZAP_ADDRESS]);
+  }, [contracts.nectToken, account, isNectApprovedWithAmmZapper, BNECT_LP_ZAP_ADDRESS]);
 
   useEffect(() => {
     (async () => {
-      if (contracts.bLusdAmm === undefined || isBLusdLpApprovedWithAmmZapper) return;
-      const lpToken = await api.getLpToken(contracts.bLusdAmm);
+      if (contracts.bNectAmm === undefined || isBNectLpApprovedWithAmmZapper) return;
+      const lpToken = await api.getLpToken(contracts.bNectAmm);
       const isLpApproved = await api.isTokenApprovedWithAmmZapper(
         account,
         lpToken,
-        BLUSD_LP_ZAP_ADDRESS
+        BNECT_LP_ZAP_ADDRESS
       );
 
-      setIsBLusdLpApprovedWithAmmZapper(isLpApproved);
+      setIsBNectLpApprovedWithAmmZapper(isLpApproved);
     })();
-  }, [contracts.bLusdAmm, account, isBLusdLpApprovedWithAmmZapper, BLUSD_LP_ZAP_ADDRESS]);
+  }, [contracts.bNectAmm, account, isBNectLpApprovedWithAmmZapper, BNECT_LP_ZAP_ADDRESS]);
 
   useEffect(() => {
     (async () => {
       if (
-        BLUSD_LP_ZAP_ADDRESS === null ||
-        contracts.bLusdToken === undefined ||
-        isBLusdApprovedWithAmmZapper
+        BNECT_LP_ZAP_ADDRESS === null ||
+        contracts.bNectToken === undefined ||
+        isBNectApprovedWithAmmZapper
       ) {
         return;
       }
 
-      const isBLusdApproved = await api.isTokenApprovedWithAmmZapper(
+      const isBNectApproved = await api.isTokenApprovedWithAmmZapper(
         account,
-        contracts.bLusdToken,
-        BLUSD_LP_ZAP_ADDRESS
+        contracts.bNectToken,
+        BNECT_LP_ZAP_ADDRESS
       );
 
-      setIsLusdApprovedWithAmmZapper(isBLusdApproved);
+      setIsNectApprovedWithAmmZapper(isBNectApproved);
     })();
-  }, [contracts.bLusdToken, account, isBLusdApprovedWithAmmZapper, BLUSD_LP_ZAP_ADDRESS]);
+  }, [contracts.bNectToken, account, isBNectApprovedWithAmmZapper, BNECT_LP_ZAP_ADDRESS]);
 
   useEffect(() => {
     if (isSynchronizing) return;
@@ -279,12 +279,12 @@ export const BondViewProvider: React.FC = props => {
     (async () => {
       try {
         if (
-          contracts.lusdToken === undefined ||
+          contracts.nectToken === undefined ||
           contracts.bondNft === undefined ||
           contracts.chickenBondManager === undefined ||
-          contracts.bLusdToken === undefined ||
-          contracts.bLusdAmm === undefined ||
-          contracts.bLusdGauge === undefined ||
+          contracts.bNectToken === undefined ||
+          contracts.bNectAmm === undefined ||
+          contracts.bNectGauge === undefined ||
           !shouldSynchronize ||
           isSynchronizing
         ) {
@@ -302,13 +302,13 @@ export const BondViewProvider: React.FC = props => {
           protocolInfo,
           bonds,
           stats,
-          bLusdBalance,
-          lusdBalance,
+          bNectBalance,
+          nectBalance,
           lpTokenBalance,
           stakedLpTokenBalance,
           lpTokenSupply,
-          bLusdAmmBLusdBalance,
-          bLusdAmmLusdBalance,
+          bNectAmmBNectBalance,
+          bNectAmmNectBalance,
           lpRewards
         } = latest;
 
@@ -331,13 +331,13 @@ export const BondViewProvider: React.FC = props => {
 
         setShouldSynchronize(false);
         setLpRewards(lpRewards);
-        setBLusdBalance(bLusdBalance);
-        setLusdBalance(lusdBalance);
+        setBNectBalance(bNectBalance);
+        setNectBalance(nectBalance);
         setLpTokenBalance(lpTokenBalance);
         setStakedLpTokenBalance(stakedLpTokenBalance);
         setLpTokenSupply(lpTokenSupply);
-        setBLusdAmmBLusdBalance(bLusdAmmBLusdBalance);
-        setBLusdAmmLusdBalance(bLusdAmmLusdBalance);
+        setBNectAmmBNectBalance(bNectAmmBNectBalance);
+        setBNectAmmNectBalance(bNectAmmNectBalance);
         setStats(stats);
         setBonds(bonds);
         setOptimisticBond(undefined);
@@ -351,224 +351,224 @@ export const BondViewProvider: React.FC = props => {
 
   const [approveInfiniteBond, approveStatus] = useTransaction(async () => {
     await api.approveInfiniteBond(
-      contracts.lusdToken,
+      contracts.nectToken,
       contracts.chickenBondManager,
-      liquity.connection.signer
+      beraborrow.connection.signer
     );
     setIsInfiniteBondApproved(true);
-  }, [contracts.lusdToken, contracts.chickenBondManager, liquity.connection.signer]);
+  }, [contracts.nectToken, contracts.chickenBondManager, beraborrow.connection.signer]);
 
   const [approveAmm, approveAmmStatus] = useTransaction(
-    async (tokensNeedingApproval: BLusdAmmTokenIndex[]) => {
+    async (tokensNeedingApproval: BNectAmmTokenIndex[]) => {
       for (const token of tokensNeedingApproval) {
-        if (token === BLusdAmmTokenIndex.BLUSD) {
+        if (token === BNectAmmTokenIndex.BNECT) {
           await (isMainnet
-            ? api.approveTokenWithBLusdAmmMainnet(contracts.bLusdToken, liquity.connection.signer)
-            : api.approveTokenWithBLusdAmm(
-                contracts.bLusdToken,
-                BLUSD_AMM_ADDRESS,
-                liquity.connection.signer
+            ? api.approveTokenWithBNectAmmMainnet(contracts.bNectToken, beraborrow.connection.signer)
+            : api.approveTokenWithBNectAmm(
+                contracts.bNectToken,
+                BNECT_AMM_ADDRESS,
+                beraborrow.connection.signer
               ));
 
-          setIsBLusdApprovedWithBlusdAmm(true);
+          setIsBNectApprovedWithBnectAmm(true);
         } else {
           await (isMainnet
-            ? api.approveTokenWithBLusdAmmMainnet(contracts.lusdToken, liquity.connection.signer)
-            : api.approveTokenWithBLusdAmm(
-                contracts.lusdToken,
-                BLUSD_AMM_ADDRESS,
-                liquity.connection.signer
+            ? api.approveTokenWithBNectAmmMainnet(contracts.nectToken, beraborrow.connection.signer)
+            : api.approveTokenWithBNectAmm(
+                contracts.nectToken,
+                BNECT_AMM_ADDRESS,
+                beraborrow.connection.signer
               ));
 
-          setIsLusdApprovedWithBlusdAmm(true);
+          setIsNectApprovedWithBnectAmm(true);
         }
       }
     },
     [
-      contracts.bLusdToken,
-      contracts.lusdToken,
+      contracts.bNectToken,
+      contracts.nectToken,
       isMainnet,
-      BLUSD_AMM_ADDRESS,
-      liquity.connection.signer
+      BNECT_AMM_ADDRESS,
+      beraborrow.connection.signer
     ]
   );
 
   const [approveTokens, approveTokensStatus] = useTransaction(
     async ({ tokensNeedingApproval }: ApprovePressedPayload) => {
-      if (contracts.bLusdAmm === undefined) return;
+      if (contracts.bNectAmm === undefined) return;
       for (const [token, spender] of Array.from(tokensNeedingApproval)) {
-        if (token === BLusdAmmTokenIndex.BLUSD) {
-          await api.approveToken(contracts.bLusdToken, spender, liquity.connection.signer);
-          if (spender === BLUSD_AMM_ADDRESS) {
-            setIsBLusdApprovedWithBlusdAmm(true);
-          } else if (spender === BLUSD_LP_ZAP_ADDRESS) {
-            setIsBLusdApprovedWithAmmZapper(true);
+        if (token === BNectAmmTokenIndex.BNECT) {
+          await api.approveToken(contracts.bNectToken, spender, beraborrow.connection.signer);
+          if (spender === BNECT_AMM_ADDRESS) {
+            setIsBNectApprovedWithBnectAmm(true);
+          } else if (spender === BNECT_LP_ZAP_ADDRESS) {
+            setIsBNectApprovedWithAmmZapper(true);
           }
-        } else if (token === BLusdAmmTokenIndex.LUSD) {
+        } else if (token === BNectAmmTokenIndex.NECT) {
           await api.approveToken(
-            contracts.lusdToken,
-            BLUSD_LP_ZAP_ADDRESS,
-            liquity.connection.signer
+            contracts.nectToken,
+            BNECT_LP_ZAP_ADDRESS,
+            beraborrow.connection.signer
           );
-          setIsLusdApprovedWithAmmZapper(true);
-        } else if (token === BLusdAmmTokenIndex.BLUSD_LUSD_LP && spender === undefined) {
-          const lpToken = await api.getLpToken(contracts.bLusdAmm);
-          await api.approveToken(lpToken, BLUSD_LP_ZAP_ADDRESS, liquity.connection.signer);
-          setIsBLusdLpApprovedWithAmmZapper(true);
-        } else if (token === BLusdAmmTokenIndex.BLUSD_LUSD_LP) {
-          const lpToken = await api.getLpToken(contracts.bLusdAmm);
-          await api.approveToken(lpToken, spender, liquity.connection.signer);
-          if (spender === BLUSD_LP_ZAP_ADDRESS) {
-            setIsBLusdLpApprovedWithAmmZapper(true);
-          } else if (spender === BLUSD_AMM_STAKING_ADDRESS) {
-            setIsBLusdLpApprovedWithGauge(true);
+          setIsNectApprovedWithAmmZapper(true);
+        } else if (token === BNectAmmTokenIndex.BNECT_NECT_LP && spender === undefined) {
+          const lpToken = await api.getLpToken(contracts.bNectAmm);
+          await api.approveToken(lpToken, BNECT_LP_ZAP_ADDRESS, beraborrow.connection.signer);
+          setIsBNectLpApprovedWithAmmZapper(true);
+        } else if (token === BNectAmmTokenIndex.BNECT_NECT_LP) {
+          const lpToken = await api.getLpToken(contracts.bNectAmm);
+          await api.approveToken(lpToken, spender, beraborrow.connection.signer);
+          if (spender === BNECT_LP_ZAP_ADDRESS) {
+            setIsBNectLpApprovedWithAmmZapper(true);
+          } else if (spender === BNECT_AMM_STAKING_ADDRESS) {
+            setIsBNectLpApprovedWithGauge(true);
           }
         }
       }
     },
     [
-      contracts.bLusdAmm,
-      contracts.bLusdToken,
-      contracts.lusdToken,
-      BLUSD_LP_ZAP_ADDRESS,
-      BLUSD_AMM_STAKING_ADDRESS,
-      BLUSD_AMM_ADDRESS,
-      liquity.connection.signer
+      contracts.bNectAmm,
+      contracts.bNectToken,
+      contracts.nectToken,
+      BNECT_LP_ZAP_ADDRESS,
+      BNECT_AMM_STAKING_ADDRESS,
+      BNECT_AMM_ADDRESS,
+      beraborrow.connection.signer
     ]
   );
 
   const [createBond, createStatus] = useTransaction(
-    async (lusdAmount: Decimal) => {
+    async (nectAmount: Decimal) => {
       await api.createBond(
-        lusdAmount,
+        nectAmount,
         account,
         contracts.chickenBondManager,
-        liquity.connection.signer
+        beraborrow.connection.signer
       );
       const optimisticBond: OptimisticBond = {
         id: "OPTIMISTIC_BOND",
-        deposit: lusdAmount,
+        deposit: nectAmount,
         startTime: Date.now(),
         status: "PENDING"
       };
       setOptimisticBond(optimisticBond);
       setShouldSynchronize(true);
     },
-    [contracts.chickenBondManager, liquity.connection.signer, account]
+    [contracts.chickenBondManager, beraborrow.connection.signer, account]
   );
 
   const [cancelBond, cancelStatus] = useTransaction(
-    async (bondId: string, minimumLusd: Decimal) => {
+    async (bondId: string, minimumNect: Decimal) => {
       await api.cancelBond(
         bondId,
-        minimumLusd,
+        minimumNect,
         account,
         contracts.chickenBondManager,
-        liquity.connection.signer
+        beraborrow.connection.signer
       );
       removeBondFromList(bondId);
       setShouldSynchronize(true);
     },
-    [contracts.chickenBondManager, removeBondFromList, liquity.connection.signer, account]
+    [contracts.chickenBondManager, removeBondFromList, beraborrow.connection.signer, account]
   );
 
   const [claimBond, claimStatus] = useTransaction(
     async (bondId: string) => {
-      await api.claimBond(bondId, account, contracts.chickenBondManager, liquity.connection.signer);
+      await api.claimBond(bondId, account, contracts.chickenBondManager, beraborrow.connection.signer);
       changeBondStatusToClaimed(bondId);
       setShouldSynchronize(true);
     },
-    [contracts.chickenBondManager, changeBondStatusToClaimed, liquity.connection.signer, account]
+    [contracts.chickenBondManager, changeBondStatusToClaimed, beraborrow.connection.signer, account]
   );
 
   const getExpectedSwapOutput = useCallback(
-    async (inputToken: BLusdAmmTokenIndex, inputAmount: Decimal) =>
-      contracts.bLusdAmm
+    async (inputToken: BNectAmmTokenIndex, inputAmount: Decimal) =>
+      contracts.bNectAmm
         ? (isMainnet ? api.getExpectedSwapOutputMainnet : api.getExpectedSwapOutput)(
             inputToken,
             inputAmount,
-            contracts.bLusdAmm
+            contracts.bNectAmm
           )
         : Decimal.ZERO,
-    [contracts.bLusdAmm, isMainnet]
+    [contracts.bNectAmm, isMainnet]
   );
 
   const [swapTokens, swapStatus] = useTransaction(
-    async (inputToken: BLusdAmmTokenIndex, inputAmount: Decimal, minOutputAmount: Decimal) => {
+    async (inputToken: BNectAmmTokenIndex, inputAmount: Decimal, minOutputAmount: Decimal) => {
       await (isMainnet ? api.swapTokensMainnet : api.swapTokens)(
         inputToken,
         inputAmount,
         minOutputAmount,
-        contracts.bLusdAmm,
-        liquity.connection.signer,
+        contracts.bNectAmm,
+        beraborrow.connection.signer,
         account
       );
       setShouldSynchronize(true);
     },
-    [contracts.bLusdAmm, isMainnet, liquity.connection.signer, account]
+    [contracts.bNectAmm, isMainnet, beraborrow.connection.signer, account]
   );
 
   const getExpectedLpTokens = useCallback(
-    async (bLusdAmount: Decimal, lusdAmount: Decimal) => {
-      return contracts.bLusdAmmZapper
-        ? api.getExpectedLpTokens(bLusdAmount, lusdAmount, contracts.bLusdAmmZapper)
+    async (bNectAmount: Decimal, nectAmount: Decimal) => {
+      return contracts.bNectAmmZapper
+        ? api.getExpectedLpTokens(bNectAmount, nectAmount, contracts.bNectAmmZapper)
         : Decimal.ZERO;
     },
-    [contracts.bLusdAmmZapper]
+    [contracts.bNectAmmZapper]
   );
 
   const [manageLiquidity, manageLiquidityStatus] = useTransaction(
     async (params: ManageLiquidityPayload) => {
       if (params.action === "addLiquidity") {
         await api.addLiquidity(
-          params.bLusdAmount,
-          params.lusdAmount,
+          params.bNectAmount,
+          params.nectAmount,
           params.minLpTokens,
           params.shouldStakeInGauge,
-          contracts.bLusdAmmZapper,
-          liquity.connection.signer,
+          contracts.bNectAmmZapper,
+          beraborrow.connection.signer,
           account
         );
       } else if (params.action === "removeLiquidity") {
         await api.removeLiquidity(
           params.burnLpTokens,
-          params.minBLusdAmount,
-          params.minLusdAmount,
-          contracts.bLusdAmmZapper,
-          liquity.connection.signer
+          params.minBNectAmount,
+          params.minNectAmount,
+          contracts.bNectAmmZapper,
+          beraborrow.connection.signer
         );
       } else if (params.action === "removeLiquidityOneCoin") {
         await api.removeLiquidityOneCoin(
           params.burnLpTokens,
           params.output,
           params.minAmount,
-          contracts.bLusdAmmZapper,
-          contracts.bLusdAmm,
-          liquity.connection.signer,
+          contracts.bNectAmmZapper,
+          contracts.bNectAmm,
+          beraborrow.connection.signer,
           account
         );
       } else if (params.action === "stakeLiquidity") {
         await api.stakeLiquidity(
           params.stakeAmount,
-          contracts.bLusdGauge,
-          liquity.connection.signer
+          contracts.bNectGauge,
+          beraborrow.connection.signer
         );
       } else if (params.action === "unstakeLiquidity") {
         await api.unstakeLiquidity(
           params.unstakeAmount,
-          contracts.bLusdGauge,
-          liquity.connection.signer
+          contracts.bNectGauge,
+          beraborrow.connection.signer
         );
       } else if (params.action === "claimLpRewards") {
-        await api.claimLpRewards(contracts.bLusdGauge, liquity.connection.signer);
+        await api.claimLpRewards(contracts.bNectGauge, beraborrow.connection.signer);
       }
       setShouldSynchronize(true);
     },
     [
-      contracts.bLusdAmmZapper,
-      contracts.bLusdGauge,
-      contracts.bLusdAmm,
-      liquity.connection.signer,
+      contracts.bNectAmmZapper,
+      contracts.bNectGauge,
+      contracts.bNectAmm,
+      beraborrow.connection.signer,
       account
     ]
   );
@@ -576,19 +576,19 @@ export const BondViewProvider: React.FC = props => {
   const getExpectedWithdrawal = useCallback(
     async (
       burnLp: Decimal,
-      output: BLusdAmmTokenIndex | "both"
-    ): Promise<Map<BLusdAmmTokenIndex, Decimal>> => {
-      if (contracts.bLusdAmm === undefined)
+      output: BNectAmmTokenIndex | "both"
+    ): Promise<Map<BNectAmmTokenIndex, Decimal>> => {
+      if (contracts.bNectAmm === undefined)
         return new Map([
-          [BLusdAmmTokenIndex.LUSD, Decimal.ZERO],
-          [BLusdAmmTokenIndex.BLUSD, Decimal.ZERO]
+          [BNectAmmTokenIndex.NECT, Decimal.ZERO],
+          [BNectAmmTokenIndex.BNECT, Decimal.ZERO]
         ]);
 
-      return contracts.bLusdAmmZapper
-        ? api.getExpectedWithdrawal(burnLp, output, contracts.bLusdAmmZapper, contracts.bLusdAmm)
+      return contracts.bNectAmmZapper
+        ? api.getExpectedWithdrawal(burnLp, output, contracts.bNectAmmZapper, contracts.bNectAmm)
         : new Map();
     },
-    [contracts.bLusdAmmZapper, contracts.bLusdAmm]
+    [contracts.bNectAmmZapper, contracts.bNectAmm]
   );
 
   const selectedBond = useMemo(() => bonds?.find(bond => bond.id === selectedBondId), [
@@ -708,7 +708,7 @@ export const BondViewProvider: React.FC = props => {
       )
         return;
 
-      if (protocolInfo.bLusdSupply.gt(0)) {
+      if (protocolInfo.bNectSupply.gt(0)) {
         setIsBootstrapPeriodActive(false);
         return;
       }
@@ -733,31 +733,31 @@ export const BondViewProvider: React.FC = props => {
     bonds,
     statuses,
     selectedBond,
-    bLusdBalance,
-    lusdBalance,
+    bNectBalance,
+    nectBalance,
     lpTokenBalance,
     stakedLpTokenBalance,
     lpTokenSupply,
-    bLusdAmmBLusdBalance,
-    bLusdAmmLusdBalance,
+    bNectAmmBNectBalance,
+    bNectAmmNectBalance,
     isInfiniteBondApproved,
     isSynchronizing,
-    getLusdFromFaucet,
+    getNectFromFaucet,
     setSimulatedMarketPrice,
     resetSimulatedMarketPrice,
     simulatedProtocolInfo,
     hasFoundContracts: contracts.hasFoundContracts,
-    isBLusdApprovedWithBlusdAmm,
-    isLusdApprovedWithBlusdAmm,
-    isLusdApprovedWithAmmZapper,
-    isBLusdApprovedWithAmmZapper,
-    isBLusdLpApprovedWithAmmZapper,
-    isBLusdLpApprovedWithGauge,
+    isBNectApprovedWithBnectAmm,
+    isNectApprovedWithBnectAmm,
+    isNectApprovedWithAmmZapper,
+    isBNectApprovedWithAmmZapper,
+    isBNectLpApprovedWithAmmZapper,
+    isBNectLpApprovedWithGauge,
     inputToken,
-    isInputTokenApprovedWithBLusdAmm:
-      inputToken === BLusdAmmTokenIndex.BLUSD
-        ? isBLusdApprovedWithBlusdAmm
-        : isLusdApprovedWithBlusdAmm,
+    isInputTokenApprovedWithBNectAmm:
+      inputToken === BNectAmmTokenIndex.BNECT
+        ? isBNectApprovedWithBnectAmm
+        : isNectApprovedWithBnectAmm,
     getExpectedSwapOutput,
     getExpectedLpTokens,
     getExpectedWithdrawal,
@@ -767,7 +767,7 @@ export const BondViewProvider: React.FC = props => {
     lpRewards
   };
 
-  // window.__LIQUITY_BONDS__ = provider.current;
+  // window.__BERABORROW_BONDS__ = provider.current;
 
   return <BondViewContext.Provider value={provider}>{children}</BondViewContext.Provider>;
 };

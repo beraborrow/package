@@ -5,7 +5,7 @@ import { Borrow } from "./Borrow";
 import { Opening } from "./Opening";
 import { useTroveView } from "./context/TroveViewContext";
 import { ReadOnlyStats } from "./ReadOnlyStats";
-import { Decimal } from "@liquity/lib-base";
+import { Decimal } from "@beraborrow/lib-base";
 
 export const Trove: React.FC = props => {
   const { view } = useTroveView();

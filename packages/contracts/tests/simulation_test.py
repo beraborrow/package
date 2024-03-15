@@ -217,7 +217,7 @@ def test_run_simulation(add_accounts, contracts, print_expectations):
 
     with open('tests/simulation.csv', 'w', newline='') as csvfile:
         datawriter = csv.writer(csvfile, delimiter=',')
-        datawriter.writerow(['iteration', 'ETH_price', 'price_NECT', 'price_POLLEN', 'num_troves', 'total_coll', 'total_debt', 'TCR', 'recovery_mode', 'last_ICR', 'SP_NECT', 'SP_ETH', 'total_coll_added', 'total_coll_liquidated', 'total_nect_redempted'])
+        datawriter.writerow(['iteration', 'iBGT_price', 'price_NECT', 'price_POLLEN', 'num_troves', 'total_coll', 'total_debt', 'TCR', 'recovery_mode', 'last_ICR', 'SP_NECT', 'SP_iBGT', 'total_coll_added', 'total_coll_liquidated', 'total_nect_redempted'])
 
         #Simulation Process
         for index in range(1, n_sim):
@@ -262,13 +262,13 @@ def test_run_simulation(add_accounts, contracts, print_expectations):
             #annualized_earning = result_POLLEN[1]
             #MC_POLLEN_current = result_POLLEN[2]
 
-            [ETH_price, num_troves, total_coll, total_debt, TCR, recovery_mode, last_ICR, SP_NECT, SP_ETH] = logGlobalState(contracts)
+            [iBGT_price, num_troves, total_coll, total_debt, TCR, recovery_mode, last_ICR, SP_NECT, SP_iBGT] = logGlobalState(contracts)
             print('Total redempted ', total_nect_redempted)
-            print('Total ETH added ', total_coll_added)
-            print('Total ETH liquid', total_coll_liquidated)
-            print(f'Ratio ETH liquid {100 * total_coll_liquidated / total_coll_added}%')
+            print('Total iBGT added ', total_coll_added)
+            print('Total iBGT liquid', total_coll_liquidated)
+            print(f'Ratio iBGT liquid {100 * total_coll_liquidated / total_coll_added}%')
             print(' ----------------------\n')
 
-            datawriter.writerow([index, ETH_price, price_NECT, price_POLLEN_current, num_troves, total_coll, total_debt, TCR, recovery_mode, last_ICR, SP_NECT, SP_ETH, total_coll_added, total_coll_liquidated, total_nect_redempted])
+            datawriter.writerow([index, iBGT_price, price_NECT, price_POLLEN_current, num_troves, total_coll, total_debt, TCR, recovery_mode, last_ICR, SP_NECT, SP_iBGT, total_coll_added, total_coll_liquidated, total_nect_redempted])
 
             assert price_NECT > 0

@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { Card, Heading, Box, Flex, Button } from "theme-ui";
 import { InfoMessage } from "../InfoMessage";
 import { useStabilityView } from "./context/StabilityViewContext";
-import { RemainingLQTY } from "./RemainingLQTY";
+import { RemainingPOLLEN } from "./RemainingPOLLEN";
 import { Yield } from "./Yield";
 
 export const NoDeposit: React.FC = () => {
@@ -17,12 +17,12 @@ export const NoDeposit: React.FC = () => {
       <Heading>
         Stability Pool
         <Flex sx={{ justifyContent: "flex-end" }}>
-          <RemainingLQTY />
+          <RemainingPOLLEN />
         </Flex>
       </Heading>
       <Box sx={{ p: [2, 3] }}>
-        <InfoMessage title="You have no LUSD in the Stability Pool.">
-          You can earn ETH and LQTY rewards by depositing LUSD.
+        <InfoMessage title="You have no NECT in the Stability Pool.">
+          You can earn ETH and POLLEN rewards by depositing NECT.
         </InfoMessage>
 
         <Flex variant="layout.actions">

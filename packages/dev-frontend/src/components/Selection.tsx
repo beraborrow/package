@@ -3,7 +3,7 @@ import { useState, useContext } from 'react'
 import styled, { keyframes } from "styled-components";
 
 import { UserAccount } from "../components/UserAccount";
-import { LiquityLogo } from "../components/LiquityLogo";
+import { BeraBorrowLogo } from "./BeraBorrowLogo";
 import { CurPageContext } from '../contexts/CurPageContext';
 import { useTroveView } from "./Trove/context/TroveViewContext";
 import { useStabilityView } from "./Stability/context/StabilityViewContext";
@@ -16,7 +16,7 @@ import { ReadOnlyStats } from "./Trove/ReadOnlyStats";
 import { StabilityDepositManager } from "./Stability//StabilityDepositManager";
 import { StabilityStats } from "./Stability//StabilityStats";
 
-import { Decimal } from "@liquity/lib-base";
+import { Decimal } from "@beraborrow/lib-base";
 
 const appearFromHide = keyframes`
   0% {
@@ -72,7 +72,7 @@ const Selection: React.FC = props => {
             <div className={`w-full h-full bg-cover bg-no-repeat z-1 bg-bottom-50 ${(showTrove || showStability) ? "bg-[#111]" : "bg-bear bg-[#AF8765] "}`}>
                 <div className="flex h-full flex-col min-h-full pb-[192px] sm:pb-[166px]">
                     <div className="flex z-[5] flex-row justify-between px-5 md:px-10 lg:px-[60px] py-[15px]">
-                        <LiquityLogo />
+                        <BeraBorrowLogo />
                         <UserAccount />
                     </div>
                     <div className={`flex flex-col lg:flex-row items-start lg:items-end bottom-[30px] lg:bottom-[55px] justify-between absolute ${(showTrove || showStability)?"px-0":"px-0 md:px-12"} lg:px-16 w-full`}>

@@ -95,37 +95,37 @@ contract('BorrowerWrappers', async accounts => {
     NECT_GAS_COMPENSATION = await borrowerOperations.NECT_GAS_COMPENSATION()
   })
 
-  it('proxy owner can recover ETH', async () => {
+  it('proxy owner can recover iBGT', async () => {
     const amount = toBN(dec(1, 18))
     const proxyAddress = borrowerWrappers.getProxyAddressFromUser(alice)
 
-    // send some ETH to proxy
+    // send some iBGT to proxy
     await web3.eth.sendTransaction({ from: owner, to: proxyAddress, value: amount, gasPrice: GAS_PRICE })
     assert.equal(await web3.eth.getBalance(proxyAddress), amount.toString())
 
     const balanceBefore = toBN(await web3.eth.getBalance(alice))
 
-    // recover ETH
-    const gas_Used = th.gasUsed(await borrowerWrappers.transferETH(alice, amount, { from: alice, gasPrice: GAS_PRICE }))
+    // recover iBGT
+    const gas_Used = th.gasUsed(await borrowerWrappers.transferiBGT(alice, amount, { from: alice, gasPrice: GAS_PRICE }))
     
     const balanceAfter = toBN(await web3.eth.getBalance(alice))
     const expectedBalance = toBN(balanceBefore.sub(toBN(gas_Used * GAS_PRICE)))
     assert.equal(balanceAfter.sub(expectedBalance), amount.toString())
   })
 
-  it('non proxy owner cannot recover ETH', async () => {
+  it('non proxy owner cannot recover iBGT', async () => {
     const amount = toBN(dec(1, 18))
     const proxyAddress = borrowerWrappers.getProxyAddressFromUser(alice)
 
-    // send some ETH to proxy
+    // send some iBGT to proxy
     await web3.eth.sendTransaction({ from: owner, to: proxyAddress, value: amount })
     assert.equal(await web3.eth.getBalance(proxyAddress), amount.toString())
 
     const balanceBefore = toBN(await web3.eth.getBalance(alice))
 
-    // try to recover ETH
+    // try to recover iBGT
     const proxy = borrowerWrappers.getProxyFromUser(alice)
-    const signature = 'transferETH(address,uint256)'
+    const signature = 'transferiBGT(address,uint256)'
     const calldata = th.getTransactionData(signature, [alice, amount])
     await assertRevert(proxy.methods["execute(address,bytes)"](borrowerWrappers.scriptAddress, calldata, { from: bob }), 'ds-auth-unauthorized')
 
@@ -269,7 +269,6 @@ contract('BorrowerWrappers', async accounts => {
     const aliceDeposit = toBN(dec(150, 18))
     await openTrove({ extraNECTAmount: aliceDeposit, ICR: toBN(dec(3, 18)), extraParams: { from: alice } })
     await stabilityPool.provideToSP(aliceDeposit, ZERO_ADDRESS, { from: alice })
-
     // Defaulter Trove opened
     const { nectAmount, netDebt, collateral } = await openTrove({ ICR: toBN(dec(210, 16)), extraParams: { from: defaulter_1 } })
 
@@ -288,11 +287,11 @@ contract('BorrowerWrappers', async accounts => {
     const expectedCompoundedNECTDeposit_A = toBN(dec(150, 18)).sub(expectedNECTLoss_A)
     const compoundedNECTDeposit_A = await stabilityPool.getCompoundedNECTDeposit(alice)
     // collateral * 150 / 2500 * 0.995
-    const expectedETHGain_A = collateral.mul(aliceDeposit).div(totalDeposits).mul(toBN(dec(995, 15))).div(mv._1e18BN)
+    const expectediBGTGain_A = collateral.mul(aliceDeposit).div(totalDeposits).mul(toBN(dec(995, 15))).div(mv._1e18BN)
 
     assert.isAtMost(th.getDifference(expectedCompoundedNECTDeposit_A, compoundedNECTDeposit_A), 1000)
 
-    const ethBalanceBefore = await web3.eth.getBalance(borrowerOperations.getProxyAddressFromUser(alice))
+    const ibgtBalanceBefore = await web3.eth.getBalance(borrowerOperations.getProxyAddressFromUser(alice))
     const troveCollBefore = await troveManager.getTroveColl(alice)
     const nectBalanceBefore = await nectToken.balanceOf(alice)
     const troveDebtBefore = await troveManager.getTroveDebt(alice)
@@ -301,7 +300,7 @@ contract('BorrowerWrappers', async accounts => {
     const depositBefore = (await stabilityPool.deposits(alice))[0]
     const stakeBefore = await pollenStaking.stakes(alice)
 
-    const proportionalNECT = expectedETHGain_A.mul(price).div(ICRBefore)
+    const proportionalNECT = expectediBGTGain_A.mul(price).div(ICRBefore)
     const borrowingRate = await troveManagerOriginal.getBorrowingRateWithDecay()
     const netDebtChange = proportionalNECT.mul(mv._1e18BN).div(mv._1e18BN.add(borrowingRate))
 
@@ -316,7 +315,7 @@ contract('BorrowerWrappers', async accounts => {
     const proxyAddress = borrowerWrappers.getProxyAddressFromUser(alice)
     await borrowerWrappers.claimSPRewardsAndRecycle(th._100pct, alice, alice, { from: alice })
 
-    const ethBalanceAfter = await web3.eth.getBalance(borrowerOperations.getProxyAddressFromUser(alice))
+    const ibgtBalanceAfter = await web3.eth.getBalance(borrowerOperations.getProxyAddressFromUser(alice))
     const troveCollAfter = await troveManager.getTroveColl(alice)
     const nectBalanceAfter = await nectToken.balanceOf(alice)
     const troveDebtAfter = await troveManager.getTroveDebt(alice)
@@ -326,13 +325,13 @@ contract('BorrowerWrappers', async accounts => {
     const stakeAfter = await pollenStaking.stakes(alice)
 
     // check proxy balances remain the same
-    assert.equal(ethBalanceAfter.toString(), ethBalanceBefore.toString())
+    assert.equal(ibgtBalanceAfter.toString(), ibgtBalanceBefore.toString())
     assert.equal(nectBalanceAfter.toString(), nectBalanceBefore.toString())
     assert.equal(pollenBalanceAfter.toString(), pollenBalanceBefore.toString())
-    // check trove has increased debt by the ICR proportional amount to ETH gain
+    // check trove has increased debt by the ICR proportional amount to iBGT gain
     th.assertIsApproximatelyEqual(troveDebtAfter, troveDebtBefore.add(proportionalNECT))
-    // check trove has increased collateral by the ETH gain
-    th.assertIsApproximatelyEqual(troveCollAfter, troveCollBefore.add(expectedETHGain_A))
+    // check trove has increased collateral by the iBGT gain
+    th.assertIsApproximatelyEqual(troveCollAfter, troveCollBefore.add(expectediBGTGain_A))
     // check that ICR remains constant
     th.assertIsApproximatelyEqual(ICRAfter, ICRBefore)
     // check that Stability Pool deposit
@@ -343,9 +342,9 @@ contract('BorrowerWrappers', async accounts => {
     // POLLEN staking
     th.assertIsApproximatelyEqual(stakeAfter, stakeBefore.add(expectedPOLLENGain_A))
 
-    // Expect Alice has withdrawn all ETH gain
-    const alice_pendingETHGain = await stabilityPool.getDepositorETHGain(alice)
-    assert.equal(alice_pendingETHGain, 0)
+    // Expect Alice has withdrawn all iBGT gain
+    const alice_pendingiBGTGain = await stabilityPool.getDepositoriBGTGain(alice)
+    assert.equal(alice_pendingiBGTGain, 0)
   })
 
 
@@ -417,7 +416,7 @@ contract('BorrowerWrappers', async accounts => {
     const redeemedAmount = toBN(dec(100, 18))
     await th.redeemCollateral(whale, contracts, redeemedAmount, GAS_PRICE)
 
-    const ethBalanceBefore = await web3.eth.getBalance(borrowerOperations.getProxyAddressFromUser(alice))
+    const ibgtBalanceBefore = await web3.eth.getBalance(borrowerOperations.getProxyAddressFromUser(alice))
     const troveCollBefore = await troveManager.getTroveColl(alice)
     const nectBalanceBefore = await nectToken.balanceOf(alice)
     const troveDebtBefore = await troveManager.getTroveDebt(alice)
@@ -432,7 +431,7 @@ contract('BorrowerWrappers', async accounts => {
       'BorrowerWrappersScript: caller must have an active trove'
     )
 
-    const ethBalanceAfter = await web3.eth.getBalance(borrowerOperations.getProxyAddressFromUser(alice))
+    const ibgtBalanceAfter = await web3.eth.getBalance(borrowerOperations.getProxyAddressFromUser(alice))
     const troveCollAfter = await troveManager.getTroveColl(alice)
     const nectBalanceAfter = await nectToken.balanceOf(alice)
     const troveDebtAfter = await troveManager.getTroveDebt(alice)
@@ -442,7 +441,7 @@ contract('BorrowerWrappers', async accounts => {
     const stakeAfter = await pollenStaking.stakes(alice)
 
     // check everything remains the same
-    assert.equal(ethBalanceAfter.toString(), ethBalanceBefore.toString())
+    assert.equal(ibgtBalanceAfter.toString(), ibgtBalanceBefore.toString())
     assert.equal(nectBalanceAfter.toString(), nectBalanceBefore.toString())
     assert.equal(pollenBalanceAfter.toString(), pollenBalanceBefore.toString())
     th.assertIsApproximatelyEqual(troveDebtAfter, troveDebtBefore, 10000)
@@ -453,12 +452,12 @@ contract('BorrowerWrappers', async accounts => {
     // POLLEN staking
     th.assertIsApproximatelyEqual(stakeAfter, stakeBefore)
 
-    // Expect Alice has withdrawn all ETH gain
-    const alice_pendingETHGain = await stabilityPool.getDepositorETHGain(alice)
-    assert.equal(alice_pendingETHGain, 0)
+    // Expect Alice has withdrawn all iBGT gain
+    const alice_pendingiBGTGain = await stabilityPool.getDepositoriBGTGain(alice)
+    assert.equal(alice_pendingiBGTGain, 0)
   })
 
-  it('claimStakingGainsAndRecycle(): with only ETH gain', async () => {
+  it('claimStakingGainsAndRecycle(): with only iBGT gain', async () => {
     const price = toBN(dec(200, 18))
 
     // Whale opens Trove
@@ -487,11 +486,11 @@ contract('BorrowerWrappers', async accounts => {
     const redeemedAmount = toBN(dec(100, 18))
     await th.redeemCollateral(whale, contracts, redeemedAmount, GAS_PRICE)
 
-    // Alice ETH gain is ((150/2000) * (redemption fee over redeemedAmount) / price)
+    // Alice iBGT gain is ((150/2000) * (redemption fee over redeemedAmount) / price)
     const redemptionFee = await troveManager.getRedemptionFeeWithDecay(redeemedAmount)
-    const expectedETHGain_A = redemptionFee.mul(toBN(dec(150, 18))).div(toBN(dec(2000, 18))).mul(mv._1e18BN).div(price)
+    const expectediBGTGain_A = redemptionFee.mul(toBN(dec(150, 18))).div(toBN(dec(2000, 18))).mul(mv._1e18BN).div(price)
 
-    const ethBalanceBefore = await web3.eth.getBalance(borrowerOperations.getProxyAddressFromUser(alice))
+    const ibgtBalanceBefore = await web3.eth.getBalance(borrowerOperations.getProxyAddressFromUser(alice))
     const troveCollBefore = await troveManager.getTroveColl(alice)
     const nectBalanceBefore = await nectToken.balanceOf(alice)
     const troveDebtBefore = await troveManager.getTroveDebt(alice)
@@ -500,7 +499,7 @@ contract('BorrowerWrappers', async accounts => {
     const depositBefore = (await stabilityPool.deposits(alice))[0]
     const stakeBefore = await pollenStaking.stakes(alice)
 
-    const proportionalNECT = expectedETHGain_A.mul(price).div(ICRBefore)
+    const proportionalNECT = expectediBGTGain_A.mul(price).div(ICRBefore)
     const borrowingRate = await troveManagerOriginal.getBorrowingRateWithDecay()
     const netDebtChange = proportionalNECT.mul(toBN(dec(1, 18))).div(toBN(dec(1, 18)).add(borrowingRate))
 
@@ -514,7 +513,7 @@ contract('BorrowerWrappers', async accounts => {
     const newBorrowingFee = await troveManagerOriginal.getBorrowingFeeWithDecay(netDebtChange)
     const expectedNewNECTGain_A = newBorrowingFee.mul(toBN(dec(150, 18))).div(toBN(dec(2000, 18)))
 
-    const ethBalanceAfter = await web3.eth.getBalance(borrowerOperations.getProxyAddressFromUser(alice))
+    const ibgtBalanceAfter = await web3.eth.getBalance(borrowerOperations.getProxyAddressFromUser(alice))
     const troveCollAfter = await troveManager.getTroveColl(alice)
     const nectBalanceAfter = await nectToken.balanceOf(alice)
     const troveDebtAfter = await troveManager.getTroveDebt(alice)
@@ -524,14 +523,14 @@ contract('BorrowerWrappers', async accounts => {
     const stakeAfter = await pollenStaking.stakes(alice)
 
     // check proxy balances remain the same
-    assert.equal(ethBalanceAfter.toString(), ethBalanceBefore.toString())
+    assert.equal(ibgtBalanceAfter.toString(), ibgtBalanceBefore.toString())
     assert.equal(pollenBalanceAfter.toString(), pollenBalanceBefore.toString())
     // check proxy nect balance has increased by own adjust trove reward
     th.assertIsApproximatelyEqual(nectBalanceAfter, nectBalanceBefore.add(expectedNewNECTGain_A))
-    // check trove has increased debt by the ICR proportional amount to ETH gain
+    // check trove has increased debt by the ICR proportional amount to iBGT gain
     th.assertIsApproximatelyEqual(troveDebtAfter, troveDebtBefore.add(proportionalNECT), 10000)
-    // check trove has increased collateral by the ETH gain
-    th.assertIsApproximatelyEqual(troveCollAfter, troveCollBefore.add(expectedETHGain_A))
+    // check trove has increased collateral by the iBGT gain
+    th.assertIsApproximatelyEqual(troveCollAfter, troveCollBefore.add(expectediBGTGain_A))
     // check that ICR remains constant
     th.assertIsApproximatelyEqual(ICRAfter, ICRBefore)
     // check that Stability Pool deposit
@@ -542,9 +541,9 @@ contract('BorrowerWrappers', async accounts => {
     // POLLEN staking
     th.assertIsApproximatelyEqual(stakeAfter, stakeBefore.add(expectedPOLLENGain_A))
 
-    // Expect Alice has withdrawn all ETH gain
-    const alice_pendingETHGain = await stabilityPool.getDepositorETHGain(alice)
-    assert.equal(alice_pendingETHGain, 0)
+    // Expect Alice has withdrawn all iBGT gain
+    const alice_pendingiBGTGain = await stabilityPool.getDepositoriBGTGain(alice)
+    assert.equal(alice_pendingiBGTGain, 0)
   })
 
   it('claimStakingGainsAndRecycle(): with only NECT gain', async () => {
@@ -572,7 +571,7 @@ contract('BorrowerWrappers', async accounts => {
     // Alice NECT gain is ((150/2000) * borrowingFee)
     const expectedNECTGain_A = borrowingFee.mul(toBN(dec(150, 18))).div(toBN(dec(2000, 18)))
 
-    const ethBalanceBefore = await web3.eth.getBalance(borrowerOperations.getProxyAddressFromUser(alice))
+    const ibgtBalanceBefore = await web3.eth.getBalance(borrowerOperations.getProxyAddressFromUser(alice))
     const troveCollBefore = await troveManager.getTroveColl(alice)
     const nectBalanceBefore = await nectToken.balanceOf(alice)
     const troveDebtBefore = await troveManager.getTroveDebt(alice)
@@ -586,7 +585,7 @@ contract('BorrowerWrappers', async accounts => {
     // Alice claims staking rewards and puts them back in the system through the proxy
     await borrowerWrappers.claimStakingGainsAndRecycle(th._100pct, alice, alice, { from: alice })
 
-    const ethBalanceAfter = await web3.eth.getBalance(borrowerOperations.getProxyAddressFromUser(alice))
+    const ibgtBalanceAfter = await web3.eth.getBalance(borrowerOperations.getProxyAddressFromUser(alice))
     const troveCollAfter = await troveManager.getTroveColl(alice)
     const nectBalanceAfter = await nectToken.balanceOf(alice)
     const troveDebtAfter = await troveManager.getTroveDebt(alice)
@@ -596,13 +595,13 @@ contract('BorrowerWrappers', async accounts => {
     const stakeAfter = await pollenStaking.stakes(alice)
 
     // check proxy balances remain the same
-    assert.equal(ethBalanceAfter.toString(), ethBalanceBefore.toString())
+    assert.equal(ibgtBalanceAfter.toString(), ibgtBalanceBefore.toString())
     assert.equal(pollenBalanceAfter.toString(), pollenBalanceBefore.toString())
     // check proxy nect balance has increased by own adjust trove reward
     th.assertIsApproximatelyEqual(nectBalanceAfter, nectBalanceBefore)
-    // check trove has increased debt by the ICR proportional amount to ETH gain
+    // check trove has increased debt by the ICR proportional amount to iBGT gain
     th.assertIsApproximatelyEqual(troveDebtAfter, troveDebtBefore, 10000)
-    // check trove has increased collateral by the ETH gain
+    // check trove has increased collateral by the iBGT gain
     th.assertIsApproximatelyEqual(troveCollAfter, troveCollBefore)
     // check that ICR remains constant
     th.assertIsApproximatelyEqual(ICRAfter, ICRBefore)
@@ -611,12 +610,12 @@ contract('BorrowerWrappers', async accounts => {
     // check pollen balance remains the same
     th.assertIsApproximatelyEqual(pollenBalanceBefore, pollenBalanceAfter)
 
-    // Expect Alice has withdrawn all ETH gain
-    const alice_pendingETHGain = await stabilityPool.getDepositorETHGain(alice)
-    assert.equal(alice_pendingETHGain, 0)
+    // Expect Alice has withdrawn all iBGT gain
+    const alice_pendingiBGTGain = await stabilityPool.getDepositoriBGTGain(alice)
+    assert.equal(alice_pendingiBGTGain, 0)
   })
 
-  it('claimStakingGainsAndRecycle(): with both ETH and NECT gains', async () => {
+  it('claimStakingGainsAndRecycle(): with both iBGT and NECT gains', async () => {
     const price = toBN(dec(200, 18))
 
     // Whale opens Trove
@@ -648,11 +647,11 @@ contract('BorrowerWrappers', async accounts => {
     const redeemedAmount = toBN(dec(100, 18))
     await th.redeemCollateral(whale, contracts, redeemedAmount, GAS_PRICE)
 
-    // Alice ETH gain is ((150/2000) * (redemption fee over redeemedAmount) / price)
+    // Alice iBGT gain is ((150/2000) * (redemption fee over redeemedAmount) / price)
     const redemptionFee = await troveManager.getRedemptionFeeWithDecay(redeemedAmount)
-    const expectedETHGain_A = redemptionFee.mul(toBN(dec(150, 18))).div(toBN(dec(2000, 18))).mul(mv._1e18BN).div(price)
+    const expectediBGTGain_A = redemptionFee.mul(toBN(dec(150, 18))).div(toBN(dec(2000, 18))).mul(mv._1e18BN).div(price)
 
-    const ethBalanceBefore = await web3.eth.getBalance(borrowerOperations.getProxyAddressFromUser(alice))
+    const ibgtBalanceBefore = await web3.eth.getBalance(borrowerOperations.getProxyAddressFromUser(alice))
     const troveCollBefore = await troveManager.getTroveColl(alice)
     const nectBalanceBefore = await nectToken.balanceOf(alice)
     const troveDebtBefore = await troveManager.getTroveDebt(alice)
@@ -661,7 +660,7 @@ contract('BorrowerWrappers', async accounts => {
     const depositBefore = (await stabilityPool.deposits(alice))[0]
     const stakeBefore = await pollenStaking.stakes(alice)
 
-    const proportionalNECT = expectedETHGain_A.mul(price).div(ICRBefore)
+    const proportionalNECT = expectediBGTGain_A.mul(price).div(ICRBefore)
     const borrowingRate = await troveManagerOriginal.getBorrowingRateWithDecay()
     const netDebtChange = proportionalNECT.mul(toBN(dec(1, 18))).div(toBN(dec(1, 18)).add(borrowingRate))
     const expectedTotalNECT = expectedNECTGain_A.add(netDebtChange)
@@ -675,7 +674,7 @@ contract('BorrowerWrappers', async accounts => {
     const newBorrowingFee = await troveManagerOriginal.getBorrowingFeeWithDecay(netDebtChange)
     const expectedNewNECTGain_A = newBorrowingFee.mul(toBN(dec(150, 18))).div(toBN(dec(2000, 18)))
 
-    const ethBalanceAfter = await web3.eth.getBalance(borrowerOperations.getProxyAddressFromUser(alice))
+    const ibgtBalanceAfter = await web3.eth.getBalance(borrowerOperations.getProxyAddressFromUser(alice))
     const troveCollAfter = await troveManager.getTroveColl(alice)
     const nectBalanceAfter = await nectToken.balanceOf(alice)
     const troveDebtAfter = await troveManager.getTroveDebt(alice)
@@ -685,14 +684,14 @@ contract('BorrowerWrappers', async accounts => {
     const stakeAfter = await pollenStaking.stakes(alice)
 
     // check proxy balances remain the same
-    assert.equal(ethBalanceAfter.toString(), ethBalanceBefore.toString())
+    assert.equal(ibgtBalanceAfter.toString(), ibgtBalanceBefore.toString())
     assert.equal(pollenBalanceAfter.toString(), pollenBalanceBefore.toString())
     // check proxy nect balance has increased by own adjust trove reward
     th.assertIsApproximatelyEqual(nectBalanceAfter, nectBalanceBefore.add(expectedNewNECTGain_A))
-    // check trove has increased debt by the ICR proportional amount to ETH gain
+    // check trove has increased debt by the ICR proportional amount to iBGT gain
     th.assertIsApproximatelyEqual(troveDebtAfter, troveDebtBefore.add(proportionalNECT), 10000)
-    // check trove has increased collateral by the ETH gain
-    th.assertIsApproximatelyEqual(troveCollAfter, troveCollBefore.add(expectedETHGain_A))
+    // check trove has increased collateral by the iBGT gain
+    th.assertIsApproximatelyEqual(troveCollAfter, troveCollBefore.add(expectediBGTGain_A))
     // check that ICR remains constant
     th.assertIsApproximatelyEqual(ICRAfter, ICRBefore)
     // check that Stability Pool deposit
@@ -703,9 +702,9 @@ contract('BorrowerWrappers', async accounts => {
     // POLLEN staking
     th.assertIsApproximatelyEqual(stakeAfter, stakeBefore.add(expectedPOLLENGain_A))
 
-    // Expect Alice has withdrawn all ETH gain
-    const alice_pendingETHGain = await stabilityPool.getDepositorETHGain(alice)
-    assert.equal(alice_pendingETHGain, 0)
+    // Expect Alice has withdrawn all iBGT gain
+    const alice_pendingiBGTGain = await stabilityPool.getDepositoriBGTGain(alice)
+    assert.equal(alice_pendingiBGTGain, 0)
   })
 
 })

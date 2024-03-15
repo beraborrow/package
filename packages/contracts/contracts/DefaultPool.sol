@@ -9,10 +9,10 @@ import "./Dependencies/CheckContract.sol";
 import "./Dependencies/console.sol";
 
 /*
- * The Default Pool holds the ETH and NECT debt (but not NECT tokens) from liquidations that have been redistributed
+ * The Default Pool holds the iBGT and NECT debt (but not NECT tokens) from liquidations that have been redistributed
  * to active troves but not yet "applied", i.e. not yet recorded on a recipient active trove's struct.
  *
- * When a trove makes an operation that applies its pending ETH and NECT debt, its pending ETH and NECT debt is moved
+ * When a trove makes an operation that applies its pending iBGT and NECT debt, its pending iBGT and NECT debt is moved
  * from the Default Pool to the Active Pool.
  */
 contract DefaultPool is Ownable, CheckContract, IDefaultPool {
@@ -22,12 +22,12 @@ contract DefaultPool is Ownable, CheckContract, IDefaultPool {
 
     address public troveManagerAddress;
     address public activePoolAddress;
-    uint256 internal ETH;  // deposited ETH tracker
+    uint256 internal iBGT;  // deposited iBGT tracker
     uint256 internal NECTDebt;  // debt
 
     event TroveManagerAddressChanged(address _newTroveManagerAddress);
     event DefaultPoolNECTDebtUpdated(uint _NECTDebt);
-    event DefaultPoolETHBalanceUpdated(uint _ETH);
+    event DefaultPooliBGTBalanceUpdated(uint _iBGT);
 
     // --- Dependency setters ---
 
@@ -53,12 +53,12 @@ contract DefaultPool is Ownable, CheckContract, IDefaultPool {
     // --- Getters for public variables. Required by IPool interface ---
 
     /*
-    * Returns the ETH state variable.
+    * Returns the iBGT state variable.
     *
-    * Not necessarily equal to the the contract's raw ETH balance - ether can be forcibly sent to contracts.
+    * Not necessarily equal to the the contract's raw iBGT balance - ibgt can be forcibly sent to contracts.
     */
-    function getETH() external view override returns (uint) {
-        return ETH;
+    function getiBGT() external view override returns (uint) {
+        return iBGT;
     }
 
     function getNECTDebt() external view override returns (uint) {
@@ -67,15 +67,15 @@ contract DefaultPool is Ownable, CheckContract, IDefaultPool {
 
     // --- Pool functionality ---
 
-    function sendETHToActivePool(uint _amount) external override {
+    function sendiBGTToActivePool(uint _amount) external override {
         _requireCallerIsTroveManager();
         address activePool = activePoolAddress; // cache to save an SLOAD
-        ETH = ETH.sub(_amount);
-        emit DefaultPoolETHBalanceUpdated(ETH);
-        emit EtherSent(activePool, _amount);
+        iBGT = iBGT.sub(_amount);
+        emit DefaultPooliBGTBalanceUpdated(iBGT);
+        emit iBGTSent(activePool, _amount);
 
         (bool success, ) = activePool.call{ value: _amount }("");
-        require(success, "DefaultPool: sending ETH failed");
+        require(success, "DefaultPool: sending iBGT failed");
     }
 
     function increaseNECTDebt(uint _amount) external override {
@@ -104,7 +104,7 @@ contract DefaultPool is Ownable, CheckContract, IDefaultPool {
 
     receive() external payable {
         _requireCallerIsActivePool();
-        ETH = ETH.add(msg.value);
-        emit DefaultPoolETHBalanceUpdated(ETH);
+        iBGT = iBGT.add(msg.value);
+        emit DefaultPooliBGTBalanceUpdated(iBGT);
     }
 }

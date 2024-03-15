@@ -6,7 +6,7 @@ const { defaultAbiCoder } = require('@ethersproject/abi');
 const { toUtf8Bytes } = require('@ethersproject/strings');
 const { pack } = require('@ethersproject/solidity');
 const { hexlify } = require("@ethersproject/bytes");
-const { ecsign } = require('ethereumjs-util');
+const { ecsign, ecrecover, isValidSignature } = require('ethereumjs-util');
 
 
 // the second account our hardhatenv creates (for EOA A)
@@ -45,8 +45,8 @@ contract('POLLEN Token', async accounts => {
   let tokenVersion
   let chainId
 
-  const sign = (digest, privateKey) => {
-    return ecsign(Buffer.from(digest.slice(2), 'hex'), Buffer.from(privateKey.slice(2), 'hex'))
+  const sign = (digest, privateKey, _chainId) => {
+    return ecsign(Buffer.from(digest.slice(2), 'hex'), Buffer.from(privateKey.slice(2), 'hex'), _chainId)
   }
 
   const PERMIT_TYPEHASH = keccak256(
@@ -97,7 +97,7 @@ contract('POLLEN Token', async accounts => {
       approve.value, nonce, deadline
     )
 
-    const { v, r, s } = sign(digest, A_PrivateKey)
+    const { v, r, s } = sign(digest, A_PrivateKey, chainId)
 
     const tx = pollenTokenTester.permit(
       approve.owner, approve.spender, approve.value,
@@ -355,7 +355,6 @@ contract('POLLEN Token', async accounts => {
     await assertRevert(pollenTokenTester.permit(
       approve.owner, approve.spender, approve.value,
       deadline, v, r, s), 'POLLEN: invalid signature')
-
     // Check that the zero address fails
     await assertRevert(pollenTokenTester.permit('0x0000000000000000000000000000000000000000',
       approve.spender, approve.value, deadline, '0x99', r, s), 'POLLEN: invalid signature')

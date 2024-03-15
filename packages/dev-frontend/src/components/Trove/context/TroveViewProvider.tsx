@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
-import { useLiquitySelector } from "@liquity/lib-react";
-import { LiquityStoreState, UserTroveStatus } from "@liquity/lib-base";
+import { useLiquitySelector } from "@beraborrow/lib-react";
+import { BeraBorrowStoreState, UserTroveStatus } from "@beraborrow/lib-base";
 import { TroveViewContext } from "./TroveViewContext";
 import type { TroveView, TroveEvent } from "./types";
 
@@ -75,7 +75,7 @@ const getInitialView = (troveStatus: UserTroveStatus): TroveView => {
   return "NONE";
 };
 
-const select = ({ trove: { status } }: LiquityStoreState) => status;
+const select = ({ trove: { status } }: BeraBorrowStoreState) => status;
 
 export const TroveViewProvider: React.FC = props => {
   const { children } = props;

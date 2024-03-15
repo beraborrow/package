@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
 
-import { Decimal, TroveChange } from "@liquity/lib-base";
-import { PopulatedEthersLiquityTransaction } from "@liquity/lib-ethers";
+import { Decimal, TroveChange } from "@beraborrow/lib-base";
+import { PopulatedEthersLiquityTransaction } from "@beraborrow/lib-ethers";
 
-import { useLiquity } from "../../hooks/LiquityContext";
+import { useBeraBorrow } from "../../hooks/BeraBorrowContext";
 import { Warning } from "../Warning";
 
 export type GasEstimationState =
@@ -25,7 +25,7 @@ export const ExpensiveTroveChangeWarning: React.FC<ExpensiveTroveChangeWarningPa
   gasEstimationState,
   setGasEstimationState
 }) => {
-  const { liquity } = useLiquity();
+  const { beraborrow } = useBeraBorrow();
 
   useEffect(() => {
     if (troveChange && troveChange.type !== "closure") {
@@ -35,11 +35,11 @@ export const ExpensiveTroveChangeWarning: React.FC<ExpensiveTroveChangeWarningPa
 
       const timeoutId = setTimeout(async () => {
         const populatedTx = await (troveChange.type === "creation"
-          ? liquity.populate.openTrove(troveChange.params, {
+          ? beraborrow.populate.openTrove(troveChange.params, {
               maxBorrowingRate,
               borrowingFeeDecayToleranceMinutes
             })
-          : liquity.populate.adjustTrove(troveChange.params, {
+          : beraborrow.populate.adjustTrove(troveChange.params, {
               maxBorrowingRate,
               borrowingFeeDecayToleranceMinutes
             }));

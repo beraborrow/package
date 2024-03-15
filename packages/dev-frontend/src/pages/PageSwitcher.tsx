@@ -1,23 +1,23 @@
 import { useEffect, useState } from "react";
 import { AddressZero } from "@ethersproject/constants";
 
-import { LiquityStoreState } from "@liquity/lib-base";
-import { useLiquitySelector } from "@liquity/lib-react";
+import { BeraBorrowStoreState } from "@beraborrow/lib-base";
+import { useLiquitySelector } from "@beraborrow/lib-react";
 
-import { useLiquity } from "../hooks/LiquityContext";
+import { useBeraBorrow } from "../hooks/BeraBorrowContext";
 
 import { Dashboard } from "./Dashboard";
 import { UnregisteredFrontend } from "./UnregisteredFrontend";
 import { FrontendRegistration } from "./FrontendRegistration";
 import { FrontendRegistrationSuccess } from "./FrontendRegistrationSuccess";
 
-const selectFrontend = ({ frontend }: LiquityStoreState) => frontend;
+const selectFrontend = ({ frontend }: BeraBorrowStoreState) => frontend;
 
 export const PageSwitcher: React.FC = () => {
   const {
     account,
     config: { frontendTag }
-  } = useLiquity();
+  } = useBeraBorrow();
 
   const frontend = useLiquitySelector(selectFrontend);
   const unregistered = frontendTag !== AddressZero && frontend.status === "unregistered";

@@ -1,98 +1,98 @@
-import { Decimal } from "@liquity/lib-base";
+import { Decimal } from "@beraborrow/lib-base";
 import {
-  BLUSDLPZap,
-  BLUSDLPZap__factory,
-  BLUSDToken,
+  BNECTLPZap,
+  BNECTLPZap__factory,
+  BNECTToken,
   BondNFT,
   ChickenBondManager,
   ERC20Faucet,
   ERC20Faucet__factory
-} from "@liquity/chicken-bonds/lusd/types";
+} from "@beraborrow/chicken-bonds/nect/types";
 import {
   CurveCryptoSwap2ETH,
   CurveLiquidityGaugeV5__factory
-} from "@liquity/chicken-bonds/lusd/types/external";
-import { CurveCryptoSwap2ETH__factory } from "@liquity/chicken-bonds/lusd/types/external";
+} from "@beraborrow/chicken-bonds/nect/types/external";
+import { CurveCryptoSwap2ETH__factory } from "@beraborrow/chicken-bonds/nect/types/external";
 import {
-  BLUSDToken__factory,
+  BNECTToken__factory,
   BondNFT__factory,
   ChickenBondManager__factory
-} from "@liquity/chicken-bonds/lusd/types";
-import type { LUSDToken } from "@liquity/lib-ethers/dist/types";
-import LUSDTokenAbi from "@liquity/lib-ethers/abi/LUSDToken.json";
+} from "@beraborrow/chicken-bonds/nect/types";
+import type { NECTToken } from "@beraborrow/lib-ethers/dist/types";
+import NECTTokenAbi from "@beraborrow/lib-ethers/abi/NECTToken.json";
 import { useContract } from "../../../hooks/useContract";
-import { useLiquity } from "../../../hooks/LiquityContext";
+import { useBeraBorrow } from "../../../hooks/BeraBorrowContext";
 import { useCallback } from "react";
 import type { BondsApi } from "./api";
-import type { BLusdLpRewards, Bond, ProtocolInfo, Stats } from "./transitions";
-import { BLusdAmmTokenIndex } from "./transitions";
+import type { BNectLpRewards, Bond, ProtocolInfo, Stats } from "./transitions";
+import { BNectAmmTokenIndex } from "./transitions";
 import type { Addresses } from "./transitions";
 import { useChainId } from "wagmi";
 import { useBondAddresses } from "./BondAddressesContext";
-import type { CurveLiquidityGaugeV5 } from "@liquity/chicken-bonds/lusd/types/external/CurveLiquidityGaugeV5";
+import type { CurveLiquidityGaugeV5 } from "@beraborrow/chicken-bonds/nect/types/external/CurveLiquidityGaugeV5";
 
 type BondsInformation = {
   protocolInfo: ProtocolInfo;
   bonds: Bond[];
   stats: Stats;
-  bLusdBalance: Decimal;
-  lusdBalance: Decimal;
+  bNectBalance: Decimal;
+  nectBalance: Decimal;
   lpTokenBalance: Decimal;
   stakedLpTokenBalance: Decimal;
   lpTokenSupply: Decimal;
-  bLusdAmmBLusdBalance: Decimal;
-  bLusdAmmLusdBalance: Decimal;
-  lpRewards: BLusdLpRewards;
+  bNectAmmBNectBalance: Decimal;
+  bNectAmmNectBalance: Decimal;
+  lpRewards: BNectLpRewards;
 };
 
 type BondContracts = {
   addresses: Addresses;
-  lusdToken: LUSDToken | undefined;
-  bLusdToken: BLUSDToken | undefined;
+  nectToken: NECTToken | undefined;
+  bNectToken: BNECTToken | undefined;
   bondNft: BondNFT | undefined;
   chickenBondManager: ChickenBondManager | undefined;
-  bLusdAmm: CurveCryptoSwap2ETH | undefined;
-  bLusdAmmZapper: BLUSDLPZap | undefined;
-  bLusdGauge: CurveLiquidityGaugeV5 | undefined;
+  bNectAmm: CurveCryptoSwap2ETH | undefined;
+  bNectAmmZapper: BNECTLPZap | undefined;
+  bNectGauge: CurveLiquidityGaugeV5 | undefined;
   hasFoundContracts: boolean;
   getLatestData: (account: string, api: BondsApi) => Promise<BondsInformation | undefined>;
 };
 
 export const useBondContracts = (): BondContracts => {
-  const { liquity } = useLiquity();
+  const { beraborrow } = useBeraBorrow();
   const chainId = useChainId();
   const isMainnet = chainId === 1;
 
   const addresses = useBondAddresses();
 
   const {
-    BLUSD_AMM_ADDRESS,
-    BLUSD_TOKEN_ADDRESS,
+    BNECT_AMM_ADDRESS,
+    BNECT_TOKEN_ADDRESS,
     BOND_NFT_ADDRESS,
     CHICKEN_BOND_MANAGER_ADDRESS,
-    LUSD_OVERRIDE_ADDRESS,
-    BLUSD_LP_ZAP_ADDRESS,
-    BLUSD_AMM_STAKING_ADDRESS
+    NECT_OVERRIDE_ADDRESS,
+    BNECT_LP_ZAP_ADDRESS,
+    BNECT_AMM_STAKING_ADDRESS
   } = addresses;
 
-  const [lusdTokenDefault, lusdTokenDefaultStatus] = useContract<LUSDToken>(
-    liquity.connection.addresses.lusdToken,
-    LUSDTokenAbi
+  const [nectTokenDefault, nectTokenDefaultStatus] = useContract<NECTToken>(
+    beraborrow.connection.addresses.nectToken,
+    NECTTokenAbi
   );
 
-  const [lusdTokenOverride, lusdTokenOverrideStatus] = useContract<ERC20Faucet>(
-    LUSD_OVERRIDE_ADDRESS,
+  const [nectTokenOverride, nectTokenOverrideStatus] = useContract<ERC20Faucet>(
+    NECT_OVERRIDE_ADDRESS,
     ERC20Faucet__factory.abi
   );
 
-  const [lusdToken, lusdTokenStatus] =
-    LUSD_OVERRIDE_ADDRESS === null
-      ? [lusdTokenDefault, lusdTokenDefaultStatus]
-      : [(lusdTokenOverride as unknown) as LUSDToken, lusdTokenOverrideStatus];
+  const [nectToken, nectTokenStatus] =
+    NECT_OVERRIDE_ADDRESS === null
+      ? [nectTokenDefault, nectTokenDefaultStatus]
+      : [(nectTokenOverride as unknown) as NECTToken, nectTokenOverrideStatus];
 
-  const [bLusdToken, bLusdTokenStatus] = useContract<BLUSDToken>(
-    BLUSD_TOKEN_ADDRESS,
-    BLUSDToken__factory.abi
+  const [bNectToken, bNectTokenStatus] = useContract<BNECTToken>(
+    BNECT_TOKEN_ADDRESS,
+    BNECTToken__factory.abi
   );
 
   const [bondNft, bondNftStatus] = useContract<BondNFT>(BOND_NFT_ADDRESS, BondNFT__factory.abi);
@@ -101,48 +101,48 @@ export const useBondContracts = (): BondContracts => {
     ChickenBondManager__factory.abi
   );
 
-  const [bLusdAmm, bLusdAmmStatus] = useContract<CurveCryptoSwap2ETH>(
-    BLUSD_AMM_ADDRESS,
+  const [bNectAmm, bNectAmmStatus] = useContract<CurveCryptoSwap2ETH>(
+    BNECT_AMM_ADDRESS,
     CurveCryptoSwap2ETH__factory.abi
   );
 
-  const [bLusdAmmZapper, bLusdAmmZapperStatus] = useContract<BLUSDLPZap>(
-    BLUSD_LP_ZAP_ADDRESS,
-    BLUSDLPZap__factory.abi
+  const [bNectAmmZapper, bNectAmmZapperStatus] = useContract<BNECTLPZap>(
+    BNECT_LP_ZAP_ADDRESS,
+    BNECTLPZap__factory.abi
   );
 
-  const [bLusdGauge, bLusdGaugeStatus] = useContract<CurveLiquidityGaugeV5>(
-    BLUSD_AMM_STAKING_ADDRESS,
+  const [bNectGauge, bNectGaugeStatus] = useContract<CurveLiquidityGaugeV5>(
+    BNECT_AMM_STAKING_ADDRESS,
     CurveLiquidityGaugeV5__factory.abi
   );
 
   const hasFoundContracts =
     [
-      lusdTokenStatus,
+      nectTokenStatus,
       bondNftStatus,
       chickenBondManagerStatus,
-      bLusdTokenStatus,
-      bLusdAmmStatus,
-      ...(isMainnet ? [bLusdAmmZapperStatus] : []),
-      bLusdGaugeStatus
+      bNectTokenStatus,
+      bNectAmmStatus,
+      ...(isMainnet ? [bNectAmmZapperStatus] : []),
+      bNectGaugeStatus
     ].find(status => status === "FAILED") === undefined;
 
   const getLatestData = useCallback(
     async (account: string, api: BondsApi): Promise<BondsInformation | undefined> => {
       if (
-        lusdToken === undefined ||
+        nectToken === undefined ||
         bondNft === undefined ||
         chickenBondManager === undefined ||
-        bLusdToken === undefined ||
-        bLusdAmm === undefined ||
-        bLusdGauge === undefined
+        bNectToken === undefined ||
+        bNectAmm === undefined ||
+        bNectGauge === undefined
       ) {
         return undefined;
       }
 
       const protocolInfoPromise = api.getProtocolInfo(
-        bLusdToken,
-        bLusdAmm,
+        bNectToken,
+        bNectAmm,
         chickenBondManager,
         isMainnet
       );
@@ -157,25 +157,25 @@ export const useBondContracts = (): BondContracts => {
       const [protocolInfo, stats, lpToken] = await Promise.all([
         protocolInfoPromise,
         api.getStats(chickenBondManager),
-        api.getLpToken(bLusdAmm)
+        api.getLpToken(bNectAmm)
       ]);
 
       const [
-        bLusdBalance,
-        lusdBalance,
+        bNectBalance,
+        nectBalance,
         lpTokenBalance,
         stakedLpTokenBalance,
         lpTokenSupply,
-        bLusdAmmCoinBalances,
+        bNectAmmCoinBalances,
         lpRewards
       ] = await Promise.all([
-        api.getTokenBalance(account, bLusdToken),
-        api.getTokenBalance(account, lusdToken),
+        api.getTokenBalance(account, bNectToken),
+        api.getTokenBalance(account, nectToken),
         api.getTokenBalance(account, lpToken),
-        isMainnet ? api.getTokenBalance(account, bLusdGauge) : Decimal.ZERO,
+        isMainnet ? api.getTokenBalance(account, bNectGauge) : Decimal.ZERO,
         api.getTokenTotalSupply(lpToken),
-        api.getCoinBalances(bLusdAmm),
-        isMainnet ? api.getLpRewards(account, bLusdGauge) : []
+        api.getCoinBalances(bNectAmm),
+        isMainnet ? api.getLpRewards(account, bNectGauge) : []
       ]);
 
       const bonds = await bondsPromise;
@@ -184,28 +184,28 @@ export const useBondContracts = (): BondContracts => {
         protocolInfo,
         bonds,
         stats,
-        bLusdBalance,
-        lusdBalance,
+        bNectBalance,
+        nectBalance,
         lpTokenBalance,
         stakedLpTokenBalance,
         lpTokenSupply,
-        bLusdAmmBLusdBalance: bLusdAmmCoinBalances[BLusdAmmTokenIndex.BLUSD],
-        bLusdAmmLusdBalance: bLusdAmmCoinBalances[BLusdAmmTokenIndex.LUSD],
+        bNectAmmBNectBalance: bNectAmmCoinBalances[BNectAmmTokenIndex.BNECT],
+        bNectAmmNectBalance: bNectAmmCoinBalances[BNectAmmTokenIndex.NECT],
         lpRewards
       };
     },
-    [chickenBondManager, bondNft, bLusdToken, lusdToken, bLusdAmm, isMainnet, bLusdGauge]
+    [chickenBondManager, bondNft, bNectToken, nectToken, bNectAmm, isMainnet, bNectGauge]
   );
 
   return {
     addresses,
-    lusdToken,
-    bLusdToken,
+    nectToken,
+    bNectToken,
     bondNft,
     chickenBondManager,
-    bLusdAmm,
-    bLusdAmmZapper,
-    bLusdGauge,
+    bNectAmm,
+    bNectAmmZapper,
+    bNectGauge,
     getLatestData,
     hasFoundContracts
   };

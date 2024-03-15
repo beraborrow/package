@@ -1,11 +1,11 @@
 import React, { useState, useMemo } from "react";
-import { createClient, WagmiConfig } from "wagmi";
+import { createClient, WagmiConfig, Chain } from "wagmi";
 import { mainnet, goerli, sepolia, localhost } from "wagmi/chains";
 import { ConnectKitProvider } from "connectkit";
 import { Flex, Heading, ThemeProvider, Paragraph, Link } from "theme-ui";
 
 import getDefaultClient from "./connectkit/defaultClient";
-import { LiquityProvider } from "./hooks/LiquityContext";
+import { BeraBorrowProvider } from "./hooks/BeraBorrowContext";
 import { WalletConnector } from "./components/WalletConnector";
 import { TransactionProvider } from "./components/Transaction";
 import { Icon } from "./components/Icon";
@@ -13,7 +13,7 @@ import { getConfig } from "./config";
 import theme from "./theme";
 
 import { DisposableWalletProvider } from "./testUtils/DisposableWalletProvider";
-import { LiquityFrontend } from "./LiquityFrontend";
+import { BeraBorrowFrontend } from "./BeraBorrowFrontend";
 import { AppLoader } from "./components/AppLoader";
 import { useAsyncValue } from "./hooks/AsyncValue";
 
@@ -21,6 +21,21 @@ import { CurPageContext } from "./contexts/CurPageContext";
 
 
 const isDemoMode = import.meta.env.VITE_APP_DEMO_MODE === "true";
+
+const berachain = {
+  id: 80085,
+  name: "Berachain",
+  network: "bera",
+  nativeCurrency: {
+    decimals: 18,
+    name: "BERA",
+    symbol: "BERA",
+  },
+  rpcUrls: {
+    public: { http: ["https://artio.rpc.berachain.com/"] },
+    default: { http: ["https://artio.rpc.berachain.com/"] },
+  },
+} as const satisfies Chain;
 
 if (isDemoMode) {
   const ethereum = new DisposableWalletProvider(
@@ -55,8 +70,8 @@ const UnsupportedMainnetFallback: React.FC = () => (
     <Paragraph sx={{ mb: 3 }}>Please change your network to Görli or Sepolia.</Paragraph>
 
     <Paragraph>
-      If you'd like to use the Liquity Protocol on mainnet, please pick a frontend{" "}
-      <Link href="https://www.liquity.org/frontend">
+      If you'd like to use the BeraBorrow Protocol on mainnet, please pick a frontend{" "}
+      <Link href="https://www.beraborrow.org/frontend">
         here <Icon name="external-link-alt" size="xs" />
       </Link>
       .
@@ -75,7 +90,7 @@ const UnsupportedNetworkFallback: React.FC = () => (
     }}
   >
     <Heading sx={{ mb: 3 }}>
-      <Icon name="exclamation-triangle" /> Liquity is not supported on this network.
+      <Icon name="exclamation-triangle" /> BeraBorrow is not supported on this network.
     </Heading>
     Please switch to mainnet, Görli or Sepolia.
   </Flex>
@@ -98,13 +113,13 @@ const App = () => {
         <WagmiConfig
           client={createClient(
             getDefaultClient({
-              appName: "Liquity",
+              appName: "BeraBorrow",
               chains:
                 isDemoMode || import.meta.env.MODE === "test"
                   ? [localhost]
                   : config.value.testnetOnly
-                  ? [goerli, sepolia]
-                  : [mainnet, goerli, sepolia],
+                  ? [berachain]
+                  : [berachain, mainnet],
               walletConnectProjectId: config.value.walletConnectProjectId,
               infuraId: config.value.infuraApiKey,
               alchemyId: config.value.alchemyApiKey
@@ -113,17 +128,17 @@ const App = () => {
         >
           <ConnectKitProvider options={{ hideBalance: true }}>
             <WalletConnector loader={loader}>
-              <LiquityProvider
+              <BeraBorrowProvider
                 loader={loader}
                 unsupportedNetworkFallback={<UnsupportedNetworkFallback />}
                 unsupportedMainnetFallback={<UnsupportedMainnetFallback />}
               >
                 <TransactionProvider>
                   <CurPageContext.Provider value={contextValue}>
-                    <LiquityFrontend loader={loader} />
+                    <BeraBorrowFrontend loader={loader} />
                   </CurPageContext.Provider>
                 </TransactionProvider>
-              </LiquityProvider>
+              </BeraBorrowProvider>
             </WalletConnector>
           </ConnectKitProvider>
         </WagmiConfig>

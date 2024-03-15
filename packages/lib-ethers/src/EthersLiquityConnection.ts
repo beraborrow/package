@@ -1,16 +1,12 @@
 import { Block, BlockTag } from "@ethersproject/abstract-provider";
 import { Signer } from "@ethersproject/abstract-signer";
 
-import { Decimal } from "@liquity/lib-base";
+import { Decimal } from "@beraborrow/lib-base";
 
 import devOrNull from "../deployments/dev.json";
-import goerli from "../deployments/goerli.json";
-import kovan from "../deployments/kovan.json";
-import rinkeby from "../deployments/rinkeby.json";
-import ropsten from "../deployments/ropsten.json";
 import mainnet from "../deployments/mainnet.json";
-import kiln from "../deployments/kiln.json";
 import sepolia from "../deployments/sepolia.json";
+import berachain from "../deployments/berachain.json";
 
 import { numberify, panic } from "./_utils";
 import { EthersProvider, EthersSigner } from "./types";
@@ -30,12 +26,8 @@ const deployments: {
   [chainId: number]: _LiquityDeploymentJSON | undefined;
 } = {
   [mainnet.chainId]: mainnet,
-  [ropsten.chainId]: ropsten,
-  [rinkeby.chainId]: rinkeby,
-  [goerli.chainId]: goerli,
-  [kovan.chainId]: kovan,
-  [kiln.chainId]: kiln,
   [sepolia.chainId]: sepolia,
+  [berachain.chainId]: berachain,
 
   ...(dev !== null ? { [dev.chainId]: dev } : {})
 };
@@ -76,11 +68,11 @@ export interface EthersLiquityConnection extends EthersLiquityConnectionOptional
   /** Time period (in seconds) after `deploymentDate` during which redemptions are disabled. */
   readonly bootstrapPeriod: number;
 
-  /** Total amount of LQTY allocated for rewarding stability depositors. */
-  readonly totalStabilityPoolLQTYReward: Decimal;
+  /** Total amount of POLLEN allocated for rewarding stability depositors. */
+  readonly totalStabilityPoolPOLLENReward: Decimal;
 
-  /** Amount of LQTY collectively rewarded to stakers of the liquidity mining pool per second. */
-  readonly liquidityMiningLQTYRewardRate: Decimal;
+  /** Amount of POLLEN collectively rewarded to stakers of the liquidity mining pool per second. */
+  readonly liquidityMiningPOLLENRewardRate: Decimal;
 
   /** A mapping of Liquity contracts' names to their addresses. */
   readonly addresses: Record<string, string>;
@@ -109,8 +101,8 @@ const connectionFrom = (
   _multicall: _Multicall | undefined,
   {
     deploymentDate,
-    totalStabilityPoolLQTYReward,
-    liquidityMiningLQTYRewardRate,
+    totalStabilityPoolPOLLENReward,
+    liquidityMiningPOLLENRewardRate,
     ...deployment
   }: _LiquityDeploymentJSON,
   optionalParams?: EthersLiquityConnectionOptionalParams
@@ -129,8 +121,8 @@ const connectionFrom = (
     _contracts,
     _multicall,
     deploymentDate: new Date(deploymentDate),
-    totalStabilityPoolLQTYReward: Decimal.from(totalStabilityPoolLQTYReward),
-    liquidityMiningLQTYRewardRate: Decimal.from(liquidityMiningLQTYRewardRate),
+    totalStabilityPoolPOLLENReward: Decimal.from(totalStabilityPoolPOLLENReward),
+    liquidityMiningPOLLENRewardRate: Decimal.from(liquidityMiningPOLLENRewardRate),
     ...deployment,
     ...optionalParams
   });
@@ -249,7 +241,7 @@ const validStoreOptions = ["blockPolled"];
  */
 export interface EthersLiquityConnectionOptionalParams {
   /**
-   * Address whose Trove, Stability Deposit, LQTY Stake and balances will be read by default.
+   * Address whose Trove, Stability Deposit, POLLEN Stake and balances will be read by default.
    *
    * @remarks
    * For example {@link EthersLiquity.getTrove | getTrove(address?)} will return the Trove owned by
@@ -261,18 +253,18 @@ export interface EthersLiquityConnectionOptionalParams {
   readonly userAddress?: string;
 
   /**
-   * Address that will receive LQTY rewards from newly created Stability Deposits by default.
+   * Address that will receive POLLEN rewards from newly created Stability Deposits by default.
    *
    * @remarks
    * For example
-   * {@link EthersLiquity.depositLUSDInStabilityPool | depositLUSDInStabilityPool(amount, frontendTag?)}
+   * {@link EthersLiquity.depositNECTInStabilityPool | depositNECTInStabilityPool(amount, frontendTag?)}
    * will tag newly made Stability Deposits with this address when its `frontendTag` parameter is
    * omitted.
    */
   readonly frontendTag?: string;
 
   /**
-   * Create a {@link @liquity/lib-base#LiquityStore} and expose it as the `store` property.
+   * Create a {@link @beraborrow/lib-base#LiquityStore} and expose it as the `store` property.
    *
    * @remarks
    * When set to one of the available {@link EthersLiquityStoreOption | options},
@@ -282,7 +274,7 @@ export interface EthersLiquityConnectionOptionalParams {
    * {@link EthersLiquityWithStore}.
    *
    * Note that the store won't start monitoring the blockchain until its
-   * {@link @liquity/lib-base#LiquityStore.start | start()} function is called.
+   * {@link @beraborrow/lib-base#LiquityStore.start | start()} function is called.
    */
   readonly useStore?: EthersLiquityStoreOption;
 }
