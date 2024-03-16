@@ -9,42 +9,45 @@ export default {
       backgroundImage: {
         'main-gradient': 'linear-gradient(175deg, #14095A 4.86%, #140E2E 25.8%, #150E2F)',
         'orange-gradient': 'linear-gradient(180deg, #FDBF47 0%, #EA340C 100%)',
-        'bear': 'url("/imgs/background.png")'
+        'bear': 'url("/imgs/background.png")',
+        'simple': 'url("/imgs/simple.png")',
+        'den': 'url("/imgs/den.png")',
       },
       backgroundPosition: {
-        "bottom-50": "center bottom 200px"
+        "bottom-50": "center bottom 200px",
+        "top-center-14": 'center top -14px'
       },
       colors: {
         "dark-gray": "#FFEDD4"
       },
       keyframes: {
         slideInFromRight: {
-          '0%': { right: '-600px' },
-          '100%': { right: '0' },
+          '0%': { left: '100%' },
+          '100%': { left: 'calc(100% - 700px)' },
         },
         slideOutFromRight: {
           '0%': { transform: 'translateX(0)' },
           '100%': { transform: 'translateX(100%)' },
         },
-        slideInFromTop600: {
+        slideInFromTop500: {
           '0%': { top: '2000px' },
-          '100%': { top: '600px' },
+          '100%': { top: '500px' },
         },
-        slideInFromTop450: {
+        slideInFromTop250: {
           '0%': { top: '2000px' },
-          '100%': { top: '450px' },
+          '100%': { top: '250px' },
         },
-        slideInFromTop400: {
+        slideInFromTop300: {
           '0%': { top: '2000px' },
-          '100%': { top: '400px' },
+          '100%': { top: '300px' },
         },
         slideInFromTop350: {
           '0%': { top: '2000px' },
           '100%': { top: '350px' },
         },
         slideInFromLeft: {
-          '0%': { transform: 'translateX(-100%)' },
-          '100%': { transform: 'translateX(0)' },
+          '0%': { left: '-200%' },
+          '100%': { left: '-50%' },
         },
         fadeBiggerBear: {
           '0%': { scale: '85%' },
@@ -76,9 +79,9 @@ export default {
         'slide-in-right': 'slideInFromRight 1s ease-out forwards',
         'slide-out-right': 'slideOutFromRight 1s ease-out forwards',
         'slide-in-left': 'slideInFromLeft 1s ease-out forwards',
-        'slide-in-top-600': 'slideInFromTop600 1s ease-out forwards',
-        'slide-in-top-450': 'slideInFromTop450 1s ease-out forwards',
-        'slide-in-top-400': 'slideInFromTop400 1s ease-out forwards',
+        'slide-in-top-500': 'slideInFromTop500 1s ease-out forwards',
+        'slide-in-top-250': 'slideInFromTop250 1s ease-out forwards',
+        'slide-in-top-300': 'slideInFromTop300 1s ease-out forwards',
         'slide-in-top-350': 'slideInFromTop350 1s ease-out forwards',
         'fade-bigger-bear': 'fadeBiggerBear 1s ease-out forwards',
         'fade-smaller-bear': 'fadeSmallerBear 1s ease-out forwards',

@@ -44,8 +44,8 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
   return (
     <>
       <div className="flex flex-row justify-between text-lg font-medium p-0 border border-dark-gray rounded-[260px]">
-        <div className={`${!isWithdraw ? "bg-dark-gray text-[#150D39]" : "bg-transparent text-dark-gray"} cursor-pointer w-full text-center p-5 rounded-l-[260px]`} onClick={() => setIsWithdraw(!isWithdraw)}>Deposit</div>
-        <span className={`${isWithdraw ? "bg-dark-gray text-[#150D39]" : "bg-transparent text-dark-gray"} cursor-pointer w-full text-center p-5 rounded-r-[260px]`} onClick={() => setIsWithdraw(!isWithdraw)}>Withdraw</span>
+        <div className={`${!isWithdraw ? "bg-dark-gray text-[#150D39]" : "bg-transparent text-dark-gray"} cursor-pointer w-full text-center px-5 py-[18px] rounded-l-[260px]`} onClick={() => setIsWithdraw(!isWithdraw)}>Deposit</div>
+        <span className={`${isWithdraw ? "bg-dark-gray text-[#150D39]" : "bg-transparent text-dark-gray"} cursor-pointer w-full text-center px-5 py-[18px] rounded-r-[260px]`} onClick={() => setIsWithdraw(!isWithdraw)}>Withdraw</span>
         {/* {isDirty && !isTransactionPending && (
           <Button variant="titleIcon" sx={{ ":enabled:hover": { color: "danger" } }} onClick={reset}>
             <Icon name="history" size="lg" />
@@ -54,7 +54,7 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
       </div>
 
       <div className="px-0 py-4 mt-[44px] text-dark-gray">
-        <div className={`${isWithdraw ? "mb-[48px]" : "mb-[28px]"}`}>
+        <div className="mb-[48px]">
           <div className="flex flex-row font-medium text-lg justify-between mb-[14px]">
               <div>{isWithdraw ? "Withdraw": "Deposit"}</div>
               <div className="flex flex-row">
@@ -63,7 +63,8 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
               </div>
           </div>
           <div 
-              className={`flex flex-row items-center justify-between border ${editing !== "collateral" && editedNECT.eq(0) ? "border-[#F45348]" : "border-[#FFEDD4]"} rounded-[180px] p-5`}
+              // className={`flex flex-row items-center justify-between border ${editing !== "collateral" && editedNECT.eq(0) ? "border-[#F45348]" : "border-[#FFEDD4]"} rounded-[180px] px-5 py-[14px]`}
+              className={`flex flex-row items-center justify-between border border-[#FFEDD4] rounded-[180px] px-5 py-[14px]`}
               onClick={() => setEditing("collateral")}
             >
                 {

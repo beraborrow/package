@@ -143,7 +143,7 @@ export const StabilityDepositManager: React.FC = () => {
             Complete transaction
           </StabilityDepositAction>
         ) : (
-          <Button style={{width: "100%", marginTop: "16px"}} disabled>Complete transaction</Button>
+          <Button style={{width: "100%", marginTop: "16px", backgroundColor: "#f6f6f6", color: "#0B1722", borderColor: "#f6f6f6"}} disabled>Complete transaction</Button>
         )}
       </Flex>
     </StabilityDepositEditor>

@@ -170,7 +170,7 @@ export const TroveManager: React.FC<TroveManagerProps> = ({ collateral, debt }) 
   const borrowingRate = fees.borrowingRate();
   const maxBorrowingRate = borrowingRate.add(0.005); // WONT-FIX slippage tolerance
 
-  const [validChange, description] = validateTroveChange(
+  const [validChange, ] = validateTroveChange(
     original,
     edited,
     borrowingRate,
@@ -207,7 +207,7 @@ export const TroveManager: React.FC<TroveManagerProps> = ({ collateral, debt }) 
       changePending={changePending}
       dispatch={dispatch}
     >
-      {description ?? <div />}
+      {/* {description ?? <div />} */}
 
       <Flex variant="layout.actions">
         {

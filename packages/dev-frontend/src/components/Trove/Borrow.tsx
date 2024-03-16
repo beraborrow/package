@@ -44,7 +44,6 @@ const feeFrom = (original: Trove, edited: Trove, borrowingRate: Decimal): Decima
 };
 
 export const Borrow: React.FC = () => {
-  console.log (">>>>>>>>>>>>>>>>>>>>>>>>>2222222222222")
   const { dispatchEvent } = useTroveView();
   const { trove, fees, price, accountBalance, validationContext } = useLiquitySelector(selector);
   const [editing, setEditing] = useState<string>();
@@ -90,7 +89,7 @@ export const Borrow: React.FC = () => {
     ? accountBalance.sub(GAS_ROOM_ETH)
     : Decimal.ZERO;
 
-  const [troveChange, description] = validateTroveChange(
+  const [troveChange, ] = validateTroveChange(
     trove,
     updatedTrove,
     borrowingRate,
@@ -132,8 +131,8 @@ export const Borrow: React.FC = () => {
   return (
     <>
       <div className="flex flex-row justify-between text-lg font-medium p-0 border border-dark-gray rounded-[260px]">
-        <div className="bg-dark-gray text-[#150D39] w-full text-center p-5 rounded-l-[260px]">Borrow</div>
-        <span className="cursor-pointer bg-transparent text-dark-gray w-full text-center p-5" onClick={handleRedeemTrove}>Redeem</span>
+        <div className="bg-dark-gray text-[#150D39] w-full text-center px-5 py-[18px] rounded-l-[260px]">Borrow</div>
+        <span className="cursor-pointer bg-transparent text-dark-gray w-full text-center px-5 py-[18px]" onClick={handleRedeemTrove}>Redeem</span>
         {/* {isDirty && !isTransactionPending && (
           <Button variant="titleIcon" sx={{ ":enabled:hover": { color: "danger" } }} onClick={reset}>
             <Icon name="history" size="lg" />
@@ -151,7 +150,8 @@ export const Borrow: React.FC = () => {
                 </div>
             </div>
             <div
-              className={`flex flex-row items-center justify-between border ${editing !== "collateral" && collateral.eq(0) ? "border-[#F45348]" : "border-[#FFEDD4]"} rounded-[180px] p-5`}
+              // className={`flex flex-row items-center justify-between border ${editing !== "collateral" && collateral.eq(0) ? "border-[#F45348]" : "border-[#FFEDD4]"} rounded-[180px] px-5 py-[14px]`}
+              className={`flex flex-row items-center justify-between border border-[#FFEDD4] rounded-[180px] px-5 py-[14px]`}
               onClick={() => setEditing("collateral")}
             >
                 {/* <input 
@@ -248,7 +248,8 @@ export const Borrow: React.FC = () => {
                 NECT to be minted
             </div>
             <div
-              className={`flex flex-row items-center justify-between border ${editing !== "netdebt" && netDebt.eq(0) ? "border-[#F45348]" : "border-[#FFEDD4]"} rounded-[180px] p-5`}
+              // className={`flex flex-row items-center justify-between border ${editing !== "netdebt" && netDebt.eq(0) ? "border-[#F45348]" : "border-[#FFEDD4]"} rounded-[180px] px-5 py-[14px]`}
+              className={`flex flex-row items-center justify-between border border-[#FFEDD4] rounded-[180px] px-5 py-[14px]`}
               onClick={() => setEditing("netdebt")}
             >
                 {
@@ -315,7 +316,7 @@ export const Borrow: React.FC = () => {
           setGasEstimationState={setGasEstimationState}
         />
 
-        {description ?? <div />}
+        {/* {description ?? <div />} */}
 
         <Flex variant="layout.actions">
           {
@@ -330,7 +331,7 @@ export const Borrow: React.FC = () => {
                 Complete transaction
               </TroveAction>
             ) : (
-              <Button sx={{width: "100%"}} disabled>Complete transaction</Button>
+              <Button sx={{width: "100%", backgroundColor: "#f6f6f6", color: "#0B1722", borderColor: "#f6f6f6"}} disabled>Complete transaction</Button>
             )): (<Button sx={{width: "100%"}} disabled>Transaction in progress</Button>)
           }
         </Flex>

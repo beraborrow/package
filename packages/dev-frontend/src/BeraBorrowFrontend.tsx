@@ -62,11 +62,11 @@ export const BeraBorrowFrontend: React.FC<BeraBorrowFrontendProps> = ({ loader }
                   (curPage === 2 || curPage === 3 || curPage === 4) ? <Selection /> : 
                   <>
                   <div className="flex flex-col min-h-full pb-[192px] sm:pb-[166px] bg-main-gradient">
-                    <div className="flex flex-row justify-between px-5 md:px-10 lg:px-[60px] py-[15px]">
+                    <div className="flex flex-row justify-between px-5 md:px-10 lg:px-[60px] py-3">
                       <BeraBorrowLogo />
                       <UserAccount />
                     </div>
-                    <div className="bg-[#1D0D76] text-lg font-normal p-5 text-center text-dark-gray">Currently in simple mode. Click here to &nbsp;
+                    <div className="bg-[#1D0D76] text-lg leading-[18px] font-normal p-5 text-center text-dark-gray">Currently in simple mode. Click here to &nbsp;
                       <span className="underline cursor-pointer" onClick={() => setCurPage(2)}>travel to the Den</span>
                     </div>
                     <Switch>

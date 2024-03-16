@@ -42,10 +42,10 @@ const button: ThemeUIStyleObject = {
   ...buttonBase,
 
   px: "32px",
-  py: "12px",
+  py: "10px",
 
   color: "darkBlue",
-  border: 1,
+  border: 2,
   borderRadius: "33px",
 
   fontWeight: "bold",

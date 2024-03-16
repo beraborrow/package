@@ -65,17 +65,20 @@ const Selection: React.FC = props => {
         setShowStability(!showStability);
     }
 
+    console.log ("!showTrove && hoverBear ==========>", !showTrove && hoverBear)
+    console.log ("!showStability && hoverFish ==========>", !showStability && hoverFish)
+
     return (
         <>
             <AnimatedDiv className='fixed w-full h-full text-center z-5 pt-[150px] text-[48px] font-bold'>The Den</AnimatedDiv>
             <div className='fixed w-full h-[50%]' style={{background: "linear-gradient(180deg, #050402 0%, rgba(13, 7, 2, 0.00) 100%)"}} />
-            <div className={`w-full h-full bg-cover bg-no-repeat z-1 bg-bottom-50 ${(showTrove || showStability) ? "bg-[#111]" : "bg-bear bg-[#AF8765] "}`}>
-                <div className="flex h-full flex-col min-h-full pb-[192px] sm:pb-[166px]">
-                    <div className="flex z-[5] flex-row justify-between px-5 md:px-10 lg:px-[60px] py-[15px]">
+            <div className={`w-full h-full fixed bg-cover bg-no-repeat z-1 bg-bottom-50 ${(showTrove || showStability) ? "bg-[#111]" : "bg-bear bg-[#AF8765] "}`}>
+                <div className="flex h-full flex-col min-h-full pb-[192px] sm:pb-[30px] lg:pb-[80px] max-w-[1440px] mx-auto">
+                    <div className="flex z-[5] flex-row justify-between px-5 md:px-10 lg:px-[60px] py-3">
                         <BeraBorrowLogo />
                         <UserAccount />
                     </div>
-                    <div className={`flex flex-col lg:flex-row items-start lg:items-end bottom-[30px] lg:bottom-[55px] justify-between absolute ${(showTrove || showStability)?"px-0":"px-0 md:px-12"} lg:px-16 w-full`}>
+                    <div className={`flex flex-col lg:flex-row items-start lg:items-end bottom-[30px] lg:bottom-[55px] justify-between absolute ${(showTrove || showStability)?"px-0":"px-0 md:px-12"} lg:px-16 w-full max-w-[1440px]`}>
                         <div className={`w-full flex flex-row justify-start relative ${showTrove?"":"-left-[32px] md:left-auto"}`}>
                             <div className={`flex flex-col z-[3] ${showTrove?"fixed lg:sticky top-[100px] lg:top-auto w-full":""}`}>
                                 <div className={`flex flex-col text-white mb-8 z-[4] ${showTrove?"animate-fade-show px-10 lg:px-0":"invisible"}`}>
@@ -95,20 +98,20 @@ const Selection: React.FC = props => {
                                 />
                             </div>
                             <img
-                                src="/imgs/borrowing-arrow.png" className={`w-[250px] h-[114px] relative z-[5] top-[50px] -left-[50%] ${!showTrove && hoverBear?"animate-fade-show": "invisible"}`}
+                                src="/imgs/borrowing-arrow.png" className={`w-[233px] h-[90px] relative z-[5] top-[50px] -left-[265px] md:-left-[50%] scale-90 md:scale-100 ${!showTrove && hoverBear?"animate-fade-show": "invisible"}`}
                             />
                         </div>
-                        <div className={`w-full flex flex-row justify-end relative ${showStability?"":"-right-[80px] md:right-auto"} group`}>
-                            <img src="/imgs/stability-arrow.png" className={`w-[262px] h-[114px] relative top-[130px] md:top-0 -right-[50%] z-[10] ${!showStability && hoverFish?"animate-fade-show":"invisible"}`}/>
+                        <div className={`w-full flex flex-row justify-end z-[5] relative ${showStability?"":"-right-[80px] md:right-auto"} group`}>
+                            <img src="/imgs/stability-arrow.png" className={`w-[242px] h-[100px] relative top-[70px] md:top-0 lg:top-[70px] -right-[301px] md:-right-[321px] scale-90 md:scale-100 z-[10] ${!showStability && hoverFish?"animate-fade-show":"invisible"}`}/>
                             <div className={`flex flex-col ${showStability?"fixed lg:sticky top-[100px] lg:top-auto w-full":""}`}>
-                                <div className={`flex flex-col text-white z-[5] mb-0 lg:mb-[100px] ${showStability?"animate-fade-show px-10 lg:px-0":"invisible"}`}>
+                                <div className={`flex flex-col text-white z-[5] mb-[30px] lg:mb-[100px] ${showStability?"animate-fade-show px-10 lg:px-0":"invisible"}`}>
                                     <span className='flex flex-row items-center text-dark-gray text-lg font-medium cursor-pointer' onClick={() => {setShowTrove(false);setShowStability(false)}}>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" viewBox="0 0 17 16" fill="none">
                                             <path d="M0.292893 7.29289C-0.0976311 7.68342 -0.0976311 8.31658 0.292893 8.70711L6.65685 15.0711C7.04738 15.4616 7.68054 15.4616 8.07107 15.0711C8.46159 14.6805 8.46159 14.0474 8.07107 13.6569L2.41421 8L8.07107 2.34315C8.46159 1.95262 8.46159 1.31946 8.07107 0.928932C7.68054 0.538408 7.04738 0.538408 6.65685 0.928932L0.292893 7.29289ZM16.5 7H1V9H16.5V7Z" fill="white"/>
                                         </svg>
                                         &nbsp;Back to the Den
                                     </span>
-                                    <span className={`text-[72px] font-extrabold leading-none ${showStability?"hidden lg:block":"block"}`}>Stability pool</span>
+                                    <span className={`text-[72px] font-extrabold ${showStability?"hidden lg:block":"block"}`}>Stability pool</span>
                                 </div>
                                 <div
                                     onMouseEnter={()=> setHoverFish(true)}
@@ -118,12 +121,12 @@ const Selection: React.FC = props => {
                                     <img
                                         src="/imgs/lake.png" className={`w-[380px] md:w-[400px] h-[158px] md:h-[165px] mix-blend-color-burn ${(!showStability && hoverFish)?"filter-shadow": ""}`}
                                     />
-                                    <img
+                                    {/* <img
                                         src="/imgs/fish1.png" className={`absolute w-[116px] md:w-[128px] h-[98px] md:h-[100px] top-0 left-[98px]`}
                                     />
                                     <img
                                         src="/imgs/fish2.png" className={`absolute w-[80px] md:w-[86px] h-[62px] md:h-[67px] top-[33px] left-[215px]`}
-                                    />
+                                    /> */}
                                 </div>
                                 <img
                                     onMouseEnter={()=> setHoverFish(true)}
@@ -134,7 +137,8 @@ const Selection: React.FC = props => {
                             </div>
                         </div>
                     </div>
-                    <div className={`w-full lg:w-[600px] h-[200px] md:h-[450px] lg:h-full fixed lg:top-0 px-5 md:px-[128px] lg:px-0 lg:py-[100px] lg:pr-[100px] overflow-y-auto z-[3] ${showTrove ? "animate-slide-in-top-450 md:animate-slide-in-top-600 lg:animate-slide-in-right visible" : "invisible"}`}>
+                    <div className='flex flex-row relative h-full'>
+                    <div className={`w-full lg:w-[700px] min-w-full lg:min-w-[700px] h-[200px] md:h-[450px] lg:h-full relative lg:top-0 px-5 md:px-[128px] lg:px-0 lg:pt-[30px] lg:pr-[60px] overflow-y-auto z-[3] ${showTrove ? "animate-slide-in-top-350 md:animate-slide-in-top-500 lg:animate-slide-in-right visible" : "invisible"}`}>
                         {
                             (troveView === "ACTIVE" || troveView === "ADJUSTING") && <Borrow />
                         }
@@ -149,13 +153,14 @@ const Selection: React.FC = props => {
                         <div className="h-0 w-full border-t border-dark-gray my-8" />
                         <ReadOnlyStats {...props} />
                     </div>
-                    <div className={`w-full lg:w-[600px] h-[300px] md:h-[600px] lg:h-full fixed top-0 px-5 md:px-[128px] lg:px-0 lg:py-[100px] lg:pl-[100px] overflow-y-auto z-[3] left-0 ${showStability ? "animate-slide-in-top-350 md:animate-slide-in-top-400 lg:animate-slide-in-left visible" : "invisible"}`}>
+                    <div className={`w-full lg:w-[700px] min-w-full lg:min-w-[700px] h-[300px] md:h-[600px] lg:h-full relative top-0 px-5 md:px-[128px] lg:px-0 lg:pt-[30px] lg:pl-[80px] overflow-y-auto z-[3] -left-[100%] ${showStability ? "animate-slide-in-top-250 md:animate-slide-in-top-300 lg:animate-slide-in-left visible" : "invisible"}`}>
                         {
                             (stabilityView === "NONE" || stabilityView === "DEPOSITING") ? <StabilityDepositManager {...props} /> :
                             (stabilityView === "ADJUSTING") ? <StabilityDepositManager {...props} /> : <StabilityDepositManager {...props} />
                         }
                         <div className="my-[14px] h-0 w-full border-t border-[#BDFAE2]" />
                         <StabilityStats />
+                    </div>
                     </div>
                 </div>
             </div>

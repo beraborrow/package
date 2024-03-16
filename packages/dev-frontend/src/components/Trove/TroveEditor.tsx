@@ -47,8 +47,8 @@ export const TroveEditor: React.FC<TroveEditorProps> = ({
   return (
     <>
       <div className="flex flex-row justify-between text-lg font-medium p-0 border border-dark-gray rounded-[260px]">
-        <div className="cursor-pointer bg-transparent text-dark-gray w-full text-center p-5" onClick={handleOpenTrove}>Borrow</div>
-        <span className=" bg-dark-gray text-[#150D39] w-full text-center p-5 rounded-r-[260px]">Redeem</span>
+        <div className="cursor-pointer bg-transparent text-dark-gray w-full text-center px-5 py-[18px]" onClick={handleOpenTrove}>Borrow</div>
+        <span className=" bg-dark-gray text-[#150D39] w-full text-center px-5 py-[18px] rounded-r-[260px]">Redeem</span>
       </div>
 
       <div className="px-0 py-4 mt-[44px] text-dark-gray">
@@ -56,7 +56,7 @@ export const TroveEditor: React.FC<TroveEditorProps> = ({
           <div className="flex flex-row font-medium text-lg justify-between mb-[14px]">
               <div>Pay back</div>
           </div>
-          <div className={`flex flex-row items-center justify-between border border-[#FFEDD4] rounded-[180px] p-5`}>
+          <div className={`flex flex-row items-center justify-between border border-[#FFEDD4] rounded-[180px] px-5 py-[14px]`}>
             <input 
                 className="bg-transparent text-lg w-full outline-none opacity-60"
                 value={trove.debt.toString(4)}
@@ -76,7 +76,7 @@ export const TroveEditor: React.FC<TroveEditorProps> = ({
                   <div className="ml-2 font-normal">{`${availableEth.prettify(4)}`} iBGT</div>
               </div> */}
           </div>
-          <div className={`flex flex-row items-center justify-between border border-[#FFEDD4] rounded-[180px] p-5`}>
+          <div className={`flex flex-row items-center justify-between border border-[#FFEDD4] rounded-[180px] px-5 py-[14px]`}>
             <input 
                 className="bg-transparent text-lg w-full outline-none opacity-60"
                 value={trove.collateral.toString(4)}

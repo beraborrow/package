@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { createClient, WagmiConfig, Chain } from "wagmi";
-import { mainnet, goerli, sepolia, localhost } from "wagmi/chains";
+import { mainnet, localhost } from "wagmi/chains";
 import { ConnectKitProvider } from "connectkit";
 import { Flex, Heading, ThemeProvider, Paragraph, Link } from "theme-ui";
 
@@ -32,8 +32,8 @@ const berachain = {
     symbol: "BERA",
   },
   rpcUrls: {
-    public: { http: ["https://artio.rpc.berachain.com/"] },
-    default: { http: ["https://artio.rpc.berachain.com/"] },
+    public: { http: [import.meta.env.VITE_APP_RPC_URL] },
+    default: { http: [import.meta.env.VITE_APP_RPC_URL] },
   },
 } as const satisfies Chain;
 
@@ -92,7 +92,7 @@ const UnsupportedNetworkFallback: React.FC = () => (
     <Heading sx={{ mb: 3 }}>
       <Icon name="exclamation-triangle" /> BeraBorrow is not supported on this network.
     </Heading>
-    Please switch to mainnet, Görli or Sepolia.
+    Please switch to mainnet, Berachain.
   </Flex>
 );
 

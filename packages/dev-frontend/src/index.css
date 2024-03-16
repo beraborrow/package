@@ -4,12 +4,14 @@
 @tailwind components;
 @tailwind utilities;
 
-html {
-  height: 100%;
-}
 @font-face {
   font-family: "Metropolis";
-  src: url('fonts/Metrophobic-Regular.ttf') format('truetype'),
+  src: url('fonts/Metropolis-Regular.otf') format('opentype'),
+}
+
+html {
+  height: 100%;
+  font-family: 'Metropolis';
 }
 
 .black-background {

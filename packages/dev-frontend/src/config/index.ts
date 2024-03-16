@@ -1,5 +1,6 @@
 import { AddressZero } from "@ethersproject/constants";
 import { isAddress, getAddress } from "@ethersproject/address";
+import CONFIG from "./config.json"
 
 export type BeraBorrowFrontendConfig = {
   frontendTag: string;
@@ -11,7 +12,7 @@ export type BeraBorrowFrontendConfig = {
 
 const defaultConfig: BeraBorrowFrontendConfig = {
   frontendTag: AddressZero,
-  walletConnectProjectId: "b16efb4fd41473c0f45dbad8efa15a00"
+  walletConnectProjectId: "c68378d9d2b9f25c29d30c16bb76f258",
 };
 
 function hasKey<K extends string>(o: object, k: K): o is Record<K, unknown> {
@@ -77,13 +78,13 @@ let configPromise: Promise<BeraBorrowFrontendConfig> | undefined = undefined;
 
 const fetchConfig = async () => {
   try {
-    const response = await fetch("config.json");
+    // const response = await fetch("config.json");
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch config.json (status ${response.status})`);
-    }
+    // if (!response.ok) {
+    //   throw new Error(`Failed to fetch config.json (status ${response.status})`);
+    // }
 
-    return parseConfig(await response.json());
+    return parseConfig(CONFIG);
   } catch (err) {
     console.error(err);
     return { ...defaultConfig };

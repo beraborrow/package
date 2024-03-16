@@ -139,19 +139,6 @@ class MainnetDeploymentHelper {
   }
 
   async deployPriceFeedBeraBorrow(deploymentState) {
-
-    const multicall = new ethers.Contract("0xEe8d287B844959ADe40d718Dc23077ba920e2f07", multiCallABI.multiCall.abi, this.deployerWallet)
-    // const priceFeedInterface = new ethers.utils.Interface(priceFeedABI.priceFeed.abi)
-    // const calls = [
-    //   ["0x1Fc8970d71c365c3d1A0D10Fc6B3Ca50bc42f78b", priceFeedInterface.encodeFunctionData("latestAnswer", [])]
-    // ]
-    // const tx = await multicall.getEthBalance("0x552594b83058882C2263DBe23235477f63e7D60B");
-    // // const tx = await multicall.callStatic.aggregate(calls);
-    // // await tx.wait()
-
-    // const saiToken = new ethers.Contract("0x36B820c7A8ed89AA5b894C5fD1CeaA674ae79E3E", multiCallABI.multiCall.abi, this.deployerWallet)
-
-
     const ibgtOraclePriceFeedFactory = await this.getFactory("iBGTOraclePriceFeed")
     const ibgtOraclePriceFeed = await this.loadOrDeploy(ibgtOraclePriceFeedFactory, 'ibgtOraclePriceFeed', deploymentState)
     const nectOraclePriceFeedFactory = await this.getFactory("NECTOraclePriceFeed")

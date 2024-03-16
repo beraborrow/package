@@ -57,7 +57,7 @@ export const Opening: React.FC = () => {
   // const collateralRatio =
   //   !collateral.isZero && !borrowAmount.isZero ? trove.collateralRatio(price) : undefined;
 
-  const [troveChange, description] = validateTroveChange(
+  const [troveChange, ] = validateTroveChange(
     EMPTY_TROVE,
     trove,
     borrowingRate,
@@ -107,8 +107,8 @@ export const Opening: React.FC = () => {
   return (
     <>
       <div className="flex flex-row justify-between text-lg font-medium p-0 border border-dark-gray rounded-[260px]">
-        <div className="bg-dark-gray text-[#150D39] w-full text-center p-5 rounded-l-[260px]">Borrow</div>
-        <span className="bg-transparent text-dark-gray w-full text-center p-5">Redeem</span>
+        <div className="bg-dark-gray text-[#150D39] w-full text-center px-5 py-[18px] rounded-l-[260px]">Borrow</div>
+        <span className="bg-transparent text-dark-gray w-full text-center px-5 py-[18px]">Redeem</span>
         {/* {isDirty && !isTransactionPending && (
           <Button variant="titleIcon" sx={{ ":enabled:hover": { color: "danger" } }} onClick={reset}>
             <Icon name="history" size="lg" />
@@ -126,7 +126,8 @@ export const Opening: React.FC = () => {
                 </div>
             </div>
             <div 
-              className={`flex flex-row items-center justify-between border ${editing !== "collateral" && collateral.eq(0) ? "border-[#F45348]" : "border-[#FFEDD4]"} rounded-[180px] p-5`}
+              // className={`flex flex-row items-center justify-between border ${editing !== "collateral" && collateral.eq(0) ? "border-[#F45348]" : "border-[#FFEDD4]"} rounded-[180px] px-5 py-[14px]`}
+              className={`flex flex-row items-center justify-between border border-[#FFEDD4] rounded-[180px] px-5 py-[14px]`}
               onClick={() => setEditing("collateral")}
             >
                 {
@@ -215,7 +216,8 @@ export const Opening: React.FC = () => {
                 NECT to be minted
             </div>
             <div 
-              className={`flex flex-row items-center justify-between border ${editing !== "netdebt" && borrowAmount.eq(0) ? "border-[#F45348]" : "border-[#FFEDD4]"} rounded-[180px] p-5`}
+              // className={`flex flex-row items-center justify-between border ${editing !== "netdebt" && borrowAmount.eq(0) ? "border-[#F45348]" : "border-[#FFEDD4]"} rounded-[180px] px-5 py-[14px]`}
+              className={`flex flex-row items-center justify-between border border-[#FFEDD4] rounded-[180px] px-5 py-[14px]`}
               onClick={() => setEditing("netdebt")}
             >
                 {
@@ -283,7 +285,7 @@ export const Opening: React.FC = () => {
           setGasEstimationState={setGasEstimationState}
         />
 
-        {description ?? <div />}
+        {/* {description ?? <div />} */}
 
         <Flex variant="layout.actions">
           {
@@ -302,7 +304,7 @@ export const Opening: React.FC = () => {
                 Complete transaction
               </TroveAction>
             ) : (
-              <Button sx={{width: "100%"}} disabled>Complete transaction</Button>
+              <Button sx={{width: "100%", backgroundColor: "#f6f6f6", color: "#0B1722", borderColor: "#f6f6f6"}} disabled>Complete transaction</Button>
             )) : (<Button sx={{width: "100%"}} disabled>Transaction in progress</Button>)
           }
         </Flex>

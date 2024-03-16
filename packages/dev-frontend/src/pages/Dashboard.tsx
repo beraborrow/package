@@ -8,7 +8,7 @@ export const Dashboard: React.FC = () => {
 
   return (
     <div className="flex flex-col w-full sm:gap-8 px-0 sm:px-[100px] lg:px-0 gap-8">
-      <div className="flex flex-row items-center justify-center gap-8 text-lg p-5 border border-[#FFEDD4] rounded-[40px] mt-8 mx-auto w-[252px]">
+      <div className="flex flex-row items-center justify-center gap-8 text-lg px-5 py-[17px] border border-[#FFEDD4] rounded-[40px] mt-10 mx-auto w-[252px]">
           <span
             onClick={() => setCurPage("Borrow")}
             className={`${curPage === "Borrow" ? "text-dark-gray font-bold leading-6" : "font-medium opacity-50"} cursor-pointer`}
