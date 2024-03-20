@@ -10,7 +10,12 @@ contract DefaultPoolTester is DefaultPool {
         NECTDebt  = NECTDebt.add(_amount);
     }
 
-    function unprotectedPayable() external payable {
-        iBGT = iBGT.add(msg.value);
+    // function unprotectedPayable() external payable {
+    //     iBGT = iBGT.add(msg.value);
+    // }
+    // burner0621 modified
+    function unprotectedPayable(uint _amount) external {
+        iBGT = iBGT.add(_amount);
     }
+    //////////////////////
 }

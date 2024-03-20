@@ -37,11 +37,11 @@ interface IBorrowerOperations {
         address _pollenStakingAddress
     ) external;
 
-    function openTrove(uint _maxFee, uint _NECTAmount, address _upperHint, address _lowerHint) external payable;
+    function openTrove(uint _maxFee, uint _NECTAmount, address _upperHint, address _lowerHint, uint _ibgtAmount) external;
 
-    function addColl(address _upperHint, address _lowerHint) external payable;
+    function addColl(address _upperHint, address _lowerHint, uint _ibgtAmount) external;
 
-    function moveiBGTGainToTrove(address _user, address _upperHint, address _lowerHint) external payable;
+    function moveiBGTGainToTrove(address _user, address _upperHint, address _lowerHint, uint _ibgtAmount) external;
 
     function withdrawColl(uint _amount, address _upperHint, address _lowerHint) external;
 
@@ -51,7 +51,7 @@ interface IBorrowerOperations {
 
     function closeTrove() external;
 
-    function adjustTrove(uint _maxFee, uint _collWithdrawal, uint _debtChange, bool isDebtIncrease, address _upperHint, address _lowerHint) external payable;
+    function adjustTrove(uint _maxFee, uint _collWithdrawal, uint _debtChange, bool isDebtIncrease, address _upperHint, address _lowerHint, uint _ibgtAmount) external;
 
     function claimCollateral() external;
 

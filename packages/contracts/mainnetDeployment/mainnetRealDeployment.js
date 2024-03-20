@@ -3,8 +3,8 @@ const { mainnetPriceFeedDeploy } = require('./deploymentPriceFeed.mainnet.js')
 const configParams = require("./deploymentParams.mainnet.js")
 
 async function main() {
-  // await mainnetPriceFeedDeploy(configParams)
-  await mainnetDeploy(configParams)
+  await mainnetPriceFeedDeploy(configParams)
+  // await mainnetDeploy(configParams)
 }
 
 main()

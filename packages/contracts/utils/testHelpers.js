@@ -550,7 +550,10 @@ class TestHelper {
     for (const account of accounts) {
       const {upperHint, lowerHint} = await this.getBorrowerOpsListHint(contracts, iBGTAmount, totalDebt)
 
-      const tx = await contracts.borrowerOperations.openTrove(this._100pct, NECTAmount, upperHint, lowerHint, { from: account, value: iBGTAmount })
+      // burner0621 modified
+      // const tx = await contracts.borrowerOperations.openTrove(this._100pct, NECTAmount, upperHint, lowerHint, { from: account, value: iBGTAmount })
+      const tx = await contracts.borrowerOperations.openTrove(this._100pct, NECTAmount, upperHint, lowerHint, iBGTAmount, { from: account })
+      //////////////////////
       const gas = this.gasUsed(tx)
       gasCostList.push(gas)
     }
@@ -565,7 +568,10 @@ class TestHelper {
       const randCollAmount = this.randAmountInWei(miniBGT, maxiBGT)
       const {upperHint, lowerHint} = await this.getBorrowerOpsListHint(contracts, randCollAmount, totalDebt)
 
-      const tx = await contracts.borrowerOperations.openTrove(this._100pct, NECTAmount, upperHint, lowerHint, { from: account, value: randCollAmount })
+      // burner0621 modified
+      // const tx = await contracts.borrowerOperations.openTrove(this._100pct, NECTAmount, upperHint, lowerHint, { from: account, value: randCollAmount })
+      const tx = await contracts.borrowerOperations.openTrove(this._100pct, NECTAmount, upperHint, lowerHint, randCollAmount, { from: account })
+      //////////////////////
       const gas = this.gasUsed(tx)
       gasCostList.push(gas)
     }
@@ -582,7 +588,10 @@ class TestHelper {
 
       const {upperHint, lowerHint} = await this.getBorrowerOpsListHint(contracts, randCollAmount, totalDebt)
 
-      const tx = await contracts.borrowerOperations.openTrove(this._100pct, proportionalNECT, upperHint, lowerHint, { from: account, value: randCollAmount })
+      // burner0621 modifed
+      // const tx = await contracts.borrowerOperations.openTrove(this._100pct, proportionalNECT, upperHint, lowerHint, { from: account, value: randCollAmount })
+      const tx = await contracts.borrowerOperations.openTrove(this._100pct, proportionalNECT, upperHint, lowerHint, randCollAmount, { from: account })
+      /////////////////////
       const gas = this.gasUsed(tx)
       gasCostList.push(gas)
     }
@@ -605,7 +614,10 @@ class TestHelper {
       const {upperHint, lowerHint} = await this.getBorrowerOpsListHint(contracts, randCollAmount, totalDebt)
 
       const feeFloor = this.dec(5, 16)
-      const tx = await contracts.borrowerOperations.openTrove(this._100pct, proportionalNECT, upperHint, lowerHint, { from: account, value: randCollAmount })
+      // burner0621 modifed
+      // const tx = await contracts.borrowerOperations.openTrove(this._100pct, proportionalNECT, upperHint, lowerHint, { from: account, value: randCollAmount })
+      const tx = await contracts.borrowerOperations.openTrove(this._100pct, proportionalNECT, upperHint, lowerHint, randCollAmount, { from: account })
+      /////////////////////
 
       if (logging && tx.receipt.status) {
         i++
@@ -626,7 +638,10 @@ class TestHelper {
       const totalDebt = await this.getOpenTroveTotalDebt(contracts, randNECTAmount)
       const {upperHint, lowerHint} = await this.getBorrowerOpsListHint(contracts, iBGTAmount, totalDebt)
 
-      const tx = await contracts.borrowerOperations.openTrove(this._100pct, randNECTAmount, upperHint, lowerHint, { from: account, value: iBGTAmount })
+      // burner0621  modified
+      // const tx = await contracts.borrowerOperations.openTrove(this._100pct, randNECTAmount, upperHint, lowerHint, { from: account, value: iBGTAmount })
+      const tx = await contracts.borrowerOperations.openTrove(this._100pct, randNECTAmount, upperHint, lowerHint, iBGTAmount, { from: account })
+      ///////////////////////
       const gas = this.gasUsed(tx)
       gasCostList.push(gas)
     }
@@ -654,12 +669,39 @@ class TestHelper {
       const totalDebt = await this.getOpenTroveTotalDebt(contracts, NECTAmountWei)
       const {upperHint, lowerHint} = await this.getBorrowerOpsListHint(contracts, iBGTAmount, totalDebt)
 
-      const tx = await contracts.borrowerOperations.openTrove(this._100pct, NECTAmountWei, upperHint, lowerHint, { from: account, value: iBGTAmount })
+      // burner0621 modified
+      // const tx = await contracts.borrowerOperations.openTrove(this._100pct, NECTAmountWei, upperHint, lowerHint, { from: account, value: iBGTAmount })
+      const tx = await contracts.borrowerOperations.openTrove(this._100pct, NECTAmountWei, upperHint, lowerHint, iBGTAmount, { from: account })
+      //////////////////////
       const gas = this.gasUsed(tx)
       gasCostList.push(gas)
       i += 1
     }
     return this.getGasMetrics(gasCostList)
+  }
+
+  static async borrowerOperationsOpenTrove(maxFeePercentage, extraNECTAmount,upperHint, lowerHint, ibgtAmount, extraParams) {
+    const iBGTToken = contracts.iBGTToken
+    console.log ("@@@@@@@@@@@@@@")
+    try{
+      await iBGTToken.mint(extraParams.from, ibgtAmount.toString())
+    }catch (e){
+      console.log ("iBGT Token minting failed", e)
+    }
+    console.log ("@@@@@@@@@@@@@@1")
+    try {
+      await iBGTToken.increaseAllowance(extraParams.from, contracts.borrowerOperations.address, ibgtAmount.toString())
+    }catch (e) {
+      console.log ("Approve failed.", e)
+    }
+    console.log ("@@@@@@@@@@@@@@2")
+
+    // const tx = await contracts.borrowerOperations.openTrove(maxFeePercentage, nectAmount, upperHint, lowerHint, extraParams)
+    try {
+    await contracts.borrowerOperations.openTrove(maxFeePercentage, extraNECTAmount, upperHint, lowerHint, ibgtAmount, extraParams)
+    }catch(e){
+      console.log ("contract openTrove call failed", e)
+    }
   }
 
   static async openTrove(contracts, {
@@ -692,14 +734,32 @@ class TestHelper {
       extraParams.value = ICR.mul(totalDebt).div(price)
     }
 
-    const tx = await contracts.borrowerOperations.openTrove(maxFeePercentage, nectAmount, upperHint, lowerHint, extraParams)
+    // burner0621 modified
+    const _ibgtAmount = extraParams.value ? extraParams.value : 0
+    extraParams.value = undefined
+
+    const iBGTToken = contracts.iBGTToken
+    try{
+      await iBGTToken.mint(extraParams.from, _ibgtAmount.toString())
+    }catch (e){
+      console.log ("iBGT Token minting failed", e)
+    }
+    try {
+      await iBGTToken.increaseAllowance(extraParams.from, contracts.borrowerOperations.address, _ibgtAmount.toString())
+    }catch (e) {
+      console.log ("Approve failed.", e)
+    }
+
+    // const tx = await contracts.borrowerOperations.openTrove(maxFeePercentage, nectAmount, upperHint, lowerHint, extraParams)
+    const tx = await contracts.borrowerOperations.openTrove(maxFeePercentage, nectAmount, upperHint, lowerHint, _ibgtAmount, extraParams)
+    ///////////////////////
 
     return {
       nectAmount,
       netDebt,
       totalDebt,
       ICR,
-      collateral: extraParams.value,
+      collateral: _ibgtAmount,
       tx
     }
   }
@@ -1007,7 +1067,11 @@ class TestHelper {
     for (const account of accounts) {
       const coll = web3.utils.toWei(amountFinney.toString(), 'finney')
 
-      await contracts.borrowerOperations.openTrove(this._100pct, '200000000000000000000', account, account, { from: account, value: coll })
+      // burner0621 modified
+      // await contracts.borrowerOperations.openTrove(this._100pct, '200000000000000000000', account, account, { from: account, value: coll })
+      await contracts.borrowerOperations.openTrove(this._100pct, '200000000000000000000', account, account, coll, { from: account })
+      ///////////////////////
+
 
       amountFinney += 10
     }

@@ -8,8 +8,8 @@ interface IPriceFeed {
 
 
 contract NECTUsdToNECTiBgt is IPriceFeed {
-    IPriceFeed public constant NECT_USD = IPriceFeed(0x6E6aEFef55730F7F91a93F20AEEc2ac6e14688B2);
-    IPriceFeed public constant iBGT_USD = IPriceFeed(0xa74f9bF5e8c3A4567E56a3735665EB8242A0C2fD);
+    IPriceFeed public constant NECT_USD = IPriceFeed(0x971Ff2D85DA8FE1e1533204cE2F3EA36F7d27c66);
+    IPriceFeed public constant iBGT_USD = IPriceFeed(0x3DaD300A888CE2c31925079c1EBEb54feEE847B9);
 
     constructor() public {}
 

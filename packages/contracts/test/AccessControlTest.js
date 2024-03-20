@@ -78,7 +78,7 @@ contract('Access Control: BeraBorrow functions with the caller restricted to Ber
     it("moveiBGTGainToTrove(): reverts when called by an account that is not StabilityPool", async () => {
       // Attempt call from alice
       try {
-        const tx1= await borrowerOperations.moveiBGTGainToTrove(bob, bob, bob, { from: bob })
+        const tx1= await borrowerOperations.moveiBGTGainToTrove(bob, bob, bob, 0, { from: bob })
       } catch (err) {
          assert.include(err.message, "revert")
         // assert.include(err.message, "BorrowerOps: Caller is not Stability Pool")

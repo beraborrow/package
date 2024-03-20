@@ -13,13 +13,16 @@ import "../NECTToken.sol";
 import "./PriceFeedTestnet.sol";
 import "../SortedTroves.sol";
 import "./EchidnaProxy.sol";
+import "../Dependencies/IERC20.sol";
+import "../Dependencies/CheckContract.sol";
+
 //import "../Dependencies/console.sol";
 
 // Run with:
 // rm -f fuzzTests/corpus/* # (optional)
 // ~/.local/bin/echidna-test contracts/TestContracts/EchidnaTester.sol --contract EchidnaTester --config fuzzTests/echidna_config.yaml
 
-contract EchidnaTester {
+contract EchidnaTester is CheckContract {
     using SafeMath for uint;
 
     uint constant private NUMBER_OF_ACTORS = 100;
@@ -87,9 +90,15 @@ contract EchidnaTester {
     
         sortedTroves.setParams(1e18, address(troveManager), address(borrowerOperations));
 
+        // burner0621 modified
+        IERC20 token = IERC20(IBGT_ADDRESS);
+        //////////////////////
         for (uint i = 0; i < NUMBER_OF_ACTORS; i++) {
             echidnaProxies[i] = new EchidnaProxy(troveManager, borrowerOperations, stabilityPool, nectToken);
-            (bool success, ) = address(echidnaProxies[i]).call{value: INITIAL_BALANCE}("");
+            // (bool success, ) = address(echidnaProxies[i]).call{value: INITIAL_BALANCE}("");
+            // burner0621 modified
+            bool success = token.transfer(address(echidnaProxies[i]), INITIAL_BALANCE);
+            ////////////////////////////////
             require(success);
         }
 
@@ -155,10 +164,14 @@ contract EchidnaTester {
         return NECTAmount;
     }
 
-    function openTroveExt(uint _i, uint _iBGT, uint _NECTAmount) public payable {
+    function openTroveExt(uint _i, uint _iBGT, uint _NECTAmount) public { // payable burner0621 modified
         uint actor = _i % NUMBER_OF_ACTORS;
         EchidnaProxy echidnaProxy = echidnaProxies[actor];
-        uint actorBalance = address(echidnaProxy).balance;
+        // uint actorBalance = address(echidnaProxy).balance;
+        // burner0621 modified
+        IERC20 ibgtToken = IERC20(IBGT_ADDRESS);
+        uint actorBalance = ibgtToken.balanceOf(address(echidnaProxy));
+        //////////////////////
 
         // we pass in CCR instead of MCR in case it’s the first one
         uint iBGT = getAdjustediBGT(actorBalance, _iBGT, CCR);
@@ -175,22 +188,26 @@ contract EchidnaTester {
         //assert(numberOfTroves == 0);
     }
 
-    function openTroveRawExt(uint _i, uint _iBGT, uint _NECTAmount, address _upperHint, address _lowerHint, uint _maxFee) public payable {
+    function openTroveRawExt(uint _i, uint _iBGT, uint _NECTAmount, address _upperHint, address _lowerHint, uint _maxFee) public {// payable burner0621 modified
         uint actor = _i % NUMBER_OF_ACTORS;
         echidnaProxies[actor].openTrovePrx(_iBGT, _NECTAmount, _upperHint, _lowerHint, _maxFee);
     }
 
-    function addCollExt(uint _i, uint _iBGT) external payable {
+    function addCollExt(uint _i, uint _iBGT) external {// payable burner0621 modified
         uint actor = _i % NUMBER_OF_ACTORS;
         EchidnaProxy echidnaProxy = echidnaProxies[actor];
-        uint actorBalance = address(echidnaProxy).balance;
+        // uint actorBalance = address(echidnaProxy).balance;
+        // burner0621 modified
+        IERC20 ibgtToken = IERC20(IBGT_ADDRESS);
+        uint actorBalance = ibgtToken.balanceOf(address(echidnaProxy));
+        //////////////////////
 
         uint iBGT = getAdjustediBGT(actorBalance, _iBGT, MCR);
 
         echidnaProxy.addCollPrx(iBGT, address(0), address(0));
     }
 
-    function addCollRawExt(uint _i, uint _iBGT, address _upperHint, address _lowerHint) external payable {
+    function addCollRawExt(uint _i, uint _iBGT, address _upperHint, address _lowerHint) external {// payable burner0621 modified
         uint actor = _i % NUMBER_OF_ACTORS;
         echidnaProxies[actor].addCollPrx(_iBGT, _upperHint, _lowerHint);
     }
@@ -215,10 +232,14 @@ contract EchidnaTester {
         echidnaProxies[actor].closeTrovePrx();
     }
 
-    function adjustTroveExt(uint _i, uint _iBGT, uint _collWithdrawal, uint _debtChange, bool _isDebtIncrease) external payable {
+    function adjustTroveExt(uint _i, uint _iBGT, uint _collWithdrawal, uint _debtChange, bool _isDebtIncrease) external {// payable burner0621 modified
         uint actor = _i % NUMBER_OF_ACTORS;
         EchidnaProxy echidnaProxy = echidnaProxies[actor];
-        uint actorBalance = address(echidnaProxy).balance;
+        // uint actorBalance = address(echidnaProxy).balance;
+        // burner0621 modified
+        IERC20 ibgtToken = IERC20(IBGT_ADDRESS);
+        uint actorBalance = ibgtToken.balanceOf(address(echidnaProxy));
+        //////////////////////
 
         uint iBGT = getAdjustediBGT(actorBalance, _iBGT, MCR);
         uint debtChange = _debtChange;
@@ -230,7 +251,7 @@ contract EchidnaTester {
         echidnaProxy.adjustTrovePrx(iBGT, _collWithdrawal, debtChange, _isDebtIncrease, address(0), address(0), 0);
     }
 
-    function adjustTroveRawExt(uint _i, uint _iBGT, uint _collWithdrawal, uint _debtChange, bool _isDebtIncrease, address _upperHint, address _lowerHint, uint _maxFee) external payable {
+    function adjustTroveRawExt(uint _i, uint _iBGT, uint _collWithdrawal, uint _debtChange, bool _isDebtIncrease, address _upperHint, address _lowerHint, uint _maxFee) external {// payable burner0621 modified
         uint actor = _i % NUMBER_OF_ACTORS;
         echidnaProxies[actor].adjustTrovePrx(_iBGT, _collWithdrawal, _debtChange, _isDebtIncrease, _upperHint, _lowerHint, _maxFee);
     }
@@ -294,7 +315,11 @@ contract EchidnaTester {
     }
 
     function echidna_canary_active_pool_balance() public view returns(bool) {
-        if (address(activePool).balance > 0) {
+        // burner0621 modified
+        IERC20 ibgtToken = IERC20(IBGT_ADDRESS);
+        //////////////////////
+        // if (address(activePool).balance > 0) {
+        if (ibgtToken.balanceOf(address(activePool)) > 0) {
             return false;
         }
         return true;
@@ -353,35 +378,39 @@ contract EchidnaTester {
     }
 
     function echidna_iBGT_balances() public view returns(bool) {
-        if (address(troveManager).balance > 0) {
+        // burner0621 modified
+        IERC20 ibgtToken = IERC20(IBGT_ADDRESS);
+        //////////////////////
+        // if (address(troveManager).balance > 0) {
+        if (ibgtToken.balanceOf(address(troveManager)) > 0) {
             return false;
         }
 
-        if (address(borrowerOperations).balance > 0) {
+        if (ibgtToken.balanceOf(address(borrowerOperations)) > 0) {
             return false;
         }
 
-        if (address(activePool).balance != activePool.getiBGT()) {
+        if (ibgtToken.balanceOf(address(activePool)) != activePool.getiBGT()) {
             return false;
         }
 
-        if (address(defaultPool).balance != defaultPool.getiBGT()) {
+        if (ibgtToken.balanceOf(address(defaultPool)) != defaultPool.getiBGT()) {
             return false;
         }
 
-        if (address(stabilityPool).balance != stabilityPool.getiBGT()) {
+        if (ibgtToken.balanceOf(address(stabilityPool)) != stabilityPool.getiBGT()) {
             return false;
         }
 
-        if (address(nectToken).balance > 0) {
+        if (ibgtToken.balanceOf(address(nectToken)) > 0) {
             return false;
         }
     
-        if (address(priceFeedTestnet).balance > 0) {
+        if (ibgtToken.balanceOf(address(priceFeedTestnet)) > 0) {
             return false;
         }
         
-        if (address(sortedTroves).balance > 0) {
+        if (ibgtToken.balanceOf(address(sortedTroves)) > 0) {
             return false;
         }
 

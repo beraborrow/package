@@ -30,6 +30,7 @@ contract('StabilityPool Scale Factor issue tests', async accounts => {
   let troveManager
   let borrowerOperations
   let pollenToken
+  let iBGTToken
 
   const ZERO_ADDRESS = th.ZERO_ADDRESS
 
@@ -58,6 +59,7 @@ contract('StabilityPool Scale Factor issue tests', async accounts => {
       stabilityPool = contracts.stabilityPool
       borrowerOperations = contracts.borrowerOperations
       pollenToken = POLLENContracts.pollenToken
+      iBGTToken = contracts.iBGTToken
 
       await deploymentHelper.connectPOLLENContracts(POLLENContracts)
       await deploymentHelper.connectCoreContracts(contracts, POLLENContracts)
@@ -74,15 +76,42 @@ contract('StabilityPool Scale Factor issue tests', async accounts => {
       await stabilityPool.registerFrontEnd(kickbackRate_F2, { from: F2 })
       await stabilityPool.registerFrontEnd(kickbackRate_F3, { from: F3 })
     })
+
+    const borrowerOperationsOpenTrove = async(maxFeePercentage, extraNECTAmount,upperHint, lowerHint, ibgtAmount, extraParams) => {
+      try{
+        await iBGTToken.mint(extraParams.from, ibgtAmount.toString())
+      }catch (e){
+        console.log ("iBGT Token minting failed", e)
+      }
+      try {
+        await iBGTToken.increaseAllowance(extraParams.from, borrowerOperations.address, ibgtAmount.toString())
+      }catch (e) {
+        console.log ("Approve failed.", e)
+      }
+  
+      // const tx = await contracts.borrowerOperations.openTrove(maxFeePercentage, nectAmount, upperHint, lowerHint, extraParams)
+      try {
+        const tx = await borrowerOperations.openTrove(maxFeePercentage, extraNECTAmount, upperHint, lowerHint, ibgtAmount, extraParams)
+        return tx
+      }catch(e){
+        throw e
+      }
+    }
  
   it("1. Liquidation succeeds after P reduced to 1", async () => {
     // Whale opens Trove with 100k iBGT and sends 50k NECT to A
-    await borrowerOperations.openTrove(th._100pct, await getOpenTroveNECTAmount(dec(100000, 18)), whale, whale, { from: whale, value: dec(100000, 'ether') })
+    // burner0621 modified
+    // await borrowerOperations.openTrove(th._100pct, await getOpenTroveNECTAmount(dec(100000, 18)), whale, whale, { from: whale, value: dec(100000, 'ether') })
+    await borrowerOperationsOpenTrove(th._100pct, await getOpenTroveNECTAmount(dec(100000, 18)), whale, whale, dec(100000, 'ether'), { from: whale })
+    ///////////////////////
     await nectToken.transfer(A, dec(50000, 18), {from: whale})
 
     // Open 3 Troves with 2000 NECT debt
     for (account of [A, B, C]) {
-      await borrowerOperations.openTrove(th._100pct, await getNECTAmountForDesiredDebt(2000), account, account, {from: account, value: dec(15, 'ether') })
+      // burner0621 modified
+      // await borrowerOperations.openTrove(th._100pct, await getNECTAmountForDesiredDebt(2000), account, account, {from: account, value: dec(15, 'ether') })
+      await borrowerOperationsOpenTrove(th._100pct, await getNECTAmountForDesiredDebt(2000), account, account, dec(15, 'ether'), {from: account })
+      //////////////////////
       assert.isTrue((await th.getTroveEntireDebt(contracts, account)).eq(th.toBN(dec(2000, 18))))
     }
 
@@ -129,7 +158,6 @@ contract('StabilityPool Scale Factor issue tests', async accounts => {
 
     // Price drop -> liquidate Trove C -> price rises 
     await priceFeed.setPrice(dec(100, 18))
-    console.log ("*************1")
     await troveManager.liquidate(C, { from: owner });
     assert.equal(await troveManager.getTroveStatus(C), 3) // status: closed by liq
     await priceFeed.setPrice(dec(200, 18))
@@ -139,12 +167,18 @@ contract('StabilityPool Scale Factor issue tests', async accounts => {
 
   it("2. New deposits can be made after P reduced to 1", async () => {
     // Whale opens Trove with 100k iBGT and sends 50k NECT to A
-    await borrowerOperations.openTrove(th._100pct, await getOpenTroveNECTAmount(dec(100000, 18)), whale, whale, { from: whale, value: dec(100000, 'ether') })
+    // burner0621 modified
+    // await borrowerOperations.openTrove(th._100pct, await getOpenTroveNECTAmount(dec(100000, 18)), whale, whale, { from: whale, value: dec(100000, 'ether') })
+    await borrowerOperationsOpenTrove(th._100pct, await getOpenTroveNECTAmount(dec(100000, 18)), whale, whale, dec(100000, 'ether'), { from: whale })
+    //////////////////////
     await nectToken.transfer(A, dec(50000, 18), {from: whale})
 
     // Open 3 Troves with 2000 NECT debt
     for (account of [A, B, C]) {
-      await borrowerOperations.openTrove(th._100pct, await getNECTAmountForDesiredDebt(2000), account, account, {from: account, value: dec(15, 'ether') })
+      // burner0621 modified
+      // await borrowerOperations.openTrove(th._100pct, await getNECTAmountForDesiredDebt(2000), account, account, {from: account, value: dec(15, 'ether') })
+      await borrowerOperationsOpenTrove(th._100pct, await getNECTAmountForDesiredDebt(2000), account, account, dec(15, 'ether'), {from: account })
+      //////////////////////
       assert.isTrue((await th.getTroveEntireDebt(contracts, account)).eq(th.toBN(dec(2000, 18))))
     }
 
@@ -203,12 +237,18 @@ contract('StabilityPool Scale Factor issue tests', async accounts => {
 
   it("3. Liquidation succeeds when P == 1 and liquidation has newProductFactor == 1e9", async () => {
     // Whale opens Trove with 100k iBGT and sends 50k NECT to A
-    await borrowerOperations.openTrove(th._100pct, await getOpenTroveNECTAmount(dec(100000, 18)), whale, whale, { from: whale, value: dec(100000, 'ether') })
+    // burner0621 modified
+    // await borrowerOperations.openTrove(th._100pct, await getOpenTroveNECTAmount(dec(100000, 18)), whale, whale, { from: whale, value: dec(100000, 'ether') })
+    await borrowerOperationsOpenTrove(th._100pct, await getOpenTroveNECTAmount(dec(100000, 18)), whale, whale, dec(100000, 'ether'), { from: whale })
+    //////////////////////
     await nectToken.transfer(A, dec(50000, 18), {from: whale})
 
     // Open 3 Troves with 2000 NECT debt
     for (account of [A, B, C]) {
-      await borrowerOperations.openTrove(th._100pct, await getNECTAmountForDesiredDebt(2000), account, account, {from: account, value: dec(15, 'ether') })
+      // burner0621 modified
+      // await borrowerOperations.openTrove(th._100pct, await getNECTAmountForDesiredDebt(2000), account, account, {from: account, value: dec(15, 'ether') })
+      await borrowerOperationsOpenTrove(th._100pct, await getNECTAmountForDesiredDebt(2000), account, account, dec(15, 'ether'), {from: account })
+      //////////////////////
       assert.isTrue((await th.getTroveEntireDebt(contracts, account)).eq(th.toBN(dec(2000, 18))))
     }
 
@@ -289,12 +329,18 @@ contract('StabilityPool Scale Factor issue tests', async accounts => {
 
   it("4. Liquidation succeeds when P == 1 and liquidation has newProductFactor > 1e9", async () => {
     // Whale opens Trove with 100k iBGT and sends 50k NECT to A
-    await borrowerOperations.openTrove(th._100pct, await getOpenTroveNECTAmount(dec(100000, 18)), whale, whale, { from: whale, value: dec(100000, 'ether') })
+    // burner0621 modified
+    // await borrowerOperations.openTrove(th._100pct, await getOpenTroveNECTAmount(dec(100000, 18)), whale, whale, { from: whale, value: dec(100000, 'ether') })
+    await borrowerOperationsOpenTrove(th._100pct, await getOpenTroveNECTAmount(dec(100000, 18)), whale, whale, dec(100000, 'ether'), { from: whale })
+    //////////////////////
     await nectToken.transfer(A, dec(50000, 18), {from: whale})
 
     // Open 3 Troves with 2000 NECT debt
     for (account of [A, B, C]) {
-      await borrowerOperations.openTrove(th._100pct, await getNECTAmountForDesiredDebt(2000), account, account, {from: account, value: dec(15, 'ether') })
+      // burner0621 modified
+      // await borrowerOperations.openTrove(th._100pct, await getNECTAmountForDesiredDebt(2000), account, account, {from: account, value: dec(15, 'ether') })
+      await borrowerOperationsOpenTrove(th._100pct, await getNECTAmountForDesiredDebt(2000), account, account, dec(15, 'ether'), {from: account })
+      //////////////////////
       assert.isTrue((await th.getTroveEntireDebt(contracts, account)).eq(th.toBN(dec(2000, 18))))
     }
 
@@ -377,12 +423,18 @@ contract('StabilityPool Scale Factor issue tests', async accounts => {
 
   it("5. Depositor have correct depleted stake after deposit at P == 1 and scale changing liq (with newProductFactor == 1e9)", async () => {
     // Whale opens Trove with 100k iBGT and sends 50k NECT to A
-    await borrowerOperations.openTrove(th._100pct, await getOpenTroveNECTAmount(dec(100000, 18)), whale, whale, { from: whale, value: dec(100000, 'ether') })
+    // burner0621 modified
+    // await borrowerOperations.openTrove(th._100pct, await getOpenTroveNECTAmount(dec(100000, 18)), whale, whale, { from: whale, value: dec(100000, 'ether') })
+    await borrowerOperationsOpenTrove(th._100pct, await getOpenTroveNECTAmount(dec(100000, 18)), whale, whale, dec(100000, 'ether'), { from: whale })
+    //////////////////////
     await nectToken.transfer(A, dec(50000, 18), {from: whale})
 
     // Open 3 Troves with 2000 NECT debt
     for (account of [A, B, C]) {
-      await borrowerOperations.openTrove(th._100pct, await getNECTAmountForDesiredDebt(2000), account, account, {from: account, value: dec(15, 'ether') })
+      // burner0621 modified
+      // await borrowerOperations.openTrove(th._100pct, await getNECTAmountForDesiredDebt(2000), account, account, {from: account, value: dec(15, 'ether') })
+      await borrowerOperationsOpenTrove(th._100pct, await getNECTAmountForDesiredDebt(2000), account, account, dec(15, 'ether'), {from: account })
+      //////////////////////
       assert.isTrue((await th.getTroveEntireDebt(contracts, account)).eq(th.toBN(dec(2000, 18))))
     }
 
@@ -474,12 +526,18 @@ contract('StabilityPool Scale Factor issue tests', async accounts => {
 
   it("6. Depositor have correct depleted stake after deposit at P == 1 and scale changing liq (with newProductFactor > 1e9)", async () => {
     // Whale opens Trove with 100k iBGT and sends 50k NECT to A
-    await borrowerOperations.openTrove(th._100pct, await getOpenTroveNECTAmount(dec(100000, 18)), whale, whale, { from: whale, value: dec(100000, 'ether') })
+    // burner0621 modified
+    // await borrowerOperations.openTrove(th._100pct, await getOpenTroveNECTAmount(dec(100000, 18)), whale, whale, { from: whale, value: dec(100000, 'ether') })
+    await borrowerOperationsOpenTrove(th._100pct, await getOpenTroveNECTAmount(dec(100000, 18)), whale, whale, dec(100000, 'ether'), { from: whale })
+    //////////////////////
     await nectToken.transfer(A, dec(50000, 18), {from: whale})
 
     // Open 3 Troves with 2000 NECT debt
     for (account of [A, B, C]) {
-      await borrowerOperations.openTrove(th._100pct, await getNECTAmountForDesiredDebt(2000), account, account, {from: account, value: dec(15, 'ether') })
+      // burner0621 modified
+      // await borrowerOperations.openTrove(th._100pct, await getNECTAmountForDesiredDebt(2000), account, account, {from: account, value: dec(15, 'ether') })
+      await borrowerOperationsOpenTrove(th._100pct, await getNECTAmountForDesiredDebt(2000), account, account, dec(15, 'ether'), {from: account })
+      //////////////////////
       assert.isTrue((await th.getTroveEntireDebt(contracts, account)).eq(th.toBN(dec(2000, 18))))
     }
 

@@ -12,6 +12,7 @@ import "./Dependencies/BeraBorrowBase.sol";
 import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/console.sol";
+import "./Dependencies/IERC20.sol";
 
 contract BorrowerOperations is BeraBorrowBase, Ownable, CheckContract, IBorrowerOperations {
     string constant public NAME = "BorrowerOperations";
@@ -153,7 +154,12 @@ contract BorrowerOperations is BeraBorrowBase, Ownable, CheckContract, IBorrower
 
     // --- Borrower Trove Operations ---
 
-    function openTrove(uint _maxFeePercentage, uint _NECTAmount, address _upperHint, address _lowerHint) external payable override {
+    function openTrove(uint _maxFeePercentage, uint _NECTAmount, address _upperHint, address _lowerHint, uint _ibgtAmount) external override {
+        // burner0621 modified
+        IERC20 ibgtToken = IERC20(IBGT_ADDRESS);
+        ibgtToken.transferFrom(msg.sender, address(this), _ibgtAmount);
+        // ////////////////////
+
         ContractsCache memory contractsCache = ContractsCache(troveManager, activePool, nectToken);
         LocalVariables_openTrove memory vars;
 
@@ -176,20 +182,20 @@ contract BorrowerOperations is BeraBorrowBase, Ownable, CheckContract, IBorrower
         vars.compositeDebt = _getCompositeDebt(vars.netDebt);
         assert(vars.compositeDebt > 0);
         
-        vars.ICR = BeraBorrowMath._computeCR(msg.value, vars.compositeDebt, vars.price);
-        vars.NICR = BeraBorrowMath._computeNominalCR(msg.value, vars.compositeDebt);
+        vars.ICR = BeraBorrowMath._computeCR(_ibgtAmount, vars.compositeDebt, vars.price);
+        vars.NICR = BeraBorrowMath._computeNominalCR(_ibgtAmount, vars.compositeDebt);
 
         if (isRecoveryMode) {
             _requireICRisAboveCCR(vars.ICR);
         } else {
             _requireICRisAboveMCR(vars.ICR);
-            uint newTCR = _getNewTCRFromTroveChange(msg.value, true, vars.compositeDebt, true, vars.price);  // bools: coll increase, debt increase
+            uint newTCR = _getNewTCRFromTroveChange(_ibgtAmount, true, vars.compositeDebt, true, vars.price);  // bools: coll increase, debt increase
             _requireNewTCRisAboveCCR(newTCR); 
         }
 
         // Set the trove struct's properties
         contractsCache.troveManager.setTroveStatus(msg.sender, 1);
-        contractsCache.troveManager.increaseTroveColl(msg.sender, msg.value);
+        contractsCache.troveManager.increaseTroveColl(msg.sender, _ibgtAmount);
         contractsCache.troveManager.increaseTroveDebt(msg.sender, vars.compositeDebt);
 
         contractsCache.troveManager.updateTroveRewardSnapshots(msg.sender);
@@ -200,43 +206,55 @@ contract BorrowerOperations is BeraBorrowBase, Ownable, CheckContract, IBorrower
         emit TroveCreated(msg.sender, vars.arrayIndex);
 
         // Move the iBGT to the Active Pool, and mint the NECTAmount to the borrower
-        _activePoolAddColl(contractsCache.activePool, msg.value);
+        _activePoolAddColl(contractsCache.activePool, _ibgtAmount);
         _withdrawNECT(contractsCache.activePool, contractsCache.nectToken, msg.sender, _NECTAmount, vars.netDebt);
         // Move the NECT gas compensation to the Gas Pool
         _withdrawNECT(contractsCache.activePool, contractsCache.nectToken, gasPoolAddress, NECT_GAS_COMPENSATION, NECT_GAS_COMPENSATION);
 
-        emit TroveUpdated(msg.sender, vars.compositeDebt, msg.value, vars.stake, BorrowerOperation.openTrove);
+        emit TroveUpdated(msg.sender, vars.compositeDebt, _ibgtAmount, vars.stake, BorrowerOperation.openTrove);
         emit NECTBorrowingFeePaid(msg.sender, vars.NECTFee);
     }
 
     // Send iBGT as collateral to a trove
-    function addColl(address _upperHint, address _lowerHint) external payable override {
-        _adjustTrove(msg.sender, 0, 0, false, _upperHint, _lowerHint, 0);
+    function addColl(address _upperHint, address _lowerHint, uint _ibgtAmount) external override {
+        // burner0621 modified
+        IERC20 ibgtToken = IERC20(IBGT_ADDRESS);
+        ibgtToken.transferFrom(msg.sender, address(this), _ibgtAmount);
+        //////////////////////
+        _adjustTrove(msg.sender, 0, 0, false, _upperHint, _lowerHint, 0, _ibgtAmount);
     }
 
     // Send iBGT as collateral to a trove. Called by only the Stability Pool.
-    function moveiBGTGainToTrove(address _borrower, address _upperHint, address _lowerHint) external payable override {
+    function moveiBGTGainToTrove(address _borrower, address _upperHint, address _lowerHint, uint _ibgtAmount) external override {
         _requireCallerIsStabilityPool();
-        _adjustTrove(_borrower, 0, 0, false, _upperHint, _lowerHint, 0);
+        // burner0621 modified
+        IERC20 ibgtToken = IERC20(IBGT_ADDRESS);
+        ibgtToken.transferFrom(msg.sender, address(this), _ibgtAmount);
+        // ////////////////////
+        _adjustTrove(_borrower, 0, 0, false, _upperHint, _lowerHint, 0, _ibgtAmount);
     }
 
     // Withdraw iBGT collateral from a trove
     function withdrawColl(uint _collWithdrawal, address _upperHint, address _lowerHint) external override {
-        _adjustTrove(msg.sender, _collWithdrawal, 0, false, _upperHint, _lowerHint, 0);
+        _adjustTrove(msg.sender, _collWithdrawal, 0, false, _upperHint, _lowerHint, 0, 0);
     }
 
     // Withdraw NECT tokens from a trove: mint new NECT tokens to the owner, and increase the trove's debt accordingly
     function withdrawNECT(uint _maxFeePercentage, uint _NECTAmount, address _upperHint, address _lowerHint) external override {
-        _adjustTrove(msg.sender, 0, _NECTAmount, true, _upperHint, _lowerHint, _maxFeePercentage);
+        _adjustTrove(msg.sender, 0, _NECTAmount, true, _upperHint, _lowerHint, _maxFeePercentage, 0);
     }
 
     // Repay NECT tokens to a Trove: Burn the repaid NECT tokens, and reduce the trove's debt accordingly
     function repayNECT(uint _NECTAmount, address _upperHint, address _lowerHint) external override {
-        _adjustTrove(msg.sender, 0, _NECTAmount, false, _upperHint, _lowerHint, 0);
+        _adjustTrove(msg.sender, 0, _NECTAmount, false, _upperHint, _lowerHint, 0, 0);
     }
 
-    function adjustTrove(uint _maxFeePercentage, uint _collWithdrawal, uint _NECTChange, bool _isDebtIncrease, address _upperHint, address _lowerHint) external payable override {
-        _adjustTrove(msg.sender, _collWithdrawal, _NECTChange, _isDebtIncrease, _upperHint, _lowerHint, _maxFeePercentage);
+    function adjustTrove(uint _maxFeePercentage, uint _collWithdrawal, uint _NECTChange, bool _isDebtIncrease, address _upperHint, address _lowerHint, uint _ibgtAmount) external override {
+        // burner0621 modified
+        IERC20 ibgtToken = IERC20(IBGT_ADDRESS);
+        ibgtToken.transferFrom(msg.sender, address(this), _ibgtAmount);
+        // ////////////////////
+        _adjustTrove(msg.sender, _collWithdrawal, _NECTChange, _isDebtIncrease, _upperHint, _lowerHint, _maxFeePercentage, _ibgtAmount);
     }
 
     /*
@@ -246,7 +264,7 @@ contract BorrowerOperations is BeraBorrowBase, Ownable, CheckContract, IBorrower
     *
     * If both are positive, it will revert.
     */
-    function _adjustTrove(address _borrower, uint _collWithdrawal, uint _NECTChange, bool _isDebtIncrease, address _upperHint, address _lowerHint, uint _maxFeePercentage) internal {
+    function _adjustTrove(address _borrower, uint _collWithdrawal, uint _NECTChange, bool _isDebtIncrease, address _upperHint, address _lowerHint, uint _maxFeePercentage, uint _ibgtAmount) internal {
         ContractsCache memory contractsCache = ContractsCache(troveManager, activePool, nectToken);
         LocalVariables_adjustTrove memory vars;
 
@@ -257,17 +275,17 @@ contract BorrowerOperations is BeraBorrowBase, Ownable, CheckContract, IBorrower
             _requireValidMaxFeePercentage(_maxFeePercentage, isRecoveryMode);
             _requireNonZeroDebtChange(_NECTChange);
         }
-        _requireSingularCollChange(_collWithdrawal);
-        _requireNonZeroAdjustment(_collWithdrawal, _NECTChange);
+        _requireSingularCollChange(_collWithdrawal, _ibgtAmount);
+        _requireNonZeroAdjustment(_collWithdrawal, _NECTChange, _ibgtAmount);
         _requireTroveisActive(contractsCache.troveManager, _borrower);
 
         // Confirm the operation is either a borrower adjusting their own trove, or a pure iBGT transfer from the Stability Pool to a trove
-        assert(msg.sender == _borrower || (msg.sender == stabilityPoolAddress && msg.value > 0 && _NECTChange == 0));
+        assert(msg.sender == _borrower || (msg.sender == stabilityPoolAddress && _ibgtAmount > 0 && _NECTChange == 0));
 
         contractsCache.troveManager.applyPendingRewards(_borrower);
 
         // Get the collChange based on whether or not iBGT was sent in the transaction
-        (vars.collChange, vars.isCollIncrease) = _getCollChange(msg.value, _collWithdrawal);
+        (vars.collChange, vars.isCollIncrease) = _getCollChange(_ibgtAmount, _collWithdrawal);
 
         vars.netDebtChange = _NECTChange;
 
@@ -444,8 +462,15 @@ contract BorrowerOperations is BeraBorrowBase, Ownable, CheckContract, IBorrower
 
     // Send iBGT to Active Pool and increase its recorded iBGT balance
     function _activePoolAddColl(IActivePool _activePool, uint _amount) internal {
-        (bool success, ) = address(_activePool).call{value: _amount}("");
+        // (bool success, ) = address(_activePool).call{value: _amount}("");
+        // require(success, "BorrowerOps: Sending iBGT to ActivePool failed");
+        
+        // burner0621 modified for iBGT
+        IERC20 token = IERC20(IBGT_ADDRESS);
+        bool success = token.transfer(address(_activePool), _amount);
         require(success, "BorrowerOps: Sending iBGT to ActivePool failed");
+        _activePool.receiveiBGT(_amount);
+        ////////////////////////////////
     }
 
     // Issue the specified amount of NECT to _account and increases the total active debt (_netDebtIncrease potentially includes a NECTFee)
@@ -462,16 +487,18 @@ contract BorrowerOperations is BeraBorrowBase, Ownable, CheckContract, IBorrower
 
     // --- 'Require' wrapper functions ---
 
-    function _requireSingularCollChange(uint _collWithdrawal) internal view {
-        require(msg.value == 0 || _collWithdrawal == 0, "BorrowerOperations: Cannot withdraw and add coll");
+    // burner0621 modified add _ibgtAmount parameter instead of msg.value
+    function _requireSingularCollChange(uint _collWithdrawal, uint _ibgtAmount) internal view {
+        require(_ibgtAmount == 0 || _collWithdrawal == 0, "BorrowerOperations: Cannot withdraw and add coll");
     }
 
     function _requireCallerIsBorrower(address _borrower) internal view {
         require(msg.sender == _borrower, "BorrowerOps: Caller must be the borrower for a withdrawal");
     }
 
-    function _requireNonZeroAdjustment(uint _collWithdrawal, uint _NECTChange) internal view {
-        require(msg.value != 0 || _collWithdrawal != 0 || _NECTChange != 0, "BorrowerOps: There must be either a collateral change or a debt change");
+    // burner0621 modified add _ibgtAmount parameter instead of msg.value
+    function _requireNonZeroAdjustment(uint _collWithdrawal, uint _NECTChange, uint _ibgtAmount) internal view {
+        require(_ibgtAmount != 0 || _collWithdrawal != 0 || _NECTChange != 0, "BorrowerOps: There must be either a collateral change or a debt change");
     }
 
     function _requireTroveisActive(ITroveManager _troveManager, address _borrower) internal view {

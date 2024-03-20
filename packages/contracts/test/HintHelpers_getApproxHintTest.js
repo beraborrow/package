@@ -19,6 +19,7 @@ contract('HintHelpers', async accounts => {
   let sortedTroves
   let troveManager
   let borrowerOperations
+  let iBGTToken
   let hintHelpers
   let priceFeed
 
@@ -47,7 +48,20 @@ contract('HintHelpers', async accounts => {
  const openTrove = async (account, index) => {
    const amountFinney = 2000 + index * 10
    const coll = web3.utils.toWei((amountFinney.toString()), 'finney')
-   await borrowerOperations.openTrove(th._100pct, 0, account, account, { from: account, value: coll })
+   // burner0621 modified
+  //  await borrowerOperations.openTrove(th._100pct, 0, account, account, { from: account, value: coll })
+    try{
+      await iBGTToken.mint(account, coll.toString())
+    }catch (e){
+      console.log ("iBGT Token minting failed", e)
+    }
+    try {
+      await iBGTToken.increaseAllowance(account, borrowerOperations.address, coll.toString())
+    }catch (e) {
+      console.log ("Approve failed.", e)
+    }
+   await borrowerOperations.openTrove(th._100pct, 0, account, account, coll, { from: account })
+   //////////////////////
  }
 
  const withdrawNECTfromTrove = async (account) => {
@@ -86,6 +100,7 @@ contract('HintHelpers', async accounts => {
     borrowerOperations = contracts.borrowerOperations
     hintHelpers = contracts.hintHelpers
     priceFeed = contracts.priceFeedTestnet
+    iBGTToken = contracts.iBGTToken
   
     await deploymentHelper.connectCoreContracts(contracts, POLLENContracts)
     await deploymentHelper.connectPOLLENContracts(POLLENContracts)

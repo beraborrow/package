@@ -42,6 +42,7 @@ contract('POLLENStaking revenue share tests', async accounts => {
   let borrowerOperations
   let pollenStaking
   let pollenToken
+  let iBGTToken
 
   let contracts
 
@@ -67,6 +68,7 @@ contract('POLLENStaking revenue share tests', async accounts => {
     defaultPool = contracts.defaultPool
     borrowerOperations = contracts.borrowerOperations
     hintHelpers = contracts.hintHelpers
+    iBGTToken = contracts.iBGTToken
 
     pollenToken = POLLENContracts.pollenToken
     pollenStaking = POLLENContracts.pollenStaking
@@ -305,17 +307,16 @@ contract('POLLENStaking revenue share tests', async accounts => {
     const expectedTotaliBGTGain = emittediBGTFee_1.add(emittediBGTFee_2)
     const expectedTotalNECTGain = emittedNECTFee_1.add(emittedNECTFee_2)
 
-    const A_iBGTBalance_Before = toBN(await web3.eth.getBalance(A))
+    const A_iBGTBalance_Before = toBN(await iBGTToken.balanceOf(A))
     const A_NECTBalance_Before = toBN(await nectToken.balanceOf(A))
 
     // A un-stakes
     const GAS_Used = th.gasUsed(await pollenStaking.unstake(dec(100, 18), {from: A, gasPrice: GAS_PRICE }))
 
-    const A_iBGTBalance_After = toBN(await web3.eth.getBalance(A))
+    const A_iBGTBalance_After = toBN(await iBGTToken.balanceOf(A))
     const A_NECTBalance_After = toBN(await nectToken.balanceOf(A))
 
-
-    const A_iBGTGain = A_iBGTBalance_After.sub(A_iBGTBalance_Before).add(toBN(GAS_Used * GAS_PRICE))
+    const A_iBGTGain = A_iBGTBalance_After.sub(A_iBGTBalance_Before)
     const A_NECTGain = A_NECTBalance_After.sub(A_NECTBalance_Before)
 
     assert.isAtMost(th.getDifference(expectedTotaliBGTGain, A_iBGTGain), 1000)
@@ -378,16 +379,16 @@ contract('POLLENStaking revenue share tests', async accounts => {
     const expectedTotaliBGTGain = emittediBGTFee_1.add(emittediBGTFee_2)
     const expectedTotalNECTGain = emittedNECTFee_1.add(emittedNECTFee_2)
 
-    const A_iBGTBalance_Before = toBN(await web3.eth.getBalance(A))
+    const A_iBGTBalance_Before = toBN(await iBGTToken.balanceOf(A))
     const A_NECTBalance_Before = toBN(await nectToken.balanceOf(A))
 
     // A tops up
     const GAS_Used = th.gasUsed(await pollenStaking.stake(dec(50, 18), {from: A, gasPrice: GAS_PRICE }))
 
-    const A_iBGTBalance_After = toBN(await web3.eth.getBalance(A))
+    const A_iBGTBalance_After = toBN(await iBGTToken.balanceOf(A))
     const A_NECTBalance_After = toBN(await nectToken.balanceOf(A))
 
-    const A_iBGTGain = A_iBGTBalance_After.sub(A_iBGTBalance_Before).add(toBN(GAS_Used * GAS_PRICE))
+    const A_iBGTGain = A_iBGTBalance_After.sub(A_iBGTBalance_Before)
     const A_NECTGain = A_NECTBalance_After.sub(A_NECTBalance_Before)
 
     assert.isAtMost(th.getDifference(expectedTotaliBGTGain, A_iBGTGain), 1000)
@@ -615,13 +616,13 @@ contract('POLLENStaking revenue share tests', async accounts => {
     const expectedNECTGain_D = toBN('50').mul(emittedNECTFee_3).div( toBN('650'))
 
 
-    const A_iBGTBalance_Before = toBN(await web3.eth.getBalance(A))
+    const A_iBGTBalance_Before = toBN(await iBGTToken.balanceOf(A))
     const A_NECTBalance_Before = toBN(await nectToken.balanceOf(A))
-    const B_iBGTBalance_Before = toBN(await web3.eth.getBalance(B))
+    const B_iBGTBalance_Before = toBN(await iBGTToken.balanceOf(B))
     const B_NECTBalance_Before = toBN(await nectToken.balanceOf(B))
-    const C_iBGTBalance_Before = toBN(await web3.eth.getBalance(C))
+    const C_iBGTBalance_Before = toBN(await iBGTToken.balanceOf(C))
     const C_NECTBalance_Before = toBN(await nectToken.balanceOf(C))
-    const D_iBGTBalance_Before = toBN(await web3.eth.getBalance(D))
+    const D_iBGTBalance_Before = toBN(await iBGTToken.balanceOf(D))
     const D_NECTBalance_Before = toBN(await nectToken.balanceOf(D))
 
     // A-D un-stake
@@ -637,23 +638,23 @@ contract('POLLENStaking revenue share tests', async accounts => {
     assert.equal((await pollenStaking.totalPOLLENStaked()), '0')
 
     // Get A-D iBGT and NECT balances
-    const A_iBGTBalance_After = toBN(await web3.eth.getBalance(A))
+    const A_iBGTBalance_After = toBN(await iBGTToken.balanceOf(A))
     const A_NECTBalance_After = toBN(await nectToken.balanceOf(A))
-    const B_iBGTBalance_After = toBN(await web3.eth.getBalance(B))
+    const B_iBGTBalance_After = toBN(await iBGTToken.balanceOf(B))
     const B_NECTBalance_After = toBN(await nectToken.balanceOf(B))
-    const C_iBGTBalance_After = toBN(await web3.eth.getBalance(C))
+    const C_iBGTBalance_After = toBN(await iBGTToken.balanceOf(C))
     const C_NECTBalance_After = toBN(await nectToken.balanceOf(C))
-    const D_iBGTBalance_After = toBN(await web3.eth.getBalance(D))
+    const D_iBGTBalance_After = toBN(await iBGTToken.balanceOf(D))
     const D_NECTBalance_After = toBN(await nectToken.balanceOf(D))
 
     // Get iBGT and NECT gains
-    const A_iBGTGain = A_iBGTBalance_After.sub(A_iBGTBalance_Before).add(toBN(A_GAS_Used * GAS_PRICE))
+    const A_iBGTGain = A_iBGTBalance_After.sub(A_iBGTBalance_Before)
     const A_NECTGain = A_NECTBalance_After.sub(A_NECTBalance_Before)
-    const B_iBGTGain = B_iBGTBalance_After.sub(B_iBGTBalance_Before).add(toBN(B_GAS_Used * GAS_PRICE))
+    const B_iBGTGain = B_iBGTBalance_After.sub(B_iBGTBalance_Before)
     const B_NECTGain = B_NECTBalance_After.sub(B_NECTBalance_Before)
-    const C_iBGTGain = C_iBGTBalance_After.sub(C_iBGTBalance_Before).add(toBN(C_GAS_Used * GAS_PRICE))
+    const C_iBGTGain = C_iBGTBalance_After.sub(C_iBGTBalance_Before)
     const C_NECTGain = C_NECTBalance_After.sub(C_NECTBalance_Before)
-    const D_iBGTGain = D_iBGTBalance_After.sub(D_iBGTBalance_Before).add(toBN(D_GAS_Used * GAS_PRICE))
+    const D_iBGTGain = D_iBGTBalance_After.sub(D_iBGTBalance_Before)
     const D_NECTGain = D_NECTBalance_After.sub(D_NECTBalance_Before)
 
     // Check gains match expected amounts
@@ -679,7 +680,6 @@ contract('POLLENStaking revenue share tests', async accounts => {
     // multisig transfers POLLEN to staker A and the non-payable proxy
     await pollenToken.transfer(A, dec(100, 18), {from: multisig})
     await pollenToken.transfer(nonPayable.address, dec(100, 18), {from: multisig})
-
     //  A makes stake
     const A_stakeTx = await pollenStaking.stake(dec(100, 18), {from: A})
     assert.isTrue(A_stakeTx.receipt.status)
@@ -687,7 +687,6 @@ contract('POLLENStaking revenue share tests', async accounts => {
     //  A tells proxy to make a stake
     const proxystakeTxData = await th.getTransactionData('stake(uint256)', ['0x56bc75e2d63100000'])  // proxy stakes 100 POLLEN
     await nonPayable.forward(pollenStaking.address, proxystakeTxData, {from: A})
-
 
     // B makes a redemption, creating iBGT gain for proxy
     const redemptionTx_1 = await th.redeemCollateralAndGetTxObject(B, contracts, dec(45, 18), gasPrice = GAS_PRICE)

@@ -139,6 +139,10 @@ class MainnetDeploymentHelper {
   }
 
   async deployPriceFeedBeraBorrow(deploymentState) {
+    const deployerWallet = (await ethers.getSigners())[0]
+    const ibgtTokenFactory = await this.getFactory("iBGT")
+    const ibgtToken = await this.loadOrDeploy(ibgtTokenFactory, 'iBGT', deploymentState)
+    await ibgtToken.mint (deployerWallet.address, "1000000000000000000000000000")
     const ibgtOraclePriceFeedFactory = await this.getFactory("iBGTOraclePriceFeed")
     const ibgtOraclePriceFeed = await this.loadOrDeploy(ibgtOraclePriceFeedFactory, 'ibgtOraclePriceFeed', deploymentState)
     const nectOraclePriceFeedFactory = await this.getFactory("NECTOraclePriceFeed")
@@ -155,6 +159,7 @@ class MainnetDeploymentHelper {
     }
 
     const FLOContracts = {
+      ibgtToken,
       ibgtOraclePriceFeed,
       nectOraclePriceFeed,
       tellorMaster,

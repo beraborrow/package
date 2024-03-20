@@ -14,12 +14,18 @@ contract BorrowerOperationsScript is CheckContract {
         borrowerOperations = _borrowerOperations;
     }
 
-    function openTrove(uint _maxFee, uint _NECTAmount, address _upperHint, address _lowerHint) external payable {
-        borrowerOperations.openTrove{ value: msg.value }(_maxFee, _NECTAmount, _upperHint, _lowerHint);
+    function openTrove(uint _maxFee, uint _NECTAmount, address _upperHint, address _lowerHint, uint _ibgtAmount) external {
+        // borrowerOperations.openTrove{ value: msg.value }(_maxFee, _NECTAmount, _upperHint, _lowerHint);
+        // burner0621 modified
+        borrowerOperations.openTrove(_maxFee, _NECTAmount, _upperHint, _lowerHint, _ibgtAmount);
+        //////////////////////
     }
 
-    function addColl(address _upperHint, address _lowerHint) external payable {
-        borrowerOperations.addColl{ value: msg.value }(_upperHint, _lowerHint);
+    function addColl(address _upperHint, address _lowerHint, uint _ibgtAmount) external {
+        // borrowerOperations.addColl{ value: msg.value }(_upperHint, _lowerHint);
+        // burner0621 modified
+        borrowerOperations.addColl(_upperHint, _lowerHint, _ibgtAmount);
+        //////////////////////
     }
 
     function withdrawColl(uint _amount, address _upperHint, address _lowerHint) external {
@@ -38,8 +44,11 @@ contract BorrowerOperationsScript is CheckContract {
         borrowerOperations.closeTrove();
     }
 
-    function adjustTrove(uint _maxFee, uint _collWithdrawal, uint _debtChange, bool isDebtIncrease, address _upperHint, address _lowerHint) external payable {
-        borrowerOperations.adjustTrove{ value: msg.value }(_maxFee, _collWithdrawal, _debtChange, isDebtIncrease, _upperHint, _lowerHint);
+    function adjustTrove(uint _maxFee, uint _collWithdrawal, uint _debtChange, bool isDebtIncrease, address _upperHint, address _lowerHint, uint _ibgtAmount) external {
+        // borrowerOperations.adjustTrove{ value: msg.value }(_maxFee, _collWithdrawal, _debtChange, isDebtIncrease, _upperHint, _lowerHint);
+        // burner0621 modified
+        borrowerOperations.adjustTrove(_maxFee, _collWithdrawal, _debtChange, isDebtIncrease, _upperHint, _lowerHint, _ibgtAmount);
+        //////////////////////
     }
 
     function claimCollateral() external {

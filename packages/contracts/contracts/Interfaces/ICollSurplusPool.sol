@@ -29,4 +29,8 @@ interface ICollSurplusPool {
     function accountSurplus(address _account, uint _amount) external;
 
     function claimColl(address _account) external;
+
+    // burner0621 modified for iBGT
+    function receiveiBGT(uint _amount) external;
+    ///////////////////////////////
 }

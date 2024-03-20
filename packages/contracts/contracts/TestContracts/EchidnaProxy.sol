@@ -56,12 +56,16 @@ contract EchidnaProxy {
     }
 
     // Borrower Operations
-    function openTrovePrx(uint _iBGT, uint _NECTAmount, address _upperHint, address _lowerHint, uint _maxFee) external payable {
-        borrowerOperations.openTrove{value: _iBGT}(_maxFee, _NECTAmount, _upperHint, _lowerHint);
+    function openTrovePrx(uint _iBGT, uint _NECTAmount, address _upperHint, address _lowerHint, uint _maxFee) external { // payable
+        // burner0621 modified
+        borrowerOperations.openTrove(_maxFee, _NECTAmount, _upperHint, _lowerHint, _iBGT);
+        //////////////////////
     }
 
-    function addCollPrx(uint _iBGT, address _upperHint, address _lowerHint) external payable {
-        borrowerOperations.addColl{value: _iBGT}(_upperHint, _lowerHint);
+    function addCollPrx(uint _iBGT, address _upperHint, address _lowerHint) external {// payable
+        // burner0621 modified
+        borrowerOperations.addColl(_upperHint, _lowerHint, _iBGT);
+        //////////////////////
     }
 
     function withdrawCollPrx(uint _amount, address _upperHint, address _lowerHint) external {
@@ -80,8 +84,10 @@ contract EchidnaProxy {
         borrowerOperations.closeTrove();
     }
 
-    function adjustTrovePrx(uint _iBGT, uint _collWithdrawal, uint _debtChange, bool _isDebtIncrease, address _upperHint, address _lowerHint, uint _maxFee) external payable {
-        borrowerOperations.adjustTrove{value: _iBGT}(_maxFee, _collWithdrawal, _debtChange, _isDebtIncrease, _upperHint, _lowerHint);
+    function adjustTrovePrx(uint _iBGT, uint _collWithdrawal, uint _debtChange, bool _isDebtIncrease, address _upperHint, address _lowerHint, uint _maxFee) external { // payable
+        // burner0621 modified
+        borrowerOperations.adjustTrove(_maxFee, _collWithdrawal, _debtChange, _isDebtIncrease, _upperHint, _lowerHint, _iBGT);
+        //////////////////////
     }
 
     // Pool Manager

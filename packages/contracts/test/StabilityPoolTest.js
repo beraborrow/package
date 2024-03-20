@@ -43,6 +43,8 @@ contract('StabilityPool', async accounts => {
   let defaultPool
   let borrowerOperations
   let pollenToken
+  let iBGTToken
+
   let communityIssuance
 
   let gasPriceInWei
@@ -76,6 +78,7 @@ contract('StabilityPool', async accounts => {
       defaultPool = contracts.defaultPool
       borrowerOperations = contracts.borrowerOperations
       hintHelpers = contracts.hintHelpers
+      iBGTToken = contracts.iBGTToken
 
       pollenToken = POLLENContracts.pollenToken
       communityIssuance = POLLENContracts.communityIssuance
@@ -1802,7 +1805,17 @@ contract('StabilityPool', async accounts => {
       await openTrove({ extraNECTAmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
       // 1 defaulter opens trove
-      await borrowerOperations.openTrove(th._100pct, await getOpenTroveNECTAmount(dec(10000, 18)), defaulter_1, defaulter_1, { from: defaulter_1, value: dec(100, 'ether') })
+      try{
+        await iBGTToken.mint(defaulter_1,dec(100, 'ether'))
+      }catch (e){
+        console.log ("iBGT Token minting failed", e)
+      }
+      try {
+        await iBGTToken.increaseAllowance(defaulter_1, borrowerOperations.address, dec(100, 'ether'))
+      }catch (e) {
+        console.log ("Approve failed.", e)
+      }
+      await borrowerOperations.openTrove(th._100pct, await getOpenTroveNECTAmount(dec(10000, 18)), defaulter_1, defaulter_1, dec(100, 'ether'), { from: defaulter_1 })
 
       const defaulterDebt = (await troveManager.getEntireDebtAndColl(defaulter_1))[0]
 
@@ -2279,7 +2292,17 @@ contract('StabilityPool', async accounts => {
       await openTrove({ extraNECTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(4, 18)), extraParams: { from: bob } })
       await openTrove({ extraNECTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(4, 18)), extraParams: { from: carol } })
 
-      await borrowerOperations.openTrove(th._100pct, await getOpenTroveNECTAmount(dec(10000, 18)), defaulter_1, defaulter_1, { from: defaulter_1, value: dec(100, 'ether') })
+      try{
+        await iBGTToken.mint(defaulter_1,dec(100, 'ether'))
+      }catch (e){
+        console.log ("iBGT Token minting failed", e)
+      }
+      try {
+        await iBGTToken.increaseAllowance(defaulter_1, borrowerOperations.address, dec(100, 'ether'))
+      }catch (e) {
+        console.log ("Approve failed.", e)
+      }
+      await borrowerOperations.openTrove(th._100pct, await getOpenTroveNECTAmount(dec(10000, 18)), defaulter_1, defaulter_1, dec(100, 'ether'), { from: defaulter_1 })
 
       // A, B, C provides 10000, 5000, 3000 NECT to SP
       const A_GAS_Used = th.gasUsed(await stabilityPool.provideToSP(dec(10000, 18), frontEnd_1, { from: alice, gasPrice: GAS_PRICE }))

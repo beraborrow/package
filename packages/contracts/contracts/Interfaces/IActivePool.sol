@@ -14,4 +14,7 @@ interface IActivePool is IPool {
 
     // --- Functions ---
     function sendiBGT(address _account, uint _amount) external;
+    // burner0621 modified for iBGT
+    function receiveiBGT(uint _amount) external;
+    ///////////////////////////////
 }

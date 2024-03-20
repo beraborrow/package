@@ -61,13 +61,23 @@ module.exports = {
                     }
                 }
             },
+            {
+                version: "0.8.0",
+                settings: {
+                    optimizer: {
+                        enabled: true,
+                        runs: 100
+                    }
+                }
+            },
         ]
     },
     networks: {
         localhost: {
             url: "http://127.0.0.1:8545/",
             chainId: 31337,
-            gasPrice: 600000000000,
+            gasPrice: 1000000000000,
+            timeout: 100000000
         },
         hardhat: {
             accounts: accountsList,
@@ -76,6 +86,10 @@ module.exports = {
             gas: 210000000,
             gasPrice: 11000000000000,
             initialBaseFeePerGas: 0,
+            forking: {
+                url: `https://ethereum-rpc.publicnode.com`,
+                enabled: true
+            }
         },
         mainnet: {
             url: alchemyUrl(),

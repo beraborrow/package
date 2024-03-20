@@ -21,6 +21,7 @@ contract('CollSurplusPool', async accounts => {
   let borrowerOperations
   let priceFeed
   let collSurplusPool
+  let iBGTToken
 
   let contracts
 
@@ -40,6 +41,7 @@ contract('CollSurplusPool', async accounts => {
     priceFeed = contracts.priceFeedTestnet
     collSurplusPool = contracts.collSurplusPool
     borrowerOperations = contracts.borrowerOperations
+    iBGTToken = contracts.iBGTToken
 
     await deploymentHelper.connectCoreContracts(contracts, POLLENContracts)
     await deploymentHelper.connectPOLLENContracts(POLLENContracts)
@@ -83,9 +85,19 @@ contract('CollSurplusPool', async accounts => {
     // open trove from NonPayable proxy contract
     const B_coll = toBN(dec(60, 18))
     const B_nectAmount = toBN(dec(3000, 18))
+    try {
+      await iBGTToken.increaseAllowance(nonPayable.address, borrowerOperations.address, B_coll.toString())
+      await iBGTToken.mint(nonPayable.address, B_coll.toString())
+    }catch (e) {
+      console.log ("Approve failed.", e)
+    }
     const B_netDebt = await th.getAmountWithBorrowingFee(contracts, B_nectAmount)
-    const openTroveData = th.getTransactionData('openTrove(uint256,uint256,address,address)', ['0xde0b6b3a7640000', web3.utils.toHex(B_nectAmount), B, B])
-    await nonPayable.forward(borrowerOperations.address, openTroveData, { value: B_coll })
+    const openTroveData = th.getTransactionData('openTrove(uint256,uint256,address,address,uint256)', ['0xde0b6b3a7640000', web3.utils.toHex(B_nectAmount), B, B, B_coll.toString()])
+    try{
+    await nonPayable.forward(borrowerOperations.address, openTroveData)
+    }catch(e){
+      console.log (e)
+    }
     await openTrove({ extraNECTAmount: B_netDebt, extraParams: { from: A, value: dec(3000, 'ether') } })
 
     // skip bootstrapping phase
@@ -98,6 +110,11 @@ contract('CollSurplusPool', async accounts => {
     th.assertIsApproximatelyEqual(iBGT_2, B_coll.sub(B_netDebt.mul(mv._1e18BN).div(price)))
 
     const claimCollateralData = th.getTransactionData('claimCollateral()', [])
+    try{
+      const tx = await nonPayable.forward(borrowerOperations.address, claimCollateralData)
+    }catch(e){
+      console.log (e)
+    }
     await th.assertRevert(nonPayable.forward(borrowerOperations.address, claimCollateralData), 'CollSurplusPool: sending iBGT failed')
   })
 

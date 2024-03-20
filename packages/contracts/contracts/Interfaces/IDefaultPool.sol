@@ -13,4 +13,8 @@ interface IDefaultPool is IPool {
 
     // --- Functions ---
     function sendiBGTToActivePool(uint _amount) external;
+
+    // burner0621 modified for iBGT
+    function receiveiBGT(uint _amount) external;
+    ///////////////////////////////
 }

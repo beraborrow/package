@@ -2761,9 +2761,9 @@ contract('TroveManager', async accounts => {
   })
 
   it("redeemCollateral(): performs partial redemption if resultant debt is > minimum net debt", async () => {
-    await borrowerOperations.openTrove(th._100pct, await getOpenTroveNECTAmount(dec(10000, 18)), A, A, { from: A, value: dec(1000, 'ether') })
-    await borrowerOperations.openTrove(th._100pct, await getOpenTroveNECTAmount(dec(20000, 18)), B, B, { from: B, value: dec(1000, 'ether') })
-    await borrowerOperations.openTrove(th._100pct, await getOpenTroveNECTAmount(dec(30000, 18)), C, C, { from: C, value: dec(1000, 'ether') })
+    await borrowerOperations.openTrove(th._100pct, await getOpenTroveNECTAmount(dec(10000, 18)), A, A, dec(1000, 'ether'), { from: A })
+    await borrowerOperations.openTrove(th._100pct, await getOpenTroveNECTAmount(dec(20000, 18)), B, B, dec(1000, 'ether'), { from: B })
+    await borrowerOperations.openTrove(th._100pct, await getOpenTroveNECTAmount(dec(30000, 18)), C, C, dec(1000, 'ether'), { from: C })
 
     // A and C send all their tokens to B
     await nectToken.transfer(B, await nectToken.balanceOf(A), {from: A})
@@ -2789,9 +2789,9 @@ contract('TroveManager', async accounts => {
   })
 
   it("redeemCollateral(): doesn't perform partial redemption if resultant debt would be < minimum net debt", async () => {
-    await borrowerOperations.openTrove(th._100pct, await getOpenTroveNECTAmount(dec(6000, 18)), A, A, { from: A, value: dec(1000, 'ether') })
-    await borrowerOperations.openTrove(th._100pct, await getOpenTroveNECTAmount(dec(20000, 18)), B, B, { from: B, value: dec(1000, 'ether') })
-    await borrowerOperations.openTrove(th._100pct, await getOpenTroveNECTAmount(dec(30000, 18)), C, C, { from: C, value: dec(1000, 'ether') })
+    await borrowerOperations.openTrove(th._100pct, await getOpenTroveNECTAmount(dec(6000, 18)), A, A, dec(1000, 'ether'), { from: A })
+    await borrowerOperations.openTrove(th._100pct, await getOpenTroveNECTAmount(dec(20000, 18)), B, B, dec(1000, 'ether'), { from: B })
+    await borrowerOperations.openTrove(th._100pct, await getOpenTroveNECTAmount(dec(30000, 18)), C, C, dec(1000, 'ether'), { from: C })
 
     // A and C send all their tokens to B
     await nectToken.transfer(B, await nectToken.balanceOf(A), {from: A})
@@ -4313,7 +4313,7 @@ contract('TroveManager', async accounts => {
       )
 
       await openTrove({ ICR: toBN(dec(150, 16)), extraParams: { from: bob } })
-      await borrowerOperations.adjustTrove(th._100pct, 0, nectAmount, true, alice, alice, { from: alice, value: nectAmount.mul(mv._1e18BN).div(price) })
+      await borrowerOperations.adjustTrove(th._100pct, 0, nectAmount, true, alice, alice, nectAmount.mul(mv._1e18BN).div(price), { from: alice })
     }
 
     const {

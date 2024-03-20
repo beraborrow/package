@@ -7,7 +7,7 @@ import "./Dependencies/SafeMath.sol";
 import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/console.sol";
-
+import "./Dependencies/IERC20.sol";
 
 contract CollSurplusPool is Ownable, CheckContract, ICollSurplusPool {
     using SafeMath for uint256;
@@ -90,8 +90,13 @@ contract CollSurplusPool is Ownable, CheckContract, ICollSurplusPool {
         iBGT = iBGT.sub(claimableColl);
         emit iBGTSent(_account, claimableColl);
 
-        (bool success, ) = _account.call{ value: claimableColl }("");
+        // (bool success, ) = _account.call{ value: claimableColl }("");
+        // require(success, "CollSurplusPool: sending iBGT failed");
+        // burner0621 modified for iBGT
+        IERC20 token = IERC20(IBGT_ADDRESS);
+        bool success = token.transfer(_account, claimableColl);
         require(success, "CollSurplusPool: sending iBGT failed");
+        ////////////////////////////////
     }
 
     // --- 'require' functions ---
@@ -120,4 +125,11 @@ contract CollSurplusPool is Ownable, CheckContract, ICollSurplusPool {
         _requireCallerIsActivePool();
         iBGT = iBGT.add(msg.value);
     }
+
+    // burner0621 modified for iBGT
+    function receiveiBGT(uint _amount) external override {
+        _requireCallerIsActivePool();
+        iBGT = iBGT.add(_amount);
+    }
+    ///////////////////////////////
 }

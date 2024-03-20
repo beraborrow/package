@@ -775,7 +775,10 @@ contract('POLLEN community issuance arithmetic tests', async accounts => {
     await stabilityPool.registerFrontEnd(dec(1, 18), { from: frontEnd_1 })
 
     // Alice opens trove and deposits to SP
-    await borrowerOperations.openTrove(th._100pct, dec(1, 18), alice, alice, { from: alice, value: dec(1, 'ether') })
+    // burner0621 modified
+    // await borrowerOperations.openTrove(th._100pct, dec(1, 18), alice, alice, { from: alice, value: dec(1, 'ether') })
+    await borrowerOperations.openTrove(th._100pct, dec(1, 18), alice, alice, dec(1, 'ether'), { from: alice })
+    //////////////////////
     await stabilityPool.provideToSP(dec(1, 18), frontEnd_1, { from: alice })
 
     assert.isTrue(await stabilityPool.isEligibleForPOLLEN(alice))
@@ -810,7 +813,10 @@ contract('POLLEN community issuance arithmetic tests', async accounts => {
     await stabilityPool.registerFrontEnd(dec(1, 18), { from: frontEnd_1 })
 
     // Alice opens trove and deposits to SP
-    await borrowerOperations.openTrove(th._100pct, dec(1, 18), alice, alice, { from: alice, value: dec(1, 'ether') })
+    // burner0621 modified
+    // await borrowerOperations.openTrove(th._100pct, dec(1, 18), alice, alice, { from: alice, value: dec(1, 'ether') })
+    await borrowerOperations.openTrove(th._100pct, dec(1, 18), alice, alice, dec(1, 'ether'), { from: alice })
+    //////////////////////
     await stabilityPool.provideToSP(dec(1, 18), frontEnd_1, { from: alice })
 
     assert.isTrue(await stabilityPool.isEligibleForPOLLEN(alice))
@@ -844,7 +850,10 @@ contract('POLLEN community issuance arithmetic tests', async accounts => {
     await stabilityPool.registerFrontEnd(dec(1, 18), { from: frontEnd_1 })
 
     // Alice opens trove and deposits to SP
-    await borrowerOperations.openTrove(th._100pct, dec(1, 18), alice, alice, { from: alice, value: dec(1, 'ether') })
+    // burner0621 modified
+    // await borrowerOperations.openTrove(th._100pct, dec(1, 18), alice, alice, { from: alice, value: dec(1, 'ether') })
+    await borrowerOperations.openTrove(th._100pct, dec(1, 18), alice, alice, dec(1, 'ether'), { from: alice })
+    //////////////////////
     await stabilityPool.provideToSP(dec(1, 18), frontEnd_1, { from: alice })
 
     assert.isTrue(await stabilityPool.isEligibleForPOLLEN(alice))
@@ -879,7 +888,10 @@ contract('POLLEN community issuance arithmetic tests', async accounts => {
     await stabilityPool.registerFrontEnd(dec(1, 18), { from: frontEnd_1 })
 
     // Alice opens trove and deposits to SP
-    await borrowerOperations.openTrove(th._100pct, dec(1, 18), alice, alice, { from: alice, value: dec(1, 'ether') })
+    // burner0621 modifed
+    // await borrowerOperations.openTrove(th._100pct, dec(1, 18), alice, alice, { from: alice, value: dec(1, 'ether') })
+    await borrowerOperations.openTrove(th._100pct, dec(1, 18), alice, alice, dec(1, 'ether'), { from: alice })
+    /////////////////////
     await stabilityPool.provideToSP(dec(1, 18), frontEnd_1, { from: alice })
 
     assert.isTrue(await stabilityPool.isEligibleForPOLLEN(alice))

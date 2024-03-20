@@ -194,4 +194,8 @@ interface IStabilityPool {
      * Only callable by Active Pool, it just accounts for iBGT received
      * receive() external payable;
      */
+
+    // burner0621 modified for iBGT
+    function receiveiBGT(uint _amount) external;
+    ///////////////////////////////
 }

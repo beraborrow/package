@@ -62,31 +62,47 @@ contract BorrowerWrappersScript is BorrowerOperationsScript, iBGTTransferScript,
         pollenStaking = pollenStakingCached;
     }
 
-    function claimCollateralAndOpenTrove(uint _maxFee, uint _NECTAmount, address _upperHint, address _lowerHint) external payable {
-        uint balanceBefore = address(this).balance;
+    function claimCollateralAndOpenTrove(uint _maxFee, uint _NECTAmount, address _upperHint, address _lowerHint, uint _ibgtAmount) external {
+        // uint balanceBefore = address(this).balance;
+        // burner0621 modified
+        IERC20 ibgtToken = IERC20(IBGT_ADDRESS);
+        uint balanceBefore = ibgtToken.balanceOf(address(this));
+        //////////////////////
 
         // Claim collateral
         borrowerOperations.claimCollateral();
 
-        uint balanceAfter = address(this).balance;
-
+        // uint balanceAfter = address(this).balance;
+        // burner0621 modified
+        uint balanceAfter = ibgtToken.balanceOf(address(this));
+        //////////////////////
         // already checked in CollSurplusPool
         assert(balanceAfter > balanceBefore);
 
-        uint totalCollateral = balanceAfter.sub(balanceBefore).add(msg.value);
+        uint totalCollateral = balanceAfter.sub(balanceBefore).add(_ibgtAmount);
 
         // Open trove with obtained collateral, plus collateral sent by user
-        borrowerOperations.openTrove{ value: totalCollateral }(_maxFee, _NECTAmount, _upperHint, _lowerHint);
+        // borrowerOperations.openTrove{ value: totalCollateral }(_maxFee, _NECTAmount, _upperHint, _lowerHint);
+        // burner0621 modified
+        borrowerOperations.openTrove(_maxFee, _NECTAmount, _upperHint, _lowerHint, totalCollateral);
+        //////////////////////
     }
 
     function claimSPRewardsAndRecycle(uint _maxFee, address _upperHint, address _lowerHint) external {
-        uint collBalanceBefore = address(this).balance;
+        // uint collBalanceBefore = address(this).balance;
+        // burner0621 modified
+        IERC20 ibgtToken = IERC20(IBGT_ADDRESS);
+        uint collBalanceBefore = ibgtToken.balanceOf(address(this));
+        //////////////////////
         uint pollenBalanceBefore = pollenToken.balanceOf(address(this));
 
         // Claim rewards
         stabilityPool.withdrawFromSP(0);
 
-        uint collBalanceAfter = address(this).balance;
+        // uint collBalanceAfter = address(this).balance;
+        // burner0621 modified
+        uint collBalanceAfter = ibgtToken.balanceOf(address(this));
+        //////////////////////
         uint pollenBalanceAfter = pollenToken.balanceOf(address(this));
         uint claimedCollateral = collBalanceAfter.sub(collBalanceBefore);
 
@@ -94,7 +110,10 @@ contract BorrowerWrappersScript is BorrowerOperationsScript, iBGTTransferScript,
         if (claimedCollateral > 0) {
             _requireUserHasTrove(address(this));
             uint NECTAmount = _getNetNECTAmount(claimedCollateral);
-            borrowerOperations.adjustTrove{ value: claimedCollateral }(_maxFee, 0, NECTAmount, true, _upperHint, _lowerHint);
+            // borrowerOperations.adjustTrove{ value: claimedCollateral }(_maxFee, 0, NECTAmount, true, _upperHint, _lowerHint);
+            // burner0621 modified
+            borrowerOperations.adjustTrove(_maxFee, 0, NECTAmount, true, _upperHint, _lowerHint, claimedCollateral);
+            //////////////////////
             // Provide withdrawn NECT to Stability Pool
             if (NECTAmount > 0) {
                 stabilityPool.provideToSP(NECTAmount, address(0));
@@ -109,14 +128,21 @@ contract BorrowerWrappersScript is BorrowerOperationsScript, iBGTTransferScript,
     }
 
     function claimStakingGainsAndRecycle(uint _maxFee, address _upperHint, address _lowerHint) external {
-        uint collBalanceBefore = address(this).balance;
+        // uint collBalanceBefore = address(this).balance;
+        // burner0621 modified
+        IERC20 ibgtToken = IERC20(IBGT_ADDRESS);
+        uint collBalanceBefore = ibgtToken.balanceOf(address(this));
+        //////////////////////
         uint nectBalanceBefore = nectToken.balanceOf(address(this));
         uint pollenBalanceBefore = pollenToken.balanceOf(address(this));
 
         // Claim gains
         pollenStaking.unstake(0);
 
-        uint gainedCollateral = address(this).balance.sub(collBalanceBefore); // stack too deep issues :'(
+        // uint gainedCollateral = address(this).balance.sub(collBalanceBefore); // stack too deep issues :'(
+        // burner0621 modified
+        uint gainedCollateral = ibgtToken.balanceOf(address(this)).sub(collBalanceBefore);
+        //////////////////////
         uint gainedNECT = nectToken.balanceOf(address(this)).sub(nectBalanceBefore);
 
         uint netNECTAmount;
@@ -124,7 +150,10 @@ contract BorrowerWrappersScript is BorrowerOperationsScript, iBGTTransferScript,
         if (gainedCollateral > 0) {
             _requireUserHasTrove(address(this));
             netNECTAmount = _getNetNECTAmount(gainedCollateral);
-            borrowerOperations.adjustTrove{ value: gainedCollateral }(_maxFee, 0, netNECTAmount, true, _upperHint, _lowerHint);
+            // borrowerOperations.adjustTrove{ value: gainedCollateral }(_maxFee, 0, netNECTAmount, true, _upperHint, _lowerHint);
+            // burner0621 modified
+            borrowerOperations.adjustTrove(_maxFee, 0, netNECTAmount, true, _upperHint, _lowerHint, gainedCollateral);
+            //////////////////////
         }
 
         uint totalNECT = gainedNECT.add(netNECTAmount);

@@ -1,3 +1,5 @@
+const { artifacts } = require("hardhat")
+const configParams = require("../mainnetDeployment/deploymentParams.mainnet.js")
 const SortedTroves = artifacts.require("./SortedTroves.sol")
 const TroveManager = artifacts.require("./TroveManager.sol")
 const PriceFeedTestnet = artifacts.require("./PriceFeedTestnet.sol")
@@ -27,6 +29,11 @@ const BeraBorrowMathTester = artifacts.require("./BeraBorrowMathTester.sol")
 const BorrowerOperationsTester = artifacts.require("./BorrowerOperationsTester.sol")
 const TroveManagerTester = artifacts.require("./TroveManagerTester.sol")
 const NECTTokenTester = artifacts.require("./NECTTokenTester.sol")
+
+// const IBGTToken = artifacts.require("./iBGT.sol")
+// const iBGTOraclePriceFeed = artifacts.require("./iBGTOraclePriceFeed.sol")
+// const NECTOraclePriceFeed = artifacts.require("./NECTOraclePriceFeed.sol")
+// const TellorMaster = artifacts.require("./TellorMaster.sol")
 
 // Proxy scripts
 const BorrowerOperationsScript = artifacts.require('BorrowerOperationsScript')
@@ -102,6 +109,15 @@ class DeploymentHelper {
       stabilityPool.address,
       borrowerOperations.address
     )
+    // const iBGTToken = await IBGTToken.new()
+    // const ibgtOraclePriceFeed = await iBGTOraclePriceFeed.new()
+    // const nectOraclePriceFeed = await NECTOraclePriceFeed.new()
+    // const tellorMaster = await TellorMaster.new()
+    // IBGTToken.setAsDeployed(iBGTToken)
+    // iBGTOraclePriceFeed.setAsDeployed(ibgtOraclePriceFeed)
+    // NECTOraclePriceFeed.setAsDeployed(nectOraclePriceFeed)
+    // TellorMaster.setAsDeployed(tellorMaster)
+    
     NECTToken.setAsDeployed(nectToken)
     DefaultPool.setAsDeployed(defaultPool)
     PriceFeedTestnet.setAsDeployed(priceFeedTestnet)
@@ -115,7 +131,19 @@ class DeploymentHelper {
     BorrowerOperations.setAsDeployed(borrowerOperations)
     HintHelpers.setAsDeployed(hintHelpers)
 
+    const deployerWallet = (await ethers.getSigners())[0]
+    const ibgtTokenFactory = await ethers.getContractFactory("iBGT", deployerWallet)
+    const iBGTToken = new ethers.Contract(
+      configParams.externalAddrs.iBGT_ERC20,
+      ibgtTokenFactory.interface,
+      deployerWallet
+    );
+
     const coreContracts = {
+      iBGTToken,
+      iBGTOraclePriceFeed,
+      NECTOraclePriceFeed,
+      TellorMaster,
       priceFeedTestnet,
       nectToken,
       sortedTroves,

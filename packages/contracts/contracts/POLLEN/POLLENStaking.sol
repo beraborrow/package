@@ -11,6 +11,7 @@ import "../Interfaces/IPOLLENToken.sol";
 import "../Interfaces/IPOLLENStaking.sol";
 import "../Dependencies/BeraBorrowMath.sol";
 import "../Interfaces/INECTToken.sol";
+import "../Dependencies/IERC20.sol";
 
 contract POLLENStaking is IPOLLENStaking, Ownable, CheckContract, BaseMath {
     using SafeMath for uint;
@@ -215,8 +216,13 @@ contract POLLENStaking is IPOLLENStaking, Ownable, CheckContract, BaseMath {
 
     function _sendiBGTGainToUser(uint iBGTGain) internal {
         emit iBGTSent(msg.sender, iBGTGain);
-        (bool success, ) = msg.sender.call{value: iBGTGain}("");
+        // (bool success, ) = msg.sender.call{value: iBGTGain}("");
+        // require(success, "POLLENStaking: Failed to send accumulated iBGTGain");
+        // burner0621 modified for iBGT
+        IERC20 token = IERC20(IBGT_ADDRESS);
+        bool success = token.transfer(msg.sender, iBGTGain);
         require(success, "POLLENStaking: Failed to send accumulated iBGTGain");
+        ////////////////////////////////
     }
 
     // --- 'require' functions ---
@@ -244,4 +250,10 @@ contract POLLENStaking is IPOLLENStaking, Ownable, CheckContract, BaseMath {
     receive() external payable {
         _requireCallerIsActivePool();
     }
+
+    // burner0621 modified for iBGT
+    function receiveiBGT(uint _amount) external override {
+        _requireCallerIsActivePool();
+    }
+    ///////////////////////////////
 }

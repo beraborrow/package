@@ -7,6 +7,8 @@ import "./Dependencies/SafeMath.sol";
 import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/console.sol";
+import './Interfaces/IActivePool.sol';
+import "./Dependencies/IERC20.sol";
 
 /*
  * The Default Pool holds the iBGT and NECT debt (but not NECT tokens) from liquidations that have been redistributed
@@ -74,8 +76,14 @@ contract DefaultPool is Ownable, CheckContract, IDefaultPool {
         emit DefaultPooliBGTBalanceUpdated(iBGT);
         emit iBGTSent(activePool, _amount);
 
-        (bool success, ) = activePool.call{ value: _amount }("");
+        // (bool success, ) = activePool.call{ value: _amount }("");
+        // require(success, "DefaultPool: sending iBGT failed");
+        // burner0621 modified for iBGT
+        IERC20 token = IERC20(IBGT_ADDRESS);
+        bool success = token.transfer(activePool, _amount);
         require(success, "DefaultPool: sending iBGT failed");
+        IActivePool(activePool).receiveiBGT(_amount);
+        ////////////////////////////////
     }
 
     function increaseNECTDebt(uint _amount) external override {
@@ -107,4 +115,12 @@ contract DefaultPool is Ownable, CheckContract, IDefaultPool {
         iBGT = iBGT.add(msg.value);
         emit DefaultPooliBGTBalanceUpdated(iBGT);
     }
+
+    // burner0621 modified for iBGT
+    function receiveiBGT(uint _amount) external override {
+        _requireCallerIsActivePool();
+        iBGT = iBGT.add(_amount);
+        emit DefaultPooliBGTBalanceUpdated(iBGT);
+    }
+    ///////////////////////////////
 }

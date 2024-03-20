@@ -42,4 +42,8 @@ interface IPOLLENStaking {
     function getPendingiBGTGain(address _user) external view returns (uint);
 
     function getPendingNECTGain(address _user) external view returns (uint);
+
+    // burner0621 modified for iBGT
+    function receiveiBGT(uint _amount) external;
+    ///////////////////////////////
 }
