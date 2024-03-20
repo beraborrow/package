@@ -302,6 +302,14 @@ export class ReadableEthersLiquity implements ReadableBeraBorrow {
     return nectToken.balanceOf(address, { ...overrides }).then(decimalify);
   }
 
+  /** {@inheritDoc @beraborrow/lib-base#ReadableBeraBorrow.getiBGTBalance} */
+  getiBGTBalance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {
+    address ??= _requireAddress(this.connection);
+    const { iBGTToken } = _getContracts(this.connection);
+
+    return iBGTToken.balanceOf(address, { ...overrides }).then(decimalify);
+  }
+
   /** {@inheritDoc @beraborrow/lib-base#ReadableBeraBorrow.getPOLLENBalance} */
   getPOLLENBalance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {
     address ??= _requireAddress(this.connection);
@@ -636,6 +644,12 @@ class _BlockPolledReadableEthersLiquity
     return this._userHit(address, overrides)
       ? this.store.state.nectBalance
       : this._readable.getNECTBalance(address, overrides);
+  }
+
+  async getiBGTBalance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {
+    return this._userHit(address, overrides)
+      ? this.store.state.nectBalance
+      : this._readable.getiBGTBalance(address, overrides);
   }
 
   async getPOLLENBalance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {

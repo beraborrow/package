@@ -45,6 +45,7 @@ contract('TroveManager', async accounts => {
   let hintHelpers
 
   let contracts
+  let iBGTToken
 
   const getOpenTroveTotalDebt = async (nectAmount) => th.getOpenTroveTotalDebt(contracts, nectAmount)
   const getOpenTroveNECTAmount = async (totalDebt) => th.getOpenTroveNECTAmount(contracts, totalDebt)
@@ -73,6 +74,7 @@ contract('TroveManager', async accounts => {
     collSurplusPool = contracts.collSurplusPool
     borrowerOperations = contracts.borrowerOperations
     hintHelpers = contracts.hintHelpers
+    iBGTToken = contracts.iBGTToken
 
     pollenStaking = POLLENContracts.pollenStaking
     pollenToken = POLLENContracts.pollenToken
@@ -83,6 +85,27 @@ contract('TroveManager', async accounts => {
     await deploymentHelper.connectPOLLENContracts(POLLENContracts)
     await deploymentHelper.connectPOLLENContractsToCore(POLLENContracts, contracts)
   })
+
+  const borrowerOperationsOpenTrove = async(maxFeePercentage, extraNECTAmount,upperHint, lowerHint, ibgtAmount, extraParams) => {
+    try{
+      await iBGTToken.mint(extraParams.from, ibgtAmount.toString())
+    }catch (e){
+      console.log ("iBGT Token minting failed", e)
+    }
+    try {
+      await iBGTToken.increaseAllowance(extraParams.from, borrowerOperations.address, ibgtAmount.toString())
+    }catch (e) {
+      console.log ("Approve failed.", e)
+    }
+
+    // const tx = await contracts.borrowerOperations.openTrove(maxFeePercentage, nectAmount, upperHint, lowerHint, extraParams)
+    try {
+      const tx = await borrowerOperations.openTrove(maxFeePercentage, extraNECTAmount, upperHint, lowerHint, ibgtAmount, extraParams)
+      return tx
+    }catch(e){
+      throw e
+    }
+  }
 
   it('liquidate(): closes a Trove that has ICR < MCR', async () => {
     await openTrove({ ICR: toBN(dec(20, 18)), extraParams: { from: whale } })
@@ -129,7 +152,7 @@ contract('TroveManager', async accounts => {
 
     // check ActivePool iBGT and NECT debt before
     const activePool_iBGT_Before = (await activePool.getiBGT()).toString()
-    const activePool_RawiBgt_Before = (await web3.eth.getBalance(activePool.address)).toString()
+    const activePool_RawiBgt_Before = (await iBGTToken.balanceOf(activePool.address)).toString()
     const activePool_NECTDebt_Before = (await activePool.getNECTDebt()).toString()
 
     assert.equal(activePool_iBGT_Before, A_collateral.add(B_collateral))
@@ -148,7 +171,7 @@ contract('TroveManager', async accounts => {
 
     // check ActivePool iBGT and NECT debt 
     const activePool_iBGT_After = (await activePool.getiBGT()).toString()
-    const activePool_RawiBgt_After = (await web3.eth.getBalance(activePool.address)).toString()
+    const activePool_RawiBgt_After = (await iBGTToken.balanceOf(activePool.address)).toString()
     const activePool_NECTDebt_After = (await activePool.getNECTDebt()).toString()
 
     assert.equal(activePool_iBGT_After, A_collateral)
@@ -165,7 +188,7 @@ contract('TroveManager', async accounts => {
 
     // check DefaultPool iBGT and NECT debt before
     const defaultPool_iBGT_Before = (await defaultPool.getiBGT())
-    const defaultPool_RawiBgt_Before = (await web3.eth.getBalance(defaultPool.address)).toString()
+    const defaultPool_RawiBgt_Before = (await iBGTToken.balanceOf(defaultPool.address)).toString()
     const defaultPool_NECTDebt_Before = (await defaultPool.getNECTDebt()).toString()
 
     assert.equal(defaultPool_iBGT_Before, '0')
@@ -183,7 +206,7 @@ contract('TroveManager', async accounts => {
 
     // check after
     const defaultPool_iBGT_After = (await defaultPool.getiBGT()).toString()
-    const defaultPool_RawiBgt_After = (await web3.eth.getBalance(defaultPool.address)).toString()
+    const defaultPool_RawiBgt_After = (await iBGTToken.balanceOf(defaultPool.address)).toString()
     const defaultPool_NECTDebt_After = (await defaultPool.getNECTDebt()).toString()
 
     const defaultPool_iBGT = th.applyLiquidationFee(B_collateral)
@@ -2332,7 +2355,7 @@ contract('TroveManager', async accounts => {
     // start Dennis with a high ICR
     await openTrove({ ICR: toBN(dec(100, 18)), extraNECTAmount: redemptionAmount, extraParams: { from: dennis } })
 
-    const dennis_iBGTBalance_Before = toBN(await web3.eth.getBalance(dennis))
+    const dennis_iBGTBalance_Before = toBN(await iBGTToken.balanceOf(dennis))
 
     const dennis_NECTBalance_Before = await nectToken.balanceOf(dennis)
 
@@ -2390,11 +2413,11 @@ contract('TroveManager', async accounts => {
     assert.equal(bob_debt_After, '0')
     assert.equal(carol_debt_After, '0')
 
-    const dennis_iBGTBalance_After = toBN(await web3.eth.getBalance(dennis))
+    const dennis_iBGTBalance_After = toBN(await iBGTToken.balanceOf(dennis))
     const receivediBGT = dennis_iBGTBalance_After.sub(dennis_iBGTBalance_Before)
 
     const expectedTotaliBGTDrawn = redemptionAmount.div(toBN(200)) // convert redemptionAmount NECT to iBGT, at iBGT:USD price 200
-    const expectedReceivediBGT = expectedTotaliBGTDrawn.sub(toBN(iBGTFee)).sub(toBN(th.gasUsed(redemptionTx) * GAS_PRICE)) // substract gas used for troveManager.redeemCollateral from expected received iBGT
+    const expectedReceivediBGT = expectedTotaliBGTDrawn.sub(toBN(iBGTFee)) // substract gas used for troveManager.redeemCollateral from expected received iBGT
     
     // console.log("*********************************************************************************")
     // console.log("iBGTFee: " + iBGTFee)
@@ -2422,7 +2445,7 @@ contract('TroveManager', async accounts => {
     // start Dennis with a high ICR
     await openTrove({ ICR: toBN(dec(100, 18)), extraNECTAmount: redemptionAmount, extraParams: { from: dennis } })
 
-    const dennis_iBGTBalance_Before = toBN(await web3.eth.getBalance(dennis))
+    const dennis_iBGTBalance_Before = toBN(await iBGTToken.balanceOf(dennis))
 
     const dennis_NECTBalance_Before = await nectToken.balanceOf(dennis)
 
@@ -2480,11 +2503,11 @@ contract('TroveManager', async accounts => {
     assert.equal(bob_debt_After, '0')
     assert.equal(carol_debt_After, '0')
 
-    const dennis_iBGTBalance_After = toBN(await web3.eth.getBalance(dennis))
+    const dennis_iBGTBalance_After = toBN(await iBGTToken.balanceOf(dennis))
     const receivediBGT = dennis_iBGTBalance_After.sub(dennis_iBGTBalance_Before)
 
     const expectedTotaliBGTDrawn = redemptionAmount.div(toBN(200)) // convert redemptionAmount NECT to iBGT, at iBGT:USD price 200
-    const expectedReceivediBGT = expectedTotaliBGTDrawn.sub(toBN(iBGTFee)).sub(toBN(th.gasUsed(redemptionTx) * GAS_PRICE)) // substract gas used for troveManager.redeemCollateral from expected received iBGT
+    const expectedReceivediBGT = expectedTotaliBGTDrawn.sub(toBN(iBGTFee)) // substract gas used for troveManager.redeemCollateral from expected received iBGT
 
     th.assertIsApproximatelyEqual(expectedReceivediBGT, receivediBGT)
 
@@ -2502,7 +2525,7 @@ contract('TroveManager', async accounts => {
     // start Dennis with a high ICR
     await openTrove({ ICR: toBN(dec(100, 18)), extraNECTAmount: redemptionAmount, extraParams: { from: dennis } })
 
-    const dennis_iBGTBalance_Before = toBN(await web3.eth.getBalance(dennis))
+    const dennis_iBGTBalance_Before = toBN(await iBGTToken.balanceOf(dennis))
 
     const dennis_NECTBalance_Before = await nectToken.balanceOf(dennis)
 
@@ -2560,11 +2583,11 @@ contract('TroveManager', async accounts => {
     assert.equal(bob_debt_After, '0')
     assert.equal(carol_debt_After, '0')
 
-    const dennis_iBGTBalance_After = toBN(await web3.eth.getBalance(dennis))
+    const dennis_iBGTBalance_After = toBN(await iBGTToken.balanceOf(dennis))
     const receivediBGT = dennis_iBGTBalance_After.sub(dennis_iBGTBalance_Before)
 
     const expectedTotaliBGTDrawn = redemptionAmount.div(toBN(200)) // convert redemptionAmount NECT to iBGT, at iBGT:USD price 200
-    const expectedReceivediBGT = expectedTotaliBGTDrawn.sub(toBN(iBGTFee)).sub(toBN(th.gasUsed(redemptionTx) * GAS_PRICE)) // substract gas used for troveManager.redeemCollateral from expected received iBGT
+    const expectedReceivediBGT = expectedTotaliBGTDrawn.sub(toBN(iBGTFee)) // substract gas used for troveManager.redeemCollateral from expected received iBGT
 
     th.assertIsApproximatelyEqual(expectedReceivediBGT, receivediBGT)
 
@@ -2582,7 +2605,7 @@ contract('TroveManager', async accounts => {
     // start Dennis with a high ICR
     await openTrove({ ICR: toBN(dec(100, 18)), extraNECTAmount: redemptionAmount, extraParams: { from: dennis } })
 
-    const dennis_iBGTBalance_Before = toBN(await web3.eth.getBalance(dennis))
+    const dennis_iBGTBalance_Before = toBN(await iBGTToken.balanceOf(dennis))
 
     const dennis_NECTBalance_Before = await nectToken.balanceOf(dennis)
 
@@ -2646,11 +2669,11 @@ contract('TroveManager', async accounts => {
     assert.equal(bob_debt_After, '0')
     assert.equal(carol_debt_After, '0')
 
-    const dennis_iBGTBalance_After = toBN(await web3.eth.getBalance(dennis))
+    const dennis_iBGTBalance_After = toBN(await iBGTToken.balanceOf(dennis))
     const receivediBGT = dennis_iBGTBalance_After.sub(dennis_iBGTBalance_Before)
 
     const expectedTotaliBGTDrawn = redemptionAmount.div(toBN(200)) // convert redemptionAmount NECT to iBGT, at iBGT:USD price 200
-    const expectedReceivediBGT = expectedTotaliBGTDrawn.sub(toBN(iBGTFee)).sub(toBN(th.gasUsed(redemptionTx) * GAS_PRICE)) // substract gas used for troveManager.redeemCollateral from expected received iBGT
+    const expectedReceivediBGT = expectedTotaliBGTDrawn.sub(toBN(iBGTFee)) // substract gas used for troveManager.redeemCollateral from expected received iBGT
 
     th.assertIsApproximatelyEqual(expectedReceivediBGT, receivediBGT)
 
@@ -2761,9 +2784,9 @@ contract('TroveManager', async accounts => {
   })
 
   it("redeemCollateral(): performs partial redemption if resultant debt is > minimum net debt", async () => {
-    await borrowerOperations.openTrove(th._100pct, await getOpenTroveNECTAmount(dec(10000, 18)), A, A, dec(1000, 'ether'), { from: A })
-    await borrowerOperations.openTrove(th._100pct, await getOpenTroveNECTAmount(dec(20000, 18)), B, B, dec(1000, 'ether'), { from: B })
-    await borrowerOperations.openTrove(th._100pct, await getOpenTroveNECTAmount(dec(30000, 18)), C, C, dec(1000, 'ether'), { from: C })
+    await borrowerOperationsOpenTrove(th._100pct, await getOpenTroveNECTAmount(dec(10000, 18)), A, A, dec(1000, 'ether'), { from: A })
+    await borrowerOperationsOpenTrove(th._100pct, await getOpenTroveNECTAmount(dec(20000, 18)), B, B, dec(1000, 'ether'), { from: B })
+    await borrowerOperationsOpenTrove(th._100pct, await getOpenTroveNECTAmount(dec(30000, 18)), C, C, dec(1000, 'ether'), { from: C })
 
     // A and C send all their tokens to B
     await nectToken.transfer(B, await nectToken.balanceOf(A), {from: A})
@@ -2789,9 +2812,9 @@ contract('TroveManager', async accounts => {
   })
 
   it("redeemCollateral(): doesn't perform partial redemption if resultant debt would be < minimum net debt", async () => {
-    await borrowerOperations.openTrove(th._100pct, await getOpenTroveNECTAmount(dec(6000, 18)), A, A, dec(1000, 'ether'), { from: A })
-    await borrowerOperations.openTrove(th._100pct, await getOpenTroveNECTAmount(dec(20000, 18)), B, B, dec(1000, 'ether'), { from: B })
-    await borrowerOperations.openTrove(th._100pct, await getOpenTroveNECTAmount(dec(30000, 18)), C, C, dec(1000, 'ether'), { from: C })
+    await borrowerOperationsOpenTrove(th._100pct, await getOpenTroveNECTAmount(dec(6000, 18)), A, A, dec(1000, 'ether'), { from: A })
+    await borrowerOperationsOpenTrove(th._100pct, await getOpenTroveNECTAmount(dec(20000, 18)), B, B, dec(1000, 'ether'), { from: B })
+    await borrowerOperationsOpenTrove(th._100pct, await getOpenTroveNECTAmount(dec(30000, 18)), C, C, dec(1000, 'ether'), { from: C })
 
     // A and C send all their tokens to B
     await nectToken.transfer(B, await nectToken.balanceOf(A), {from: A})
@@ -2829,7 +2852,7 @@ contract('TroveManager', async accounts => {
 
     await openTrove({ ICR: toBN(dec(100, 18)), extraNECTAmount: redemptionAmount, extraParams: { from: dennis } })
 
-    const dennis_iBGTBalance_Before = toBN(await web3.eth.getBalance(dennis))
+    const dennis_iBGTBalance_Before = toBN(await iBGTToken.balanceOf(dennis))
 
     const dennis_NECTBalance_Before = await nectToken.balanceOf(dennis)
 
@@ -2903,12 +2926,12 @@ contract('TroveManager', async accounts => {
     // got in the way, he would have needed to redeem 3 NECT to fully complete his redemption of 20 NECT.
     // This would have required a different hint, therefore he ended up with a partial redemption.
 
-    const dennis_iBGTBalance_After = toBN(await web3.eth.getBalance(dennis))
+    const dennis_iBGTBalance_After = toBN(await iBGTToken.balanceOf(dennis))
     const receivediBGT = dennis_iBGTBalance_After.sub(dennis_iBGTBalance_Before)
 
     // Expect only 17 worth of iBGT drawn
     const expectedTotaliBGTDrawn = fullfilledRedemptionAmount.sub(frontRunRedepmtion).div(toBN(200)) // redempted NECT converted to iBGT, at iBGT:USD price 200
-    const expectedReceivediBGT = expectedTotaliBGTDrawn.sub(iBGTFee).sub(toBN(th.gasUsed(redemptionTx) * GAS_PRICE)) // substract gas used for troveManager.redeemCollateral from expected received iBGT
+    const expectedReceivediBGT = expectedTotaliBGTDrawn.sub(iBGTFee) // substract gas used for troveManager.redeemCollateral from expected received iBGT
 
     th.assertIsApproximatelyEqual(expectedReceivediBGT, receivediBGT)
 
@@ -2934,7 +2957,7 @@ contract('TroveManager', async accounts => {
 
     // --- TEST --- 
 
-    const carol_iBGTBalance_Before = toBN(await web3.eth.getBalance(carol))
+    const carol_iBGTBalance_Before = toBN(await iBGTToken.balanceOf(carol))
 
     // skip bootstrapping phase
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
@@ -2955,7 +2978,7 @@ contract('TroveManager', async accounts => {
 
     const iBGTFee = th.getEmittedRedemptionValues(redemptionTx)[3]
 
-    const carol_iBGTBalance_After = toBN(await web3.eth.getBalance(carol))
+    const carol_iBGTBalance_After = toBN(await iBGTToken.balanceOf(carol))
 
     const expectedTotaliBGTDrawn = toBN(amount).div(toBN(100)) // convert 100 NECT to iBGT at iBGT:USD price of 100
     const expectedReceivediBGT = expectedTotaliBGTDrawn.sub(iBGTFee)
@@ -3849,7 +3872,7 @@ contract('TroveManager', async accounts => {
     assert.equal(await troveManager.baseRate(), '0')
 
     // Check POLLEN Staking contract balance before is zero
-    const pollenStakingBalance_Before = await web3.eth.getBalance(pollenStaking.address)
+    const pollenStakingBalance_Before = await iBGTToken.balanceOf(pollenStaking.address)
     assert.equal(pollenStakingBalance_Before, '0')
 
     const A_balanceBefore = await nectToken.balanceOf(A)
@@ -3865,7 +3888,7 @@ contract('TroveManager', async accounts => {
     assert.isTrue(baseRate_1.gt(toBN('0')))
 
     // Check POLLEN Staking contract balance after is non-zero
-    const pollenStakingBalance_After = toBN(await web3.eth.getBalance(pollenStaking.address))
+    const pollenStakingBalance_After = toBN(await iBGTToken.balanceOf(pollenStaking.address))
     assert.isTrue(pollenStakingBalance_After.gt(toBN('0')))
   })
 
@@ -3933,7 +3956,7 @@ contract('TroveManager', async accounts => {
     const baseRate_1 = await troveManager.baseRate()
     assert.isTrue(baseRate_1.gt(toBN('0')))
 
-    const pollenStakingBalance_Before = toBN(await web3.eth.getBalance(pollenStaking.address))
+    const pollenStakingBalance_Before = toBN(await iBGTToken.balanceOf(pollenStaking.address))
 
     // B redeems 10 NECT
     await th.redeemCollateral(B, contracts, dec(10, 18), GAS_PRICE)
@@ -3941,7 +3964,7 @@ contract('TroveManager', async accounts => {
     // Check B's balance has decreased by 10 NECT
     assert.equal(await nectToken.balanceOf(B), B_balanceBefore.sub(toBN(dec(10, 18))).toString())
 
-    const pollenStakingBalance_After = toBN(await web3.eth.getBalance(pollenStaking.address))
+    const pollenStakingBalance_After = toBN(await iBGTToken.balanceOf(pollenStaking.address))
 
     // check POLLEN Staking balance has increased
     assert.isTrue(pollenStakingBalance_After.gt(pollenStakingBalance_Before))
@@ -4003,7 +4026,7 @@ contract('TroveManager', async accounts => {
     const { totalDebt: C_totalDebt } = await openTrove({ ICR: toBN(dec(180, 16)), extraNECTAmount: dec(100, 18), extraParams: { from: C } })
     const totalDebt = W_totalDebt.add(A_totalDebt).add(B_totalDebt).add(C_totalDebt)
 
-    const A_balanceBefore = toBN(await web3.eth.getBalance(A))
+    const A_balanceBefore = toBN(await iBGTToken.balanceOf(A))
 
     // Confirm baseRate before redemption is 0
     const baseRate = await troveManager.baseRate()
@@ -4027,7 +4050,7 @@ contract('TroveManager', async accounts => {
     iBGTRemainder = 0.045 - 0.001003... = 0.0439961538462
     */
 
-    const A_balanceAfter = toBN(await web3.eth.getBalance(A))
+    const A_balanceAfter = toBN(await iBGTToken.balanceOf(A))
 
     // check A's iBGT balance has increased by 0.045 iBGT 
     const price = await priceFeed.getPrice()
@@ -4037,7 +4060,7 @@ contract('TroveManager', async accounts => {
       iBGTDrawn.sub(
         toBN(dec(5, 15)).add(redemptionAmount.mul(mv._1e18BN).div(totalDebt).div(toBN(2)))
           .mul(iBGTDrawn).div(mv._1e18BN)
-      ).sub(toBN(gasUsed * GAS_PRICE)), // substract gas used for troveManager.redeemCollateral from expected received iBGT
+      ), // substract gas used for troveManager.redeemCollateral from expected received iBGT
       100000
     )
   })
@@ -4056,9 +4079,9 @@ contract('TroveManager', async accounts => {
     const { netDebt: D_netDebt } = await openTrove({ ICR: toBN(dec(280, 16)), extraNECTAmount: dec(100, 18), extraParams: { from: D } })
     const redemptionAmount = A_netDebt.add(B_netDebt).add(C_netDebt).add(toBN(dec(10, 18)))
 
-    const A_balanceBefore = toBN(await web3.eth.getBalance(A))
-    const B_balanceBefore = toBN(await web3.eth.getBalance(B))
-    const C_balanceBefore = toBN(await web3.eth.getBalance(C))
+    const A_balanceBefore = toBN(await iBGTToken.balanceOf(A))
+    const B_balanceBefore = toBN(await iBGTToken.balanceOf(B))
+    const C_balanceBefore = toBN(await iBGTToken.balanceOf(C))
 
     // whale redeems 360 NECT.  Expect this to fully redeem A, B, C, and partially redeem D.
     await th.redeemCollateral(whale, contracts, redemptionAmount, GAS_PRICE)
@@ -4086,10 +4109,10 @@ contract('TroveManager', async accounts => {
     const { netDebt: D_netDebt } = await openTrove({ ICR: toBN(dec(280, 16)), extraNECTAmount: dec(100, 18), extraParams: { from: D } })
     const redemptionAmount = A_netDebt.add(B_netDebt).add(C_netDebt).add(toBN(dec(10, 18)))
 
-    const A_balanceBefore = toBN(await web3.eth.getBalance(A))
-    const B_balanceBefore = toBN(await web3.eth.getBalance(B))
-    const C_balanceBefore = toBN(await web3.eth.getBalance(C))
-    const D_balanceBefore = toBN(await web3.eth.getBalance(D))
+    const A_balanceBefore = toBN(await iBGTToken.balanceOf(A))
+    const B_balanceBefore = toBN(await iBGTToken.balanceOf(B))
+    const C_balanceBefore = toBN(await iBGTToken.balanceOf(C))
+    const D_balanceBefore = toBN(await iBGTToken.balanceOf(D))
 
     const A_collBefore = await troveManager.getTroveColl(A)
     const B_collBefore = await troveManager.getTroveColl(B)
@@ -4119,10 +4142,10 @@ contract('TroveManager', async accounts => {
     iBGTDrawn from C = 130/200 = 0.65 iBGT --> Surplus = (2-0.65) = 1.35
     */
 
-    const A_balanceAfter = toBN(await web3.eth.getBalance(A))
-    const B_balanceAfter = toBN(await web3.eth.getBalance(B))
-    const C_balanceAfter = toBN(await web3.eth.getBalance(C))
-    const D_balanceAfter = toBN(await web3.eth.getBalance(D))
+    const A_balanceAfter = toBN(await iBGTToken.balanceOf(A))
+    const B_balanceAfter = toBN(await iBGTToken.balanceOf(B))
+    const C_balanceAfter = toBN(await iBGTToken.balanceOf(C))
+    const D_balanceAfter = toBN(await iBGTToken.balanceOf(D))
 
     // Check A, B, C’s trove collateral balance is zero (fully redeemed-from troves)
     const A_collAfter = await troveManager.getTroveColl(A)
@@ -4143,7 +4166,7 @@ contract('TroveManager', async accounts => {
     assert.isTrue(D_balanceAfter.eq(D_balanceBefore))
 
     // D is not closed, so cannot open trove
-    await assertRevert(borrowerOperations.openTrove(th._100pct, 0, ZERO_ADDRESS, ZERO_ADDRESS, { from: D, value: dec(10, 18) }), 'BorrowerOps: Trove is active')
+    await assertRevert(borrowerOperationsOpenTrove(th._100pct, 0, ZERO_ADDRESS, ZERO_ADDRESS, dec(10, 18), { from: D }), 'BorrowerOps: Trove is active')
 
     return {
       A_netDebt, A_coll,
@@ -4206,9 +4229,9 @@ contract('TroveManager', async accounts => {
       C_netDebt, C_coll,
     } = await redeemCollateral3Full1Partial()
 
-    const A_balanceBefore = toBN(await web3.eth.getBalance(A))
-    const B_balanceBefore = toBN(await web3.eth.getBalance(B))
-    const C_balanceBefore = toBN(await web3.eth.getBalance(C))
+    const A_balanceBefore = toBN(await iBGTToken.balanceOf(A))
+    const B_balanceBefore = toBN(await iBGTToken.balanceOf(B))
+    const C_balanceBefore = toBN(await iBGTToken.balanceOf(C))
 
     // CollSurplusPool endpoint cannot be called directly
     await assertRevert(collSurplusPool.claimColl(A), 'CollSurplusPool: Caller is not Borrower Operations')
@@ -4217,13 +4240,13 @@ contract('TroveManager', async accounts => {
     const B_GAS = th.gasUsed(await borrowerOperations.claimCollateral({ from: B, gasPrice: GAS_PRICE  }))
     const C_GAS = th.gasUsed(await borrowerOperations.claimCollateral({ from: C, gasPrice: GAS_PRICE  }))
 
-    const A_expectedBalance = A_balanceBefore.sub(toBN(A_GAS * GAS_PRICE))
-    const B_expectedBalance = B_balanceBefore.sub(toBN(B_GAS * GAS_PRICE))
-    const C_expectedBalance = C_balanceBefore.sub(toBN(C_GAS * GAS_PRICE))
+    const A_expectedBalance = A_balanceBefore
+    const B_expectedBalance = B_balanceBefore
+    const C_expectedBalance = C_balanceBefore
 
-    const A_balanceAfter = toBN(await web3.eth.getBalance(A))
-    const B_balanceAfter = toBN(await web3.eth.getBalance(B))
-    const C_balanceAfter = toBN(await web3.eth.getBalance(C))
+    const A_balanceAfter = toBN(await iBGTToken.balanceOf(A))
+    const B_balanceAfter = toBN(await iBGTToken.balanceOf(B))
+    const C_balanceAfter = toBN(await iBGTToken.balanceOf(C))
 
     const price = toBN(await priceFeed.getPrice())
 
@@ -4256,21 +4279,21 @@ contract('TroveManager', async accounts => {
     assert.isTrue(B_collAfter.eq(B_coll))
     assert.isTrue(C_collAfter.eq(C_coll))
 
-    const A_balanceBefore = toBN(await web3.eth.getBalance(A))
-    const B_balanceBefore = toBN(await web3.eth.getBalance(B))
-    const C_balanceBefore = toBN(await web3.eth.getBalance(C))
+    const A_balanceBefore = toBN(await iBGTToken.balanceOf(A))
+    const B_balanceBefore = toBN(await iBGTToken.balanceOf(B))
+    const C_balanceBefore = toBN(await iBGTToken.balanceOf(C))
 
     const A_GAS = th.gasUsed(await borrowerOperations.claimCollateral({ from: A, gasPrice: GAS_PRICE  }))
     const B_GAS = th.gasUsed(await borrowerOperations.claimCollateral({ from: B, gasPrice: GAS_PRICE  }))
     const C_GAS = th.gasUsed(await borrowerOperations.claimCollateral({ from: C, gasPrice: GAS_PRICE  }))
 
-    const A_expectedBalance = A_balanceBefore.sub(toBN(A_GAS * GAS_PRICE))
-    const B_expectedBalance = B_balanceBefore.sub(toBN(B_GAS * GAS_PRICE))
-    const C_expectedBalance = C_balanceBefore.sub(toBN(C_GAS * GAS_PRICE))
+    const A_expectedBalance = A_balanceBefore
+    const B_expectedBalance = B_balanceBefore
+    const C_expectedBalance = C_balanceBefore
 
-    const A_balanceAfter = toBN(await web3.eth.getBalance(A))
-    const B_balanceAfter = toBN(await web3.eth.getBalance(B))
-    const C_balanceAfter = toBN(await web3.eth.getBalance(C))
+    const A_balanceAfter = toBN(await iBGTToken.balanceOf(A))
+    const B_balanceAfter = toBN(await iBGTToken.balanceOf(B))
+    const C_balanceAfter = toBN(await iBGTToken.balanceOf(C))
 
     th.assertIsApproximatelyEqual(A_balanceAfter, A_expectedBalance.add(A_surplus))
     th.assertIsApproximatelyEqual(B_balanceAfter, B_expectedBalance.add(B_surplus))
@@ -4313,6 +4336,16 @@ contract('TroveManager', async accounts => {
       )
 
       await openTrove({ ICR: toBN(dec(150, 16)), extraParams: { from: bob } })
+      try{
+        await iBGTToken.mint(alice, nectAmount.mul(mv._1e18BN).div(price).toString())
+      }catch (e){
+        console.log ("iBGT Token minting failed", e)
+      }
+      try {
+        await iBGTToken.increaseAllowance(alice, borrowerOperations.address, nectAmount.mul(mv._1e18BN).div(price).toString())
+      }catch (e) {
+        console.log ("Approve failed.", e)
+      }
       await borrowerOperations.adjustTrove(th._100pct, 0, nectAmount, true, alice, alice, nectAmount.mul(mv._1e18BN).div(price), { from: alice })
     }
 

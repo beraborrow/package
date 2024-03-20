@@ -57,7 +57,7 @@ export const Opening: React.FC = () => {
   // const collateralRatio =
   //   !collateral.isZero && !borrowAmount.isZero ? trove.collateralRatio(price) : undefined;
 
-  const [troveChange, ] = validateTroveChange(
+  const [troveChange, description] = validateTroveChange(
     EMPTY_TROVE,
     trove,
     borrowingRate,
@@ -285,7 +285,7 @@ export const Opening: React.FC = () => {
           setGasEstimationState={setGasEstimationState}
         />
 
-        {/* {description ?? <div />} */}
+        {description ?? <div />}
 
         <Flex variant="layout.actions">
           {

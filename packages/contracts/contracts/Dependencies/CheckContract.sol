@@ -4,7 +4,7 @@ pragma solidity 0.6.11;
 
 
 contract CheckContract {
-    address constant public IBGT_ADDRESS = 0x3B22f0466d98bE3040d2c51dE89b0479FDD48910; // berachain 0x2FdB8739DAD03CFcB4697acfe91e58E235D81C5E
+    address constant public IBGT_ADDRESS = 0x3B22f0466d98bE3040d2c51dE89b0479FDD48910; // berachain 0x61ac8568e1309342F4614b1D664E341A4E10C5b8
     /**
      * Check that the account is an already deployed non-destroyed contract.
      * See: https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Address.sol#L12

@@ -36,6 +36,7 @@ contract('Access Control: BeraBorrow functions with the caller restricted to Ber
   let pollenToken
   let communityIssuance
   let lockupContractFactory
+  let iBGTToken
 
   before(async () => {
     coreContracts = await deploymentHelper.deployBeraBorrowCore()
@@ -58,6 +59,7 @@ contract('Access Control: BeraBorrow functions with the caller restricted to Ber
     pollenToken = POLLENContracts.pollenToken
     communityIssuance = POLLENContracts.communityIssuance
     lockupContractFactory = POLLENContracts.lockupContractFactory
+    iBGTToken = coreContracts.iBGTToken
 
     await deploymentHelper.connectPOLLENContracts(POLLENContracts)
     await deploymentHelper.connectCoreContracts(coreContracts, POLLENContracts)
@@ -74,10 +76,33 @@ contract('Access Control: BeraBorrow functions with the caller restricted to Ber
     assert.equal(bal, expectedCISupplyCap)
   })
 
+  const borrowerOperationsOpenTrove = async(maxFeePercentage, extraNECTAmount,upperHint, lowerHint, ibgtAmount, extraParams) => {
+    try{
+      await iBGTToken.mint(extraParams.from, ibgtAmount.toString())
+    }catch (e){
+      console.log ("iBGT Token minting failed", e)
+    }
+    try {
+      await iBGTToken.increaseAllowance(extraParams.from, borrowerOperations.address, ibgtAmount.toString())
+    }catch (e) {
+      console.log ("Approve failed.", e)
+    }
+
+    // const tx = await contracts.borrowerOperations.openTrove(maxFeePercentage, nectAmount, upperHint, lowerHint, extraParams)
+    try {
+      const tx = await borrowerOperationsOpenTrove(maxFeePercentage, extraNECTAmount, upperHint, lowerHint, ibgtAmount, extraParams)
+      return tx
+    }catch(e){
+      throw e
+    }
+  }
+
   describe('BorrowerOperations', async accounts => { 
     it("moveiBGTGainToTrove(): reverts when called by an account that is not StabilityPool", async () => {
       // Attempt call from alice
       try {
+        // await iBGTToken.mint(bob, ibgtAmount.toString())
+        // await iBGTToken.increaseAllowance(bob, borrowerOperations.address, ibgtAmount.toString())
         const tx1= await borrowerOperations.moveiBGTGainToTrove(bob, bob, bob, 0, { from: bob })
       } catch (err) {
          assert.include(err.message, "revert")

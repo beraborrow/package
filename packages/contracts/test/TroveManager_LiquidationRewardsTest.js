@@ -32,6 +32,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
   let borrowerOperations
 
   let contracts
+  let iBGTToken
 
   const getOpenTroveNECTAmount = async (totalDebt) => th.getOpenTroveNECTAmount(contracts, totalDebt)
   const getNetBorrowingAmount = async (debtWithFee) => th.getNetBorrowingAmount(contracts, debtWithFee)
@@ -57,11 +58,33 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     defaultPool = contracts.defaultPool
     functionCaller = contracts.functionCaller
     borrowerOperations = contracts.borrowerOperations
+    iBGTToken = contracts.iBGTToken
 
     await deploymentHelper.connectPOLLENContracts(POLLENContracts)
     await deploymentHelper.connectCoreContracts(contracts, POLLENContracts)
     await deploymentHelper.connectPOLLENContractsToCore(POLLENContracts, contracts)
   })
+
+  const borrowerOperationsAddColl = async(_upper, _lower, _addColl, extraParams) => {
+    try{
+      await iBGTToken.mint(extraParams.from, _addColl.toString())
+    }catch (e){
+      console.log ("iBGT Token minting failed", e)
+    }
+    try {
+      await iBGTToken.increaseAllowance(extraParams.from, borrowerOperations.address, _addColl.toString())
+    }catch (e) {
+      console.log ("Approve failed.", e)
+    }
+
+    // const tx = await contracts.borrowerOperations.openTrove(maxFeePercentage, nectAmount, upperHint, lowerHint, extraParams)
+    try {
+      const tx = await borrowerOperations.addColl(_upper, _lower, _addColl, extraParams)
+      return tx
+    }catch(e){
+      throw e
+    }
+  }
 
   it("redistribution: A, B Open. B Liquidated. C, D Open. D Liquidated. Distributes correct rewards", async () => {
     // A, B open trove
@@ -361,7 +384,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
 
     // Bob adds 1 iBGT to his trove
     const addedColl1 = toBN(dec(1, 'ether'))
-    await borrowerOperations.addColl(B, B, addedColl1, { from: B })
+    await borrowerOperationsAddColl(B, B, addedColl1, { from: B })
 
     // Liquidate C
     const txC = await troveManager.liquidate(C)
@@ -384,7 +407,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
 
     // Bob adds 1 iBGT to his trove
     const addedColl2 = toBN(dec(1, 'ether'))
-    await borrowerOperations.addColl(B, B, addedColl2, { from: B })
+    await borrowerOperationsAddColl(B, B, addedColl2, { from: B })
 
     // Liquidate E
     const txE = await troveManager.liquidate(E)
@@ -454,7 +477,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     assert.isAtMost(getDifference(E_expectedPendingiBGT_1, E_iBGTGain_1), 1e8)
 
     // // Bob adds 1 iBGT to his trove
-    await borrowerOperations.addColl(B, B, dec(1, 'ether'), { from: B })
+    await borrowerOperationsAddColl(B, B, dec(1, 'ether'), { from: B })
 
     // Check entireColl for each trove
     const B_entireColl_1 = (await th.getEntireCollAndDebt(contracts, B)).entireColl
@@ -492,7 +515,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     assert.isAtMost(getDifference(E_expectedPendingiBGT_2, E_iBGTGain_2), 1e8)
 
     // // Bob adds 1 iBGT to his trove
-    await borrowerOperations.addColl(B, B, dec(1, 'ether'), { from: B })
+    await borrowerOperationsAddColl(B, B, dec(1, 'ether'), { from: B })
 
     // Check entireColl for each trove
     const B_entireColl_2 = (await th.getEntireCollAndDebt(contracts, B)).entireColl
@@ -543,7 +566,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
 
     //Bob adds iBGT to his trove
     const addedColl = toBN(dec(1, 'ether'))
-    await borrowerOperations.addColl(bob, bob, addedColl, { from: bob })
+    await borrowerOperationsAddColl(bob, bob, addedColl, { from: bob })
 
     // Alice withdraws NECT
     await borrowerOperations.withdrawNECT(th._100pct, await getNetBorrowingAmount(A_totalDebt), alice, alice, { from: alice })
@@ -593,7 +616,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
 
     //Bob adds iBGT to his trove
     const addedColl = toBN(dec(1, 'ether'))
-    await borrowerOperations.addColl(bob, bob, addedColl, { from: bob })
+    await borrowerOperationsAddColl(bob, bob, addedColl, { from: bob })
 
     // D opens trove
     const { collateral: D_coll, totalDebt: D_totalDebt } = await openTrove({ ICR: toBN(dec(200, 16)), extraNECTAmount: dec(110, 18), extraParams: { from: dennis } })
@@ -695,7 +718,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
 
     //Carol adds 1 iBGT to her trove, brings it to 1992.01 total coll
     const C_addedColl = toBN(dec(1, 'ether'))
-    await borrowerOperations.addColl(carol, carol, dec(1, 'ether'), { from: carol })
+    await borrowerOperationsAddColl(carol, carol, dec(1, 'ether'), { from: carol })
 
     //Expect 1996 iBGT in system now
     const entireSystemColl_2 = (await activePool.getiBGT()).add(await defaultPool.getiBGT())
@@ -795,9 +818,9 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     bringing them to 2.995, 2.995, 1992.01 total coll each. */
 
     const addedColl = toBN(dec(1, 'ether'))
-    await borrowerOperations.addColl(alice, alice, addedColl, { from: alice })
-    await borrowerOperations.addColl(bob, bob, addedColl, { from: bob })
-    await borrowerOperations.addColl(carol, carol, addedColl, { from: carol })
+    await borrowerOperationsAddColl(alice, alice, addedColl, { from: alice })
+    await borrowerOperationsAddColl(bob, bob, addedColl, { from: bob })
+    await borrowerOperationsAddColl(carol, carol, addedColl, { from: carol })
 
     //Expect 1998 iBGT in system now
     const entireSystemColl_2 = (await activePool.getiBGT()).add(await defaultPool.getiBGT()).toString()
@@ -1258,7 +1281,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
 
     //Bob adds 1 iBGT to his trove
     const B_addedColl = toBN(dec(1, 'ether'))
-    await borrowerOperations.addColl(bob, bob, B_addedColl, { from: bob })
+    await borrowerOperationsAddColl(bob, bob, B_addedColl, { from: bob })
 
     //Carol  withdraws 1 iBGT from her trove
     const C_withdrawnColl = toBN(dec(1, 'ether'))
@@ -1296,7 +1319,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
 
     // D tops up
     const D_addedColl = toBN(dec(1, 'ether'))
-    await borrowerOperations.addColl(dennis, dennis, D_addedColl, { from: dennis })
+    await borrowerOperationsAddColl(dennis, dennis, D_addedColl, { from: dennis })
 
     // Price drops to 1
     await priceFeed.setPrice(dec(1, 18))
@@ -1390,7 +1413,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
 
     // Bob adds 11.33909 iBGT to his trove
     const B_addedColl = toBN('11339090000000000000')
-    await borrowerOperations.addColl(bob, bob, B_addedColl, { from: bob })
+    await borrowerOperationsAddColl(bob, bob, B_addedColl, { from: bob })
 
     // Carol withdraws 15 iBGT from her trove
     const C_withdrawnColl = toBN(dec(15, 'ether'))
@@ -1432,7 +1455,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
 
     // D tops up
     const D_addedColl = toBN(dec(1, 'ether'))
-    await borrowerOperations.addColl(dennis, dennis, D_addedColl, { from: dennis })
+    await borrowerOperationsAddColl(dennis, dennis, D_addedColl, { from: dennis })
 
     const D_collAfterL2 = D_coll.add(D_pendingRewardsAfterL2).add(D_addedColl)
 

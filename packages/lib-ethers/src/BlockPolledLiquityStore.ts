@@ -119,7 +119,8 @@ export class BlockPolledLiquityStore extends BeraBorrowStore<BlockPolledLiquityS
 
       ...(userAddress
         ? {
-            accountBalance: this._provider.getBalance(userAddress, blockTag).then(decimalify),
+            // accountBalance: this._provider.getBalance(userAddress, blockTag).then(decimalify),
+            accountBalance: this._readable.getiBGTBalance(userAddress, { blockTag }),
             nectBalance: this._readable.getNECTBalance(userAddress, { blockTag }),
             pollenBalance: this._readable.getPOLLENBalance(userAddress, { blockTag }),
             uniTokenBalance: this._readable.getUniTokenBalance(userAddress, { blockTag }),

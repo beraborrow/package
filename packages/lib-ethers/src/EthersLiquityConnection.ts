@@ -26,7 +26,6 @@ const deployments: {
   [chainId: number]: _LiquityDeploymentJSON | undefined;
 } = {
   [mainnet.chainId]: mainnet,
-  [sepolia.chainId]: sepolia,
   [berachain.chainId]: berachain,
 
   ...(dev !== null ? { [dev.chainId]: dev } : {})
@@ -112,7 +111,7 @@ const connectionFrom = (
     optionalParams.useStore !== undefined &&
     !validStoreOptions.includes(optionalParams.useStore)
   ) {
-    throw new Error(`Invalid useStore value ${optionalParams.useStore}`);
+  throw new Error(`Invalid useStore value ${optionalParams.useStore}`);
   }
 
   return branded({
@@ -304,7 +303,7 @@ export function _connectByChainId(
 ): EthersLiquityConnection {
   const deployment: _LiquityDeploymentJSON =
     deployments[chainId] ?? panic(new UnsupportedNetworkError(chainId));
-
+  
   return connectionFrom(
     provider,
     signer,

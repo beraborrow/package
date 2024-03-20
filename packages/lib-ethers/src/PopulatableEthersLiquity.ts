@@ -849,20 +849,20 @@ export class PopulatableEthersLiquity
       currentBorrowingRate
     );
 
+    // const txParams = (borrowNECT: Decimal): Parameters<typeof borrowerOperations.openTrove> => [
+    //   maxBorrowingRate.hex,
+    //   borrowNECT.hex,
+    //   ...hints,
+    //   { value: depositCollateral.hex, ...overrides }
+    // ];
+
     const txParams = (borrowNECT: Decimal): Parameters<typeof borrowerOperations.openTrove> => [
       maxBorrowingRate.hex,
       borrowNECT.hex,
       ...hints,
-      { value: depositCollateral.hex, ...overrides }
+      depositCollateral.hex,
+      { ...overrides }
     ];
-
-    // const txParams = (borrowNECT: Decimal): Parameters<typeof borrowerOperations.openTrove> => [
-    //   maxBorrowingRate.hex,
-    //   borrowNECT.hex,
-    //   depositCollateral.hex,
-    //   ...hints,
-    //   { ...overrides }
-    // ];
 
     let gasHeadroom: number | undefined;
 
@@ -989,24 +989,24 @@ export class PopulatableEthersLiquity
       currentBorrowingRate
     );
 
+    // const txParams = (borrowNECT?: Decimal): Parameters<typeof borrowerOperations.adjustTrove> => [
+    //   maxBorrowingRate.hex,
+    //   (withdrawCollateral ?? Decimal.ZERO).hex,
+    //   (borrowNECT ?? repayNECT ?? Decimal.ZERO).hex,
+    //   !!borrowNECT,
+    //   ...hints,
+    //   { value: depositCollateral?.hex, ...overrides }
+    // ];
+
     const txParams = (borrowNECT?: Decimal): Parameters<typeof borrowerOperations.adjustTrove> => [
       maxBorrowingRate.hex,
       (withdrawCollateral ?? Decimal.ZERO).hex,
       (borrowNECT ?? repayNECT ?? Decimal.ZERO).hex,
       !!borrowNECT,
       ...hints,
-      { value: depositCollateral?.hex, ...overrides }
+      depositCollateral?.hex || 0,
+      { ...overrides }
     ];
-
-    // const txParams = (borrowNECT?: Decimal): Parameters<typeof borrowerOperations.adjustTrove> => [
-    //   depositCollateral?.hex || 0,
-    //   maxBorrowingRate.hex,
-    //   (withdrawCollateral ?? Decimal.ZERO).hex,
-    //   (borrowNECT ?? repayNECT ?? Decimal.ZERO).hex,
-    //   !!borrowNECT,
-    //   ...hints,
-    //   { ...overrides }
-    // ];
 
     let gasHeadroom: number | undefined;
 

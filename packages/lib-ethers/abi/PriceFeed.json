@@ -59,6 +59,19 @@
   },
   {
     "inputs": [],
+    "name": "IBGT_ADDRESS",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "MAX_PRICE_DEVIATION_FROM_PREVIOUS_ROUND",
     "outputs": [
       {

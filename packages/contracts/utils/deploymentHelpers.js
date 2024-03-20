@@ -131,7 +131,12 @@ class DeploymentHelper {
     BorrowerOperations.setAsDeployed(borrowerOperations)
     HintHelpers.setAsDeployed(hintHelpers)
 
-    const deployerWallet = (await ethers.getSigners())[0]
+    let deployerWallet
+    try{
+    deployerWallet = (await ethers.getSigners())[0]
+    }catch(e){
+      console.log (e)
+    }
     const ibgtTokenFactory = await ethers.getContractFactory("iBGT", deployerWallet)
     const iBGTToken = new ethers.Contract(
       configParams.externalAddrs.iBGT_ERC20,
@@ -141,9 +146,6 @@ class DeploymentHelper {
 
     const coreContracts = {
       iBGTToken,
-      iBGTOraclePriceFeed,
-      NECTOraclePriceFeed,
-      TellorMaster,
       priceFeedTestnet,
       nectToken,
       sortedTroves,

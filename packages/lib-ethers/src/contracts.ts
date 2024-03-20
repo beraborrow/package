@@ -183,6 +183,7 @@ export interface _LiquityContracts {
   gasPool: GasPool;
   unipool: Unipool;
   uniToken: IERC20 | ERC20Mock;
+  iBGTToken: IERC20;
 }
 
 /** @internal */
@@ -219,17 +220,18 @@ const getAbi = (priceFeedIsTestnet: boolean, uniTokenIsMock: boolean): LiquityCo
   gasPool: gasPoolAbi,
   collSurplusPool: collSurplusPoolAbi,
   unipool: unipoolAbi,
-  uniToken: uniTokenIsMock ? erc20MockAbi : iERC20Abi
+  uniToken: uniTokenIsMock ? erc20MockAbi : iERC20Abi,
+  iBGTToken: iERC20Abi
 });
 
 const mapLiquityContracts = <T, U>(
   contracts: Record<LiquityContractsKey, T>,
   f: (t: T, key: LiquityContractsKey) => U
-) =>
-  Object.fromEntries(
+) =>{
+  return Object.fromEntries(
     Object.entries(contracts).map(([key, t]) => [key, f(t, key as LiquityContractsKey)])
   ) as Record<LiquityContractsKey, U>;
-
+  }
 /** @internal */
 export interface _LiquityDeploymentJSON {
   readonly chainId: number;
@@ -256,5 +258,5 @@ export const _connectToContracts = (
     addresses,
     (address, key) =>
       new _LiquityContract(address, abi[key], signerOrProvider) as _TypedLiquityContract
-  ) as _LiquityContracts;
+    ) as _LiquityContracts;
 };

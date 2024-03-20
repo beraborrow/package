@@ -12,6 +12,7 @@ import {
 import { _TypedLiquityContract, _TypedLogDescription } from "../src/contracts";
 
 interface ActivePoolCalls {
+  IBGT_ADDRESS(_overrides?: CallOverrides): Promise<string>;
   NAME(_overrides?: CallOverrides): Promise<string>;
   borrowerOperationsAddress(_overrides?: CallOverrides): Promise<string>;
   defaultPoolAddress(_overrides?: CallOverrides): Promise<string>;
@@ -26,6 +27,7 @@ interface ActivePoolCalls {
 interface ActivePoolTransactions {
   decreaseNECTDebt(_amount: BigNumberish, _overrides?: Overrides): Promise<void>;
   increaseNECTDebt(_amount: BigNumberish, _overrides?: Overrides): Promise<void>;
+  receiveiBGT(_amount: BigNumberish, _overrides?: Overrides): Promise<void>;
   sendiBGT(_account: string, _amount: BigNumberish, _overrides?: Overrides): Promise<void>;
   setAddresses(_borrowerOperationsAddress: string, _troveManagerAddress: string, _stabilityPoolAddress: string, _defaultPoolAddress: string, _overrides?: Overrides): Promise<void>;
 }
@@ -62,6 +64,7 @@ interface BorrowerOperationsCalls {
   BORROWING_FEE_FLOOR(_overrides?: CallOverrides): Promise<BigNumber>;
   CCR(_overrides?: CallOverrides): Promise<BigNumber>;
   DECIMAL_PRECISION(_overrides?: CallOverrides): Promise<BigNumber>;
+  IBGT_ADDRESS(_overrides?: CallOverrides): Promise<string>;
   MCR(_overrides?: CallOverrides): Promise<BigNumber>;
   MIN_NET_DEBT(_overrides?: CallOverrides): Promise<BigNumber>;
   NAME(_overrides?: CallOverrides): Promise<string>;
@@ -84,12 +87,12 @@ interface BorrowerOperationsCalls {
 }
 
 interface BorrowerOperationsTransactions {
-  addColl(_upperHint: string, _lowerHint: string, _overrides?: PayableOverrides): Promise<void>;
-  adjustTrove(_maxFeePercentage: BigNumberish, _collWithdrawal: BigNumberish, _NECTChange: BigNumberish, _isDebtIncrease: boolean, _upperHint: string, _lowerHint: string, _overrides?: PayableOverrides): Promise<void>;
+  addColl(_upperHint: string, _lowerHint: string, _ibgtAmount: BigNumberish, _overrides?: Overrides): Promise<void>;
+  adjustTrove(_maxFeePercentage: BigNumberish, _collWithdrawal: BigNumberish, _NECTChange: BigNumberish, _isDebtIncrease: boolean, _upperHint: string, _lowerHint: string, _ibgtAmount: BigNumberish, _overrides?: Overrides): Promise<void>;
   claimCollateral(_overrides?: Overrides): Promise<void>;
   closeTrove(_overrides?: Overrides): Promise<void>;
-  moveiBGTGainToTrove(_borrower: string, _upperHint: string, _lowerHint: string, _overrides?: PayableOverrides): Promise<void>;
-  openTrove(_maxFeePercentage: BigNumberish, _NECTAmount: BigNumberish, _upperHint: string, _lowerHint: string, _overrides?: PayableOverrides): Promise<void>;
+  moveiBGTGainToTrove(_borrower: string, _upperHint: string, _lowerHint: string, _ibgtAmount: BigNumberish, _overrides?: Overrides): Promise<void>;
+  openTrove(_maxFeePercentage: BigNumberish, _NECTAmount: BigNumberish, _upperHint: string, _lowerHint: string, _ibgtAmount: BigNumberish, _overrides?: Overrides): Promise<void>;
   repayNECT(_NECTAmount: BigNumberish, _upperHint: string, _lowerHint: string, _overrides?: Overrides): Promise<void>;
   setAddresses(_troveManagerAddress: string, _activePoolAddress: string, _defaultPoolAddress: string, _stabilityPoolAddress: string, _gasPoolAddress: string, _collSurplusPoolAddress: string, _priceFeedAddress: string, _sortedTrovesAddress: string, _nectTokenAddress: string, _pollenStakingAddress: string, _overrides?: Overrides): Promise<void>;
   withdrawColl(_collWithdrawal: BigNumberish, _upperHint: string, _lowerHint: string, _overrides?: Overrides): Promise<void>;
@@ -131,6 +134,7 @@ export interface BorrowerOperations
 }
 
 interface CollSurplusPoolCalls {
+  IBGT_ADDRESS(_overrides?: CallOverrides): Promise<string>;
   NAME(_overrides?: CallOverrides): Promise<string>;
   activePoolAddress(_overrides?: CallOverrides): Promise<string>;
   borrowerOperationsAddress(_overrides?: CallOverrides): Promise<string>;
@@ -144,6 +148,7 @@ interface CollSurplusPoolCalls {
 interface CollSurplusPoolTransactions {
   accountSurplus(_account: string, _amount: BigNumberish, _overrides?: Overrides): Promise<void>;
   claimColl(_account: string, _overrides?: Overrides): Promise<void>;
+  receiveiBGT(_amount: BigNumberish, _overrides?: Overrides): Promise<void>;
   setAddresses(_borrowerOperationsAddress: string, _troveManagerAddress: string, _activePoolAddress: string, _overrides?: Overrides): Promise<void>;
 }
 
@@ -167,6 +172,7 @@ export interface CollSurplusPool
 
 interface CommunityIssuanceCalls {
   DECIMAL_PRECISION(_overrides?: CallOverrides): Promise<BigNumber>;
+  IBGT_ADDRESS(_overrides?: CallOverrides): Promise<string>;
   ISSUANCE_FACTOR(_overrides?: CallOverrides): Promise<BigNumber>;
   NAME(_overrides?: CallOverrides): Promise<string>;
   POLLENSupplyCap(_overrides?: CallOverrides): Promise<BigNumber>;
@@ -200,6 +206,7 @@ export interface CommunityIssuance
 }
 
 interface DefaultPoolCalls {
+  IBGT_ADDRESS(_overrides?: CallOverrides): Promise<string>;
   NAME(_overrides?: CallOverrides): Promise<string>;
   activePoolAddress(_overrides?: CallOverrides): Promise<string>;
   getNECTDebt(_overrides?: CallOverrides): Promise<BigNumber>;
@@ -212,6 +219,7 @@ interface DefaultPoolCalls {
 interface DefaultPoolTransactions {
   decreaseNECTDebt(_amount: BigNumberish, _overrides?: Overrides): Promise<void>;
   increaseNECTDebt(_amount: BigNumberish, _overrides?: Overrides): Promise<void>;
+  receiveiBGT(_amount: BigNumberish, _overrides?: Overrides): Promise<void>;
   sendiBGTToActivePool(_amount: BigNumberish, _overrides?: Overrides): Promise<void>;
   setAddresses(_troveManagerAddress: string, _activePoolAddress: string, _overrides?: Overrides): Promise<void>;
 }
@@ -289,6 +297,7 @@ interface HintHelpersCalls {
   BORROWING_FEE_FLOOR(_overrides?: CallOverrides): Promise<BigNumber>;
   CCR(_overrides?: CallOverrides): Promise<BigNumber>;
   DECIMAL_PRECISION(_overrides?: CallOverrides): Promise<BigNumber>;
+  IBGT_ADDRESS(_overrides?: CallOverrides): Promise<string>;
   MCR(_overrides?: CallOverrides): Promise<BigNumber>;
   MIN_NET_DEBT(_overrides?: CallOverrides): Promise<BigNumber>;
   NAME(_overrides?: CallOverrides): Promise<string>;
@@ -349,6 +358,7 @@ export interface IERC20
 }
 
 interface LockupContractFactoryCalls {
+  IBGT_ADDRESS(_overrides?: CallOverrides): Promise<string>;
   NAME(_overrides?: CallOverrides): Promise<string>;
   SECONDS_IN_ONE_YEAR(_overrides?: CallOverrides): Promise<BigNumber>;
   isOwner(_overrides?: CallOverrides): Promise<boolean>;
@@ -376,6 +386,7 @@ export interface LockupContractFactory
 }
 
 interface NECTTokenCalls {
+  IBGT_ADDRESS(_overrides?: CallOverrides): Promise<string>;
   allowance(owner: string, spender: string, _overrides?: CallOverrides): Promise<BigNumber>;
   balanceOf(account: string, _overrides?: CallOverrides): Promise<BigNumber>;
   borrowerOperationsAddress(_overrides?: CallOverrides): Promise<string>;
@@ -426,6 +437,7 @@ interface POLLENStakingCalls {
   DECIMAL_PRECISION(_overrides?: CallOverrides): Promise<BigNumber>;
   F_NECT(_overrides?: CallOverrides): Promise<BigNumber>;
   F_iBGT(_overrides?: CallOverrides): Promise<BigNumber>;
+  IBGT_ADDRESS(_overrides?: CallOverrides): Promise<string>;
   NAME(_overrides?: CallOverrides): Promise<string>;
   activePoolAddress(_overrides?: CallOverrides): Promise<string>;
   borrowerOperationsAddress(_overrides?: CallOverrides): Promise<string>;
@@ -444,6 +456,7 @@ interface POLLENStakingCalls {
 interface POLLENStakingTransactions {
   increaseF_NECT(_NECTFee: BigNumberish, _overrides?: Overrides): Promise<void>;
   increaseF_iBGT(_iBGTFee: BigNumberish, _overrides?: Overrides): Promise<void>;
+  receiveiBGT(_amount: BigNumberish, _overrides?: Overrides): Promise<void>;
   setAddresses(_pollenTokenAddress: string, _nectTokenAddress: string, _troveManagerAddress: string, _borrowerOperationsAddress: string, _activePoolAddress: string, _overrides?: Overrides): Promise<void>;
   stake(_POLLENamount: BigNumberish, _overrides?: Overrides): Promise<void>;
   unstake(_POLLENamount: BigNumberish, _overrides?: Overrides): Promise<void>;
@@ -482,6 +495,7 @@ export interface POLLENStaking
 }
 
 interface POLLENTokenCalls {
+  IBGT_ADDRESS(_overrides?: CallOverrides): Promise<string>;
   ONE_YEAR_IN_SECONDS(_overrides?: CallOverrides): Promise<BigNumber>;
   allowance(owner: string, spender: string, _overrides?: CallOverrides): Promise<BigNumber>;
   balanceOf(account: string, _overrides?: CallOverrides): Promise<BigNumber>;
@@ -544,6 +558,7 @@ export interface MultiTroveGetter
 
 interface PriceFeedCalls {
   DECIMAL_PRECISION(_overrides?: CallOverrides): Promise<BigNumber>;
+  IBGT_ADDRESS(_overrides?: CallOverrides): Promise<string>;
   MAX_PRICE_DEVIATION_FROM_PREVIOUS_ROUND(_overrides?: CallOverrides): Promise<BigNumber>;
   MAX_PRICE_DIFFERENCE_BETWEEN_ORACLES(_overrides?: CallOverrides): Promise<BigNumber>;
   NAME(_overrides?: CallOverrides): Promise<string>;
@@ -594,6 +609,7 @@ export interface PriceFeedTestnet
 }
 
 interface SortedTrovesCalls {
+  IBGT_ADDRESS(_overrides?: CallOverrides): Promise<string>;
   NAME(_overrides?: CallOverrides): Promise<string>;
   borrowerOperationsAddress(_overrides?: CallOverrides): Promise<string>;
   contains(_id: string, _overrides?: CallOverrides): Promise<boolean>;
@@ -642,6 +658,7 @@ interface StabilityPoolCalls {
   BORROWING_FEE_FLOOR(_overrides?: CallOverrides): Promise<BigNumber>;
   CCR(_overrides?: CallOverrides): Promise<BigNumber>;
   DECIMAL_PRECISION(_overrides?: CallOverrides): Promise<BigNumber>;
+  IBGT_ADDRESS(_overrides?: CallOverrides): Promise<string>;
   MCR(_overrides?: CallOverrides): Promise<BigNumber>;
   MIN_NET_DEBT(_overrides?: CallOverrides): Promise<BigNumber>;
   NAME(_overrides?: CallOverrides): Promise<string>;
@@ -686,6 +703,7 @@ interface StabilityPoolCalls {
 interface StabilityPoolTransactions {
   offset(_debtToOffset: BigNumberish, _collToAdd: BigNumberish, _overrides?: Overrides): Promise<void>;
   provideToSP(_amount: BigNumberish, _frontEndTag: string, _overrides?: Overrides): Promise<void>;
+  receiveiBGT(_amount: BigNumberish, _overrides?: Overrides): Promise<void>;
   registerFrontEnd(_kickbackRate: BigNumberish, _overrides?: Overrides): Promise<void>;
   setAddresses(_borrowerOperationsAddress: string, _troveManagerAddress: string, _activePoolAddress: string, _nectTokenAddress: string, _sortedTrovesAddress: string, _priceFeedAddress: string, _communityIssuanceAddress: string, _overrides?: Overrides): Promise<void>;
   withdrawFromSP(_amount: BigNumberish, _overrides?: Overrides): Promise<void>;
@@ -756,6 +774,7 @@ interface TroveManagerCalls {
   BORROWING_FEE_FLOOR(_overrides?: CallOverrides): Promise<BigNumber>;
   CCR(_overrides?: CallOverrides): Promise<BigNumber>;
   DECIMAL_PRECISION(_overrides?: CallOverrides): Promise<BigNumber>;
+  IBGT_ADDRESS(_overrides?: CallOverrides): Promise<string>;
   L_NECTDebt(_overrides?: CallOverrides): Promise<BigNumber>;
   L_iBGT(_overrides?: CallOverrides): Promise<BigNumber>;
   MAX_BORROWING_FEE(_overrides?: CallOverrides): Promise<BigNumber>;
@@ -887,6 +906,7 @@ export interface TroveManager
 }
 
 interface UnipoolCalls {
+  IBGT_ADDRESS(_overrides?: CallOverrides): Promise<string>;
   NAME(_overrides?: CallOverrides): Promise<string>;
   balanceOf(account: string, _overrides?: CallOverrides): Promise<BigNumber>;
   duration(_overrides?: CallOverrides): Promise<BigNumber>;
