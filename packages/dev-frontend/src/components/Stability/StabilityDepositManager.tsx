@@ -137,14 +137,16 @@ export const StabilityDepositManager: React.FC = () => {
         {/* <Button variant="cancel" onClick={handleCancel}>
           Cancel
         </Button> */}
-
-        {validChange ? (
-          <StabilityDepositAction transactionId={transactionId} change={validChange}>
-            Complete transaction
-          </StabilityDepositAction>
-        ) : (
-          <Button style={{width: "100%", marginTop: "16px", backgroundColor: "#f6f6f6", color: "#0B1722", borderColor: "#f6f6f6"}} disabled>Complete transaction</Button>
-        )}
+        {
+          !changePending ?
+          (validChange ? (
+            <StabilityDepositAction transactionId={transactionId} change={validChange}>
+              Complete transaction
+            </StabilityDepositAction>
+          ) : (
+            <Button style={{width: "100%", marginTop: "16px", backgroundColor: "#f6f6f6", color: "#0B1722", borderColor: "#f6f6f6"}} disabled>Complete transaction</Button>
+          )) : (<Button sx={{width: "100%"}} disabled>Transaction in progress</Button>)
+        }
       </Flex>
     </StabilityDepositEditor>
   );

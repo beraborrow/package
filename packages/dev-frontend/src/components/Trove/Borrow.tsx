@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
-import { Flex, Button, Input } from "theme-ui";
+import { Flex, Button, Input, Spinner } from "theme-ui";
 import {
   BeraBorrowStoreState,
   Decimal,
@@ -12,6 +12,7 @@ import { useLiquitySelector } from "@beraborrow/lib-react";
 import { useStableTroveChange } from "../../hooks/useStableTroveChange";
 import { useMyTransactionState } from "../Transaction";
 import { TroveAction } from "./TroveAction";
+import { ApproveAction } from "../ApproveAction"
 import { useTroveView } from "./context/TroveViewContext";
 import { ExpensiveTroveChangeWarning, GasEstimationState } from "./ExpensiveTroveChangeWarning";
 import {
@@ -320,19 +321,37 @@ export const Borrow: React.FC = () => {
 
         <Flex variant="layout.actions">
           {
-            !isTransactionPending ? (
-            stableTroveChange ? (
-              <TroveAction
-                transactionId={TRANSACTION_ID}
-                change={stableTroveChange}
+            !isTransactionPending ? 
+            (gasEstimationState.type === "insufficient-allowance" ? 
+            (<ApproveAction 
+                troveChange={stableTroveChange}
                 maxBorrowingRate={maxBorrowingRate}
                 borrowingFeeDecayToleranceMinutes={60}
+                gasEstimationState={gasEstimationState}
+                setGasEstimationState={setGasEstimationState}
               >
-                Complete transaction
-              </TroveAction>
-            ) : (
-              <Button sx={{width: "100%", backgroundColor: "#f6f6f6", color: "#0B1722", borderColor: "#f6f6f6"}} disabled>Complete transaction</Button>
-            )): (<Button sx={{width: "100%"}} disabled>Transaction in progress</Button>)
+                Approve
+              </ApproveAction>) :
+              (
+                gasEstimationState.type === "inProgress" ? (
+                  <Button sx={{width: "100%"}} disabled>
+                    <Spinner size="24px" sx={{ color: "background" }} />
+                  </Button>
+                ) :
+                (stableTroveChange ? (
+                  <TroveAction
+                    transactionId={TRANSACTION_ID}
+                    change={stableTroveChange}
+                    maxBorrowingRate={maxBorrowingRate}
+                    borrowingFeeDecayToleranceMinutes={60}
+                  >
+                    Complete transaction
+                  </TroveAction>
+                ) : (
+                  <Button sx={{width: "100%", backgroundColor: "#f6f6f6", color: "#0B1722", borderColor: "#f6f6f6"}} disabled>Complete transaction</Button>
+                ))
+              )
+            ): (<Button sx={{width: "100%", color: "#0B1722"}} disabled>Transaction in progress</Button>)
           }
         </Flex>
       </div>

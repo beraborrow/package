@@ -7,7 +7,7 @@ import { useBeraBorrow } from "../../hooks/BeraBorrowContext";
 import { Warning } from "../Warning";
 
 export type GasEstimationState =
-  | { type: "idle" | "inProgress" }
+  | { type: "idle" | "inProgress" | "insufficient-allowance" }
   | { type: "complete"; populatedTx: PopulatedEthersLiquityTransaction };
 
 type ExpensiveTroveChangeWarningParams = {
@@ -34,7 +34,9 @@ export const ExpensiveTroveChangeWarning: React.FC<ExpensiveTroveChangeWarningPa
       let cancelled = false;
 
       const timeoutId = setTimeout(async () => {
-        const populatedTx = await (troveChange.type === "creation"
+        let populatedTx: PopulatedEthersLiquityTransaction;
+        try {
+        populatedTx = await (troveChange.type === "creation"
           ? beraborrow.populate.openTrove(troveChange.params, {
               maxBorrowingRate,
               borrowingFeeDecayToleranceMinutes
@@ -43,13 +45,17 @@ export const ExpensiveTroveChangeWarning: React.FC<ExpensiveTroveChangeWarningPa
               maxBorrowingRate,
               borrowingFeeDecayToleranceMinutes
             }));
-
-        if (!cancelled) {
-          setGasEstimationState({ type: "complete", populatedTx });
-          console.log(
-            "Estimated TX cost: " +
-              Decimal.from(`${populatedTx.rawPopulatedTransaction.gasLimit}`).prettify(0)
-          );
+            if (!cancelled) {
+              setGasEstimationState({ type: "complete", populatedTx });
+              console.log(
+                "Estimated TX cost: " +
+                  Decimal.from(`${populatedTx.rawPopulatedTransaction.gasLimit}`).prettify(0)
+              );
+            }
+        } catch(err: any) {
+          if (err.message.includes ("ERC20: insufficient-allowance")) {
+            setGasEstimationState({ type: "insufficient-allowance" });
+          }
         }
       }, 333);
 

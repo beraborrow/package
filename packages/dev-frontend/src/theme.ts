@@ -44,7 +44,7 @@ const button: ThemeUIStyleObject = {
   px: "32px",
   py: "10px",
 
-  color: "darkBlue",
+  color: "#0B1722",
   border: 2,
   borderRadius: "33px",
 

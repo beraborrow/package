@@ -18,8 +18,9 @@ import {
   BondNFT__factory,
   ChickenBondManager__factory
 } from "@beraborrow/chicken-bonds/nect/types";
-import type { NECTToken } from "@beraborrow/lib-ethers/dist/types";
+import type { NECTToken,IERC20 } from "@beraborrow/lib-ethers/dist/types";
 import NECTTokenAbi from "@beraborrow/lib-ethers/abi/NECTToken.json";
+import IERC20Abi from "@beraborrow/lib-ethers/abi/IERC20.json";
 import { useContract } from "../../../hooks/useContract";
 import { useBeraBorrow } from "../../../hooks/BeraBorrowContext";
 import { useCallback } from "react";
@@ -48,6 +49,7 @@ type BondsInformation = {
 type BondContracts = {
   addresses: Addresses;
   nectToken: NECTToken | undefined;
+  ibgtToken: IERC20 | undefined
   bNectToken: BNECTToken | undefined;
   bondNft: BondNFT | undefined;
   chickenBondManager: ChickenBondManager | undefined;
@@ -80,6 +82,11 @@ export const useBondContracts = (): BondContracts => {
     NECTTokenAbi
   );
 
+  const [ibgtTokenDefault, ibgtTokenDefaultStatus] = useContract<IERC20>(
+    beraborrow.connection.addresses.iBGTToken,
+    IERC20Abi
+  );
+
   const [nectTokenOverride, nectTokenOverrideStatus] = useContract<ERC20Faucet>(
     NECT_OVERRIDE_ADDRESS,
     ERC20Faucet__factory.abi
@@ -90,6 +97,8 @@ export const useBondContracts = (): BondContracts => {
       ? [nectTokenDefault, nectTokenDefaultStatus]
       : [(nectTokenOverride as unknown) as NECTToken, nectTokenOverrideStatus];
 
+  const [ibgtToken, ibgtTokenStatus] = [ibgtTokenDefault, ibgtTokenDefaultStatus]
+  
   const [bNectToken, bNectTokenStatus] = useContract<BNECTToken>(
     BNECT_TOKEN_ADDRESS,
     BNECTToken__factory.abi
@@ -200,6 +209,7 @@ export const useBondContracts = (): BondContracts => {
   return {
     addresses,
     nectToken,
+    ibgtToken,
     bNectToken,
     bondNft,
     chickenBondManager,

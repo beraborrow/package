@@ -12,6 +12,7 @@ import { useLiquitySelector } from "@beraborrow/lib-react";
 import { useStableTroveChange } from "../../hooks/useStableTroveChange";
 import { useMyTransactionState } from "../Transaction";
 import { TroveAction } from "./TroveAction";
+import { ApproveAction } from "../ApproveAction"
 import { ExpensiveTroveChangeWarning, GasEstimationState } from "./ExpensiveTroveChangeWarning";
 import {
   selectForTroveChangeValidation,
@@ -66,7 +67,6 @@ export const Opening: React.FC = () => {
 
   const stableTroveChange = useStableTroveChange(troveChange);
   const [gasEstimationState, setGasEstimationState] = useState<GasEstimationState>({ type: "idle" });
-
   const transactionState = useMyTransactionState(TRANSACTION_ID);
   const isTransactionPending =
     transactionState.type === "waitingForApproval" ||
@@ -290,22 +290,35 @@ export const Opening: React.FC = () => {
         <Flex variant="layout.actions">
           {
             !isTransactionPending ? (
-            gasEstimationState.type === "inProgress" ? (
-              <Button sx={{width: "100%"}} disabled>
-                <Spinner size="24px" sx={{ color: "background" }} />
-              </Button>
-            ) : stableTroveChange ? (
-              <TroveAction
-                transactionId={TRANSACTION_ID}
-                change={stableTroveChange}
-                maxBorrowingRate={maxBorrowingRate.mul(2)}
-                borrowingFeeDecayToleranceMinutes={60}
-              >
-                Complete transaction
-              </TroveAction>
-            ) : (
-              <Button sx={{width: "100%", backgroundColor: "#f6f6f6", color: "#0B1722", borderColor: "#f6f6f6"}} disabled>Complete transaction</Button>
-            )) : (<Button sx={{width: "100%"}} disabled>Transaction in progress</Button>)
+              gasEstimationState.type === "insufficient-allowance" ? 
+              (<ApproveAction 
+                  troveChange={stableTroveChange}
+                  maxBorrowingRate={maxBorrowingRate}
+                  borrowingFeeDecayToleranceMinutes={60}
+                  gasEstimationState={gasEstimationState}
+                  setGasEstimationState={setGasEstimationState}
+                >
+                  Approve
+                </ApproveAction>) :
+              (
+                gasEstimationState.type === "inProgress" ? (
+                  <Button sx={{width: "100%"}} disabled>
+                    <Spinner size="24px" sx={{ color: "background" }} />
+                  </Button>
+                ) : stableTroveChange ? (
+                  <TroveAction
+                    transactionId={TRANSACTION_ID}
+                    change={stableTroveChange}
+                    maxBorrowingRate={maxBorrowingRate.mul(2)}
+                    borrowingFeeDecayToleranceMinutes={60}
+                  >
+                    Complete transaction
+                  </TroveAction>
+                ) : (
+                  <Button sx={{width: "100%", backgroundColor: "#f6f6f6", color: "#0B1722", borderColor: "#f6f6f6"}} disabled>Complete transaction</Button>
+                )
+              )
+            ) : (<Button sx={{width: "100%"}} disabled>Transaction in progress</Button>)
           }
         </Flex>
       </div>
