@@ -82,7 +82,7 @@ export const useBondContracts = (): BondContracts => {
     NECTTokenAbi
   );
 
-  const [ibgtTokenDefault, ibgtTokenDefaultStatus] = useContract<IERC20>(
+  const [ibgtTokenDefault,] = useContract<IERC20>(
     beraborrow.connection.addresses.iBGTToken,
     IERC20Abi
   );
@@ -97,7 +97,7 @@ export const useBondContracts = (): BondContracts => {
       ? [nectTokenDefault, nectTokenDefaultStatus]
       : [(nectTokenOverride as unknown) as NECTToken, nectTokenOverrideStatus];
 
-  const [ibgtToken, ibgtTokenStatus] = [ibgtTokenDefault, ibgtTokenDefaultStatus]
+  const [ibgtToken] = [ibgtTokenDefault]
   
   const [bNectToken, bNectTokenStatus] = useContract<BNECTToken>(
     BNECT_TOKEN_ADDRESS,

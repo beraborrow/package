@@ -26,7 +26,6 @@ export const ApproveAction: React.FC<ApproveActionProps> = ({
   troveChange,
   maxBorrowingRate,
   borrowingFeeDecayToleranceMinutes,
-  gasEstimationState,
   setGasEstimationState
 }) => {
   const { beraborrow } = useBeraBorrow();

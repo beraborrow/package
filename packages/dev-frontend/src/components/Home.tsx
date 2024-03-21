@@ -1,17 +1,10 @@
-import { useState, useContext } from 'react'
-import { CurPageContext } from '../contexts/CurPageContext'
+import { useState } from 'react'
+import { useHistory } from 'react-router-dom'
 
 const Home: React.FC = () => {
+    const history = useHistory();
     const [hoverSimple, setHoverSimple] = useState (false)
     const [hoverDen, setHoverDen] = useState (false)
-
-    const curPageContext = useContext (CurPageContext)
-
-    if (!curPageContext) {
-        throw new Error('YourComponent must be used within a CurPageContext.Provider');
-    }
-
-    const { setCurPage } = curPageContext;
 
     return (
         <div className="w-full h-full bg-main-gradient">
@@ -20,7 +13,7 @@ const Home: React.FC = () => {
                 <div className="flex flex-col md:flex-row items-center justify-center gap-10 md:gap-5 lg:gap-[60px] mt-[60px] md:mt-[98px]">
                     <div className="flex flex-col gap-8">
                         <div
-                            onClick={() => setCurPage(1)} 
+                            onClick={() => history.push('/main')} 
                             onMouseEnter={() => setHoverSimple(true)}
                             onMouseLeave={() => setHoverSimple(false)}
                             className={`bg-transparent cursor-pointer z-[1] w-[271px] lg:w-[374px] h-[200px] md:h-[298px] pt-8 md:pt-[54px] px-[15px] lg:px-[67px] rounded-[20px] border border-white hover:border-[#EC6F15] ${hoverSimple?"den-window-shadow":""}`}
@@ -31,7 +24,7 @@ const Home: React.FC = () => {
                     </div>
                     <div className="flex flex-col gap-8">
                         <div
-                            onClick={() => setCurPage(2)} 
+                            onClick={() => history.push('/den')} 
                             onMouseEnter={() => setHoverDen(true)}
                             onMouseLeave={() => setHoverDen(false)}
                             className={`bg-den bg-[length:375px_327px] lg:bg-cover bg-top-center-14 md:bg-center bg-no-repeat cursor-pointer w-[271px] lg:w-[374px] h-[200px] md:h-[298px] rounded-[20px] border border-white hover:border-[#EC6F15] ${hoverDen?"den-window-shadow":""}`}

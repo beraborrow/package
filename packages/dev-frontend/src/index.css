@@ -53,22 +53,38 @@ html {
 
 ::-webkit-scrollbar {
   width: 8px;
+  display: none;
 }
 
 /* Track */
 ::-webkit-scrollbar-track {
   background: transparent;
   border-radius: 4px;
+  display: none;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: transparent;
+  background: #FDBF47;
   border-radius: 4px;
   height: 82px;
+  display: none;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: transparent;
+  display: none;
+}
+
+/* For Chrome, Safari, Edge, Opera */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* For Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
 }

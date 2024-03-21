@@ -163,10 +163,10 @@ export const Opening: React.FC = () => {
                     iBGT
                 </div>
             </div>
-            {
+            {/* {
               editing !== "collateral" && collateral.eq(0) &&
               <span className="flex flex-row justify-end text-[#F45348] text-lg mt-1 italic">*Please enter a value</span>
-            }
+            } */}
         </div>
         <div className="mb-[28px]">
             <div className="text-lg font-medium">Calculate Debt</div>
@@ -252,10 +252,10 @@ export const Opening: React.FC = () => {
                     NECT
                 </div>
             </div>
-            {
+            {/* {
               editing !== "netdebt" && borrowAmount.eq(0) &&
               <span className="flex flex-row justify-end text-[#F45348] text-lg mt-1 italic">*Please enter a value</span>
-            }
+            } */}
         </div>
         <div className="mb-[28px]">
             <div className="flex flex-row justify-between text-lg font-normal mb-[14px]">

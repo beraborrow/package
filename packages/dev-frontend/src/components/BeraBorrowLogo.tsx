@@ -7,6 +7,6 @@ type BeraBorrowLogoProps = React.ComponentProps<typeof Box> & {
 
 export const BeraBorrowLogo: React.FC<BeraBorrowLogoProps> = ({ height, ...boxProps }) => (
   <div sx={{ lineHeight: 0 }} {...boxProps}>
-    <Image src="./beraborrow-logo.png" sx={{ height: "51px", width: "51px", borderRadius: "50%", backgroundColor: '#EC6F15' }} />
+    <a href="/"><Image src="./beraborrow-logo.png" sx={{ height: "51px", width: "51px", borderRadius: "50%", backgroundColor: '#EC6F15' }} /></a>
   </div>
 );
