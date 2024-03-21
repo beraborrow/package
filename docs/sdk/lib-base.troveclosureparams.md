@@ -4,7 +4,7 @@
 
 ## TroveClosureParams type
 
-Parameters of a [closeTrove()](./lib-base.transactableliquity.closetrove.md) transaction.
+Parameters of a [closeTrove()](./lib-base.transactableberaborrow.closetrove.md) transaction.
 
 <b>Signature:</b>
 

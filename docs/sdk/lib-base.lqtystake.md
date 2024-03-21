@@ -14,7 +14,7 @@ export declare class LQTYStake
 
 ## Remarks
 
-Returned by the [getLQTYStake()](./lib-base.readableliquity.getlqtystake.md) function.
+Returned by the [getLQTYStake()](./lib-base.readableberaborrow.getlqtystake.md) function.
 
 The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `LQTYStake` class.
 

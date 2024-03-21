@@ -4,7 +4,7 @@
 
 ## RedemptionDetails interface
 
-Details of a [redeemLUSD()](./lib-base.transactableliquity.redeemlusd.md) transaction.
+Details of a [redeemLUSD()](./lib-base.transactableberaborrow.redeemlusd.md) transaction.
 
 <b>Signature:</b>
 

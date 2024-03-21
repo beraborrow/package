@@ -8,37 +8,37 @@
 
 |  Class | Description |
 |  --- | --- |
-|  [BlockPolledLiquityStore](./lib-ethers.blockpolledliquitystore.md) | Ethers-based [LiquityStore](./lib-base.liquitystore.md) that updates state whenever there's a new block. |
-|  [EthersLiquity](./lib-ethers.ethersliquity.md) | Convenience class that combines multiple interfaces of the library in one object. |
+|  [BlockPolledBeraBorrowStore](./lib-ethers.blockpolledberaborrowstore.md) | Ethers-based [BeraBorrowStore](./lib-base.beraborrowstore.md) that updates state whenever there's a new block. |
+|  [EthersBeraBorrow](./lib-ethers.ethersberaborrow.md) | Convenience class that combines multiple interfaces of the library in one object. |
 |  [EthersTransactionCancelledError](./lib-ethers.etherstransactioncancellederror.md) | Thrown when a transaction is cancelled or replaced by a different transaction. |
-|  [EthersTransactionFailedError](./lib-ethers.etherstransactionfailederror.md) | Thrown by [EthersLiquity](./lib-ethers.ethersliquity.md) in case of transaction failure. |
-|  [PopulatableEthersLiquity](./lib-ethers.populatableethersliquity.md) | Ethers-based implementation of [PopulatableLiquity](./lib-base.populatableliquity.md)<!-- -->. |
-|  [PopulatedEthersLiquityTransaction](./lib-ethers.populatedethersliquitytransaction.md) | A transaction that has been prepared for sending. |
+|  [EthersTransactionFailedError](./lib-ethers.etherstransactionfailederror.md) | Thrown by [EthersBeraBorrow](./lib-ethers.ethersberaborrow.md) in case of transaction failure. |
+|  [PopulatableEthersBeraBorrow](./lib-ethers.populatableethersberaborrow.md) | Ethers-based implementation of [PopulatableBeraBorrow](./lib-base.populatableberaborrow.md)<!-- -->. |
+|  [PopulatedEthersBeraBorrowTransaction](./lib-ethers.populatedethersberaborrowtransaction.md) | A transaction that has been prepared for sending. |
 |  [PopulatedEthersRedemption](./lib-ethers.populatedethersredemption.md) | A redemption transaction that has been prepared for sending. |
-|  [ReadableEthersLiquity](./lib-ethers.readableethersliquity.md) | Ethers-based implementation of [ReadableLiquity](./lib-base.readableliquity.md)<!-- -->. |
-|  [SendableEthersLiquity](./lib-ethers.sendableethersliquity.md) | Ethers-based implementation of [SendableLiquity](./lib-base.sendableliquity.md)<!-- -->. |
-|  [SentEthersLiquityTransaction](./lib-ethers.sentethersliquitytransaction.md) | A transaction that has already been sent. |
-|  [UnsupportedNetworkError](./lib-ethers.unsupportednetworkerror.md) | Thrown when trying to connect to a network where Liquity is not deployed. |
+|  [ReadableEthersBeraBorrow](./lib-ethers.readableethersberaborrow.md) | Ethers-based implementation of [ReadableBeraBorrow](./lib-base.readableberaborrow.md)<!-- -->. |
+|  [SendableEthersBeraBorrow](./lib-ethers.sendableethersberaborrow.md) | Ethers-based implementation of [SendableBeraBorrow](./lib-base.sendableberaborrow.md)<!-- -->. |
+|  [SentEthersBeraBorrowTransaction](./lib-ethers.sentethersberaborrowtransaction.md) | A transaction that has already been sent. |
+|  [UnsupportedNetworkError](./lib-ethers.unsupportednetworkerror.md) | Thrown when trying to connect to a network where BeraBorrow is not deployed. |
 
 ## Interfaces
 
 |  Interface | Description |
 |  --- | --- |
-|  [BlockPolledLiquityStoreExtraState](./lib-ethers.blockpolledliquitystoreextrastate.md) | Extra state added to [LiquityStoreState](./lib-base.liquitystorestate.md) by [BlockPolledLiquityStore](./lib-ethers.blockpolledliquitystore.md)<!-- -->. |
+|  [BlockPolledBeraBorrowStoreExtraState](./lib-ethers.blockpolledberaborrowstoreextrastate.md) | Extra state added to [BeraBorrowStoreState](./lib-base.beraborrowstorestate.md) by [BlockPolledBeraBorrowStore](./lib-ethers.blockpolledberaborrowstore.md)<!-- -->. |
 |  [BorrowingOperationOptionalParams](./lib-ethers.borrowingoperationoptionalparams.md) | Optional parameters of a transaction that borrows LUSD. |
-|  [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) | Optional parameters taken by [ReadableEthersLiquity](./lib-ethers.readableethersliquity.md) functions. |
-|  [EthersLiquityConnection](./lib-ethers.ethersliquityconnection.md) | Information about a connection to the Liquity protocol. |
-|  [EthersLiquityConnectionOptionalParams](./lib-ethers.ethersliquityconnectionoptionalparams.md) | Optional parameters of [ReadableEthersLiquity.connect()](./lib-ethers.readableethersliquity.connect_1.md) and [EthersLiquity.connect()](./lib-ethers.ethersliquity.connect_1.md)<!-- -->. |
-|  [EthersLiquityWithStore](./lib-ethers.ethersliquitywithstore.md) | Variant of [EthersLiquity](./lib-ethers.ethersliquity.md) that exposes a [LiquityStore](./lib-base.liquitystore.md)<!-- -->. |
-|  [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) | Optional parameters taken by [EthersLiquity](./lib-ethers.ethersliquity.md) transaction functions. |
-|  [ReadableEthersLiquityWithStore](./lib-ethers.readableethersliquitywithstore.md) | Variant of [ReadableEthersLiquity](./lib-ethers.readableethersliquity.md) that exposes a [LiquityStore](./lib-base.liquitystore.md)<!-- -->. |
+|  [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) | Optional parameters taken by [ReadableEthersBeraBorrow](./lib-ethers.readableethersberaborrow.md) functions. |
+|  [EthersBeraBorrowConnection](./lib-ethers.ethersberaborrowconnection.md) | Information about a connection to the BeraBorrow protocol. |
+|  [EthersBeraBorrowConnectionOptionalParams](./lib-ethers.ethersberaborrowconnectionoptionalparams.md) | Optional parameters of [ReadableEthersBeraBorrow.connect()](./lib-ethers.readableethersberaborrow.connect_1.md) and [EthersBeraBorrow.connect()](./lib-ethers.ethersberaborrow.connect_1.md)<!-- -->. |
+|  [EthersBeraBorrowWithStore](./lib-ethers.ethersberaborrowwithstore.md) | Variant of [EthersBeraBorrow](./lib-ethers.ethersberaborrow.md) that exposes a [BeraBorrowStore](./lib-base.beraborrowstore.md)<!-- -->. |
+|  [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) | Optional parameters taken by [EthersBeraBorrow](./lib-ethers.ethersberaborrow.md) transaction functions. |
+|  [ReadableEthersBeraBorrowWithStore](./lib-ethers.readableethersberaborrowwithstore.md) | Variant of [ReadableEthersBeraBorrow](./lib-ethers.readableethersberaborrow.md) that exposes a [BeraBorrowStore](./lib-base.beraborrowstore.md)<!-- -->. |
 
 ## Type Aliases
 
 |  Type Alias | Description |
 |  --- | --- |
-|  [BlockPolledLiquityStoreState](./lib-ethers.blockpolledliquitystorestate.md) | The type of [BlockPolledLiquityStore](./lib-ethers.blockpolledliquitystore.md)<!-- -->'s [state](./lib-base.liquitystore.state.md)<!-- -->. |
-|  [EthersLiquityStoreOption](./lib-ethers.ethersliquitystoreoption.md) | Possible values for the optional [useStore](./lib-ethers.ethersliquityconnectionoptionalparams.usestore.md) connection parameter. |
+|  [BlockPolledBeraBorrowStoreState](./lib-ethers.blockpolledberaborrowstorestate.md) | The type of [BlockPolledBeraBorrowStore](./lib-ethers.blockpolledberaborrowstore.md)<!-- -->'s [state](./lib-base.beraborrowstore.state.md)<!-- -->. |
+|  [EthersBeraBorrowStoreOption](./lib-ethers.ethersberaborrowstoreoption.md) | Possible values for the optional [useStore](./lib-ethers.ethersberaborrowconnectionoptionalparams.usestore.md) connection parameter. |
 |  [EthersPopulatedTransaction](./lib-ethers.etherspopulatedtransaction.md) | Alias of Ethers' <code>PopulatedTransaction</code> type, which implements [UnsignedTransaction](https://docs.ethers.io/v5/api/utils/transactions/#UnsignedTransaction)<!-- -->. |
 |  [EthersProvider](./lib-ethers.ethersprovider.md) | Alias of Ethers' abstract [Provider](https://docs.ethers.io/v5/api/providers/) type. |
 |  [EthersSigner](./lib-ethers.etherssigner.md) | Alias of Ethers' abstract [Signer](https://docs.ethers.io/v5/api/signer/) type. |

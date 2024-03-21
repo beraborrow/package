@@ -4,7 +4,7 @@
 
 ## TroveCreationDetails interface
 
-Details of an [openTrove()](./lib-base.transactableliquity.opentrove.md) transaction.
+Details of an [openTrove()](./lib-base.transactableberaborrow.opentrove.md) transaction.
 
 <b>Signature:</b>
 

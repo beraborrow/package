@@ -16,5 +16,5 @@ export declare type PendingReceipt = {
 
 ## Remarks
 
-Returned by [SentLiquityTransaction.getReceipt()](./lib-base.sentliquitytransaction.getreceipt.md)<!-- -->.
+Returned by [SentBeraBorrowTransaction.getReceipt()](./lib-base.sentberaborrowtransaction.getreceipt.md)<!-- -->.
 

@@ -35,8 +35,8 @@ To calculate the redemption fee in LUSD, multiply the redeemed LUSD amount with 
 
 
 ```typescript
-const fees = await liquity.getFees();
-const total = await liquity.getTotal();
+const fees = await beraborrow.getFees();
+const total = await beraborrow.getTotal();
 
 const redeemedLUSDAmount = Decimal.from(100);
 const redeemedFractionOfSupply = redeemedLUSDAmount.div(total.debt);

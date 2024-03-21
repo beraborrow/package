@@ -4,7 +4,7 @@
 
 ## LiquidationDetails interface
 
-Details of a [liquidate()](./lib-base.transactableliquity.liquidate.md) or [liquidateUpTo()](./lib-base.transactableliquity.liquidateupto.md) transaction.
+Details of a [liquidate()](./lib-base.transactableberaborrow.liquidate.md) or [liquidateUpTo()](./lib-base.transactableberaborrow.liquidateupto.md) transaction.
 
 <b>Signature:</b>
 

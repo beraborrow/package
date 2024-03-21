@@ -4,7 +4,7 @@
 
 ## EthersTransactionOverrides interface
 
-Optional parameters taken by [EthersLiquity](./lib-ethers.ethersliquity.md) transaction functions.
+Optional parameters taken by [EthersBeraBorrow](./lib-ethers.ethersberaborrow.md) transaction functions.
 
 <b>Signature:</b>
 

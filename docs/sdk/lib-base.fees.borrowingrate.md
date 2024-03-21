@@ -32,7 +32,7 @@ To calculate the borrowing fee in LUSD, multiply the borrowed LUSD amount by the
 
 
 ```typescript
-const fees = await liquity.getFees();
+const fees = await beraborrow.getFees();
 
 const borrowedLUSDAmount = 100;
 const borrowingRate = fees.borrowingRate();
