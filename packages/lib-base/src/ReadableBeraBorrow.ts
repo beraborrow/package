@@ -85,7 +85,7 @@ export interface ReadableBeraBorrow {
   getNumberOfTroves(): Promise<number>;
 
   /**
-   * Get the current price of the native currency (e.g. Ether) in USD.
+   * Get the current price of the native currency (e.g. iBGT) in USD.
    */
   getPrice(): Promise<Decimal>;
 

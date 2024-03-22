@@ -1,5 +1,5 @@
 declare interface Window {
-  ethereum?: {
+  berachain?: {
     isMetaMask?: boolean;
   };
 }

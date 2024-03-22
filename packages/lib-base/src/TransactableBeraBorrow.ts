@@ -77,7 +77,7 @@ export interface LiquidationDetails {
   /** Amount of NECT paid to the liquidator as gas compensation. */
   nectGasCompensation: Decimal;
 
-  /** Amount of native currency (e.g. Ether) paid to the liquidator as gas compensation. */
+  /** Amount of native currency (e.g. iBGT) paid to the liquidator as gas compensation. */
   collateralGasCompensation: Decimal;
 }
 
@@ -101,10 +101,10 @@ export interface RedemptionDetails {
    */
   actualNECTAmount: Decimal;
 
-  /** Amount of collateral (e.g. Ether) taken from Troves by the transaction. */
+  /** Amount of collateral (e.g. iBGT) taken from Troves by the transaction. */
   collateralTaken: Decimal;
 
-  /** Amount of native currency (e.g. Ether) deducted as fee from collateral taken. */
+  /** Amount of native currency (e.g. iBGT) deducted as fee from collateral taken. */
   fee: Decimal;
 }
 
@@ -122,7 +122,7 @@ export interface StabilityPoolGainsWithdrawalDetails {
   /** Amount of NECT in the deposit directly after this transaction. */
   newNECTDeposit: Decimal;
 
-  /** Amount of native currency (e.g. Ether) paid out to the depositor in this transaction. */
+  /** Amount of native currency (e.g. iBGT) paid out to the depositor in this transaction. */
   collateralGain: Decimal;
 
   /** Amount of POLLEN rewarded to the depositor in this transaction. */
@@ -392,7 +392,7 @@ export interface TransactableBeraBorrow {
   sendPOLLEN(toAddress: string, amount: Decimalish): Promise<void>;
 
   /**
-   * Redeem NECT to native currency (e.g. Ether) at face value.
+   * Redeem NECT to native currency (e.g. iBGT) at face value.
    *
    * @param amount - Amount of NECT to be redeemed.
    * @param maxRedemptionRate - Maximum acceptable

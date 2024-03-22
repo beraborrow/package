@@ -92,10 +92,10 @@ export const StakingEditor: React.FC<StakingEditorProps> = ({
           <>
             <StaticRow
               label="Redemption gain"
-              inputId="stake-gain-eth"
+              inputId="stake-gain-ibgt"
               amount={originalStake.collateralGain.prettify(4)}
               color={originalStake.collateralGain.nonZero && "success"}
-              unit="ETH"
+              unit="iBGT"
             />
 
             <StaticRow

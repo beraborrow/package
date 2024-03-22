@@ -91,7 +91,7 @@ const oracleAddresses = {
 const hasOracles = (network: string): network is keyof typeof oracleAddresses =>
   network in oracleAddresses;
 
-const wethAddresses = {
+const ibgtAddresses = {
   mainnet: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
   ropsten: "0xc778417E063141139Fce010982780140Aa0cD5Ab",
   rinkeby: "0xc778417E063141139Fce010982780140Aa0cD5Ab",
@@ -100,7 +100,7 @@ const wethAddresses = {
   sepolia: "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9"
 };
 
-const hasWETH = (network: string): network is keyof typeof wethAddresses => network in wethAddresses;
+const hasWETH = (network: string): network is keyof typeof ibgtAddresses => network in ibgtAddresses;
 
 const config: HardhatUserConfig = {
   networks: {
@@ -149,7 +149,7 @@ declare module "hardhat/types/runtime" {
     deployLiquity: (
       deployer: Signer,
       useRealPriceFeed?: boolean,
-      wethAddress?: string,
+      ibgtAddress?: string,
       overrides?: Overrides
     ) => Promise<_LiquityDeploymentJSON>;
   }
@@ -171,7 +171,7 @@ extendEnvironment(env => {
   env.deployLiquity = async (
     deployer,
     useRealPriceFeed = false,
-    wethAddress = undefined,
+    ibgtAddress = undefined,
     overrides?: Overrides
   ) => {
     const deployment = await deployAndSetupContracts(
@@ -179,7 +179,7 @@ extendEnvironment(env => {
       getContractFactory(env),
       !useRealPriceFeed,
       env.network.name === "dev",
-      wethAddress,
+      ibgtAddress,
       overrides
     );
 
@@ -222,17 +222,17 @@ task("deploy", "Deploys the contracts to the network")
         throw new Error(`PriceFeed not supported on ${env.network.name}`);
       }
 
-      let wethAddress: string | undefined = undefined;
+      let ibgtAddress: string | undefined = undefined;
       if (createUniswapPair) {
         if (!hasWETH(env.network.name)) {
           throw new Error(`WETH not deployed on ${env.network.name}`);
         }
-        wethAddress = wethAddresses[env.network.name];
+        ibgtAddress = ibgtAddresses[env.network.name];
       }
 
       setSilent(false);
 
-      const deployment = await env.deployLiquity(deployer, useRealPriceFeed, wethAddress, overrides);
+      const deployment = await env.deployLiquity(deployer, useRealPriceFeed, ibgtAddress, overrides);
 
       if (useRealPriceFeed) {
         const contracts = _connectToContracts(deployer, deployment);

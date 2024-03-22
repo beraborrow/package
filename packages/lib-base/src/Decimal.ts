@@ -27,7 +27,7 @@ export type Decimalish = Decimal | number | string;
  * Fixed-point decimal bignumber with 18 digits of precision.
  *
  * @remarks
- * Used by BeraBorrow libraries to precisely represent native currency (e.g. Ether), NECT and POLLEN
+ * Used by BeraBorrow libraries to precisely represent native currency (e.g. iBGT), NECT and POLLEN
  * amounts, as well as derived metrics like collateral ratios.
  *
  * @public

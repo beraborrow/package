@@ -7,7 +7,7 @@ services:
     ports:
       - 80:80
     environment:
-      # Ethereum address that shall receive POLLEN rewards
+      # Berachain address that shall receive POLLEN rewards
       - FRONTEND_TAG=0x0000000000000000000000000000000000000000
       # Optional Infura API key, if Infura is to be used as an additional API provider
       - INFURA_API_KEY=

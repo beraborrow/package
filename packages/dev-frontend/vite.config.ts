@@ -46,7 +46,7 @@ export default defineConfig({
       ]
     },
     testTimeout: 10000,
-    // the WalletConnect connector of wagmi throws "EthereumProvider.init is not a function" ???
+    // the WalletConnect connector of wagmi throws "BerachainProvider.init is not a function" ???
     dangerouslyIgnoreUnhandledErrors: true
   },
   server: {

@@ -165,8 +165,8 @@ contract('TroveManager', async accounts => {
     // Confirm system is not in Recovery Mode
     assert.isFalse(await th.checkRecoveryMode(contracts));
 
-    /* close Bob's Trove. Should liquidate his ether and NECT, 
-    leaving Alice’s ether and NECT debt in the ActivePool. */
+    /* close Bob's Trove. Should liquidate his ibgt and NECT, 
+    leaving Alice’s ibgt and NECT debt in the ActivePool. */
     await troveManager.liquidate(bob, { from: owner });
 
     // check ActivePool iBGT and NECT debt 

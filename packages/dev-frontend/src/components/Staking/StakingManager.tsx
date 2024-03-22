@@ -73,7 +73,7 @@ const StakingManagerActionDescription: React.FC<StakingManagerActionDescriptionP
 }) => {
   const stakePOLLEN = change.stakePOLLEN?.prettify().concat(" ", GT);
   const unstakePOLLEN = change.unstakePOLLEN?.prettify().concat(" ", GT);
-  const collateralGain = originalStake.collateralGain.nonZero?.prettify(4).concat(" ETH");
+  const collateralGain = originalStake.collateralGain.nonZero?.prettify(4).concat(" iBGT");
   const nectGain = originalStake.nectGain.nonZero?.prettify().concat(" ", COIN);
 
   if (originalStake.isEmpty && stakePOLLEN) {

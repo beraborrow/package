@@ -147,8 +147,8 @@ def contracts():
 
 @pytest.fixture
 def print_expectations():
-    # ether_price_one_year = price_ether_initial * (1 + drift_ether)**8760
-    # print("Expected ether price at the end of the year: $", ether_price_one_year)
+    # ibgt_price_one_year = price_ibgt_initial * (1 + drift_ibgt)**8760
+    # print("Expected ibgt price at the end of the year: $", ibgt_price_one_year)
     print("Expected POLLEN price at the end of first month: $", price_POLLEN_initial * (1 + drift_POLLEN)**720)
 
     print("\n Open troves")
@@ -173,7 +173,7 @@ def _test_test(contracts):
 > In each period, the following events occur sequentially
 
 
-* exogenous ether price input
+* exogenous ibgt price input
 * trove liquidation
 * return of the previous period's stability pool determined (liquidation gain & airdropped POLLEN gain)
 * trove closure
@@ -192,7 +192,7 @@ def test_run_simulation(add_accounts, contracts, print_expectations):
     NECT_GAS_COMPENSATION = contracts.troveManager.NECT_GAS_COMPENSATION() / 1e18
     MIN_NET_DEBT = contracts.troveManager.MIN_NET_DEBT() / 1e18
 
-    contracts.priceFeedTestnet.setPrice(floatToWei(price_ether[0]), { 'from': accounts[0] })
+    contracts.priceFeedTestnet.setPrice(floatToWei(price_ibgt[0]), { 'from': accounts[0] })
     # whale
     whale_coll = 30000.0
     contracts.borrowerOperations.openTrove(MAX_FEE, Wei(10e24), ZERO_ADDRESS, ZERO_ADDRESS,
@@ -223,23 +223,23 @@ def test_run_simulation(add_accounts, contracts, print_expectations):
         for index in range(1, n_sim):
             print('\n  --> Iteration', index)
             print('  -------------------\n')
-            #exogenous ether price input
-            price_ether_current = price_ether[index]
-            contracts.priceFeedTestnet.setPrice(floatToWei(price_ether_current), { 'from': accounts[0] })
+            #exogenous ibgt price input
+            price_ibgt_current = price_ibgt[index]
+            contracts.priceFeedTestnet.setPrice(floatToWei(price_ibgt_current), { 'from': accounts[0] })
 
             #trove liquidation & return of stability pool
-            result_liquidation = liquidate_troves(accounts, contracts, active_accounts, inactive_accounts, price_ether_current, price_NECT, price_POLLEN_current, data, index)
+            result_liquidation = liquidate_troves(accounts, contracts, active_accounts, inactive_accounts, price_ibgt_current, price_NECT, price_POLLEN_current, data, index)
             total_coll_liquidated = total_coll_liquidated + result_liquidation[0]
             return_stability = result_liquidation[1]
 
             #close troves
-            result_close = close_troves(accounts, contracts, active_accounts, inactive_accounts, price_ether_current, price_NECT, index)
+            result_close = close_troves(accounts, contracts, active_accounts, inactive_accounts, price_ibgt_current, price_NECT, index)
 
             #adjust troves
-            [coll_added_adjust, issuance_NECT_adjust] = adjust_troves(accounts, contracts, active_accounts, inactive_accounts, price_ether_current, index)
+            [coll_added_adjust, issuance_NECT_adjust] = adjust_troves(accounts, contracts, active_accounts, inactive_accounts, price_ibgt_current, index)
 
             #open troves
-            [coll_added_open, issuance_NECT_open] = open_troves(accounts, contracts, active_accounts, inactive_accounts, price_ether_current, price_NECT, index)
+            [coll_added_open, issuance_NECT_open] = open_troves(accounts, contracts, active_accounts, inactive_accounts, price_ibgt_current, price_NECT, index)
             total_coll_added = total_coll_added + coll_added_adjust + coll_added_open
             #active_accounts.sort(key=lambda a : a.get('CR_initial'))
 
@@ -247,7 +247,7 @@ def test_run_simulation(add_accounts, contracts, print_expectations):
             stability_update(accounts, contracts, active_accounts, return_stability, index)
 
             #Calculating Price, Liquidity Pool, and Redemption
-            [price_NECT, redemption_pool, redemption_fee, issuance_NECT_stabilizer] = price_stabilizer(accounts, contracts, active_accounts, inactive_accounts, price_ether_current, price_NECT, index)
+            [price_NECT, redemption_pool, redemption_fee, issuance_NECT_stabilizer] = price_stabilizer(accounts, contracts, active_accounts, inactive_accounts, price_ibgt_current, price_NECT, index)
             total_nect_redempted = total_nect_redempted + redemption_pool
             print('NECT price', price_NECT)
             print('POLLEN price', price_POLLEN_current)

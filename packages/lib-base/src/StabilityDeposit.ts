@@ -21,7 +21,7 @@ export class StabilityDeposit {
   /** Amount of NECT left in the Stability Deposit. */
   readonly currentNECT: Decimal;
 
-  /** Amount of native currency (e.g. Ether) received in exchange for the used-up NECT. */
+  /** Amount of native currency (e.g. iBGT) received in exchange for the used-up NECT. */
   readonly collateralGain: Decimal;
 
   /** Amount of POLLEN rewarded since the last modification of the Stability Deposit. */

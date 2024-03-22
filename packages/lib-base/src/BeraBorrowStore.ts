@@ -22,7 +22,7 @@ export interface BeraBorrowStoreBaseState {
   /** Number of Troves that are currently open. */
   numberOfTroves: number;
 
-  /** User's native currency balance (e.g. Ether). */
+  /** User's native currency balance (e.g. iBGT). */
   accountBalance: Decimal;
 
   /** User's NECT token balance. */
@@ -58,7 +58,7 @@ export interface BeraBorrowStoreBaseState {
    */
   collateralSurplusBalance: Decimal;
 
-  /** Current price of the native currency (e.g. Ether) in USD. */
+  /** Current price of the native currency (e.g. iBGT) in USD. */
   price: Decimal;
 
   /** Total amount of NECT currently deposited in the Stability Pool. */

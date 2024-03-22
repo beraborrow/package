@@ -31,7 +31,7 @@ const selector = (state: BeraBorrowStoreState) => {
 
 const EMPTY_TROVE = new Trove(Decimal.ZERO, Decimal.ZERO);
 const TRANSACTION_ID = "trove-creation";
-// const GAS_ROOM_ETH = Decimal.from(0.1);
+// const GAS_ROOM_iBGT = Decimal.from(0.1);
 
 export const Opening: React.FC = () => {
   // const { dispatchEvent } = useTroveView();
@@ -51,8 +51,8 @@ export const Opening: React.FC = () => {
   const totalDebt = borrowAmount.add(NECT_LIQUIDATION_RESERVE).add(fee);
   const isDirty = !collateral.isZero || !borrowAmount.isZero;
   const trove = isDirty ? new Trove(collateral, totalDebt) : EMPTY_TROVE;
-  // const maxCollateral = accountBalance.gt(GAS_ROOM_ETH)
-  //   ? accountBalance.sub(GAS_ROOM_ETH)
+  // const maxCollateral = accountBalance.gt(GAS_ROOM_iBGT)
+  //   ? accountBalance.sub(GAS_ROOM_iBGT)
   //   : Decimal.ZERO;
   // const collateralMaxedOut = collateral.eq(maxCollateral);
   // const collateralRatio =

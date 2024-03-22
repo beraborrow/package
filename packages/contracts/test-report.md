@@ -21,7 +21,7 @@ $ hardhat test
 
   Contract: Access Control: BeraBorrow functions with the caller restricted to BeraBorrow contract(s)
     BorrowerOperations
-      ✓ moveETHGainToTrove(): reverts when called by an account that is not StabilityPool
+      ✓ moveiBGTGainToTrove(): reverts when called by an account that is not StabilityPool
     TroveManager
       ✓ applyPendingRewards(): reverts when called by an account that is not BorrowerOperations
       ✓ updateRewardSnapshots(): reverts when called by an account that is not BorrowerOperations
@@ -35,19 +35,19 @@ $ hardhat test
       ✓ increaseTroveDebt(): reverts when called by an account that is not BorrowerOperations
       ✓ decreaseTroveDebt(): reverts when called by an account that is not BorrowerOperations
     ActivePool
-      ✓ sendETH(): reverts when called by an account that is not BO nor TroveM nor SP
-      ✓ increaseLUSDDebt(): reverts when called by an account that is not BO nor TroveM
-      ✓ decreaseLUSDDebt(): reverts when called by an account that is not BO nor TroveM nor SP
+      ✓ sendiBGT(): reverts when called by an account that is not BO nor TroveM nor SP
+      ✓ increaseNECTDebt(): reverts when called by an account that is not BO nor TroveM
+      ✓ decreaseNECTDebt(): reverts when called by an account that is not BO nor TroveM nor SP
       ✓ fallback(): reverts when called by an account that is not Borrower Operations nor Default Pool
     DefaultPool
-      ✓ sendETHToActivePool(): reverts when called by an account that is not TroveManager
-      ✓ increaseLUSDDebt(): reverts when called by an account that is not TroveManager
-      ✓ decreaseLUSD(): reverts when called by an account that is not TroveManager
+      ✓ sendiBGTToActivePool(): reverts when called by an account that is not TroveManager
+      ✓ increaseNECTDebt(): reverts when called by an account that is not TroveManager
+      ✓ decreaseNECT(): reverts when called by an account that is not TroveManager
       ✓ fallback(): reverts when called by an account that is not the Active Pool
     StabilityPool
       ✓ offset(): reverts when called by an account that is not TroveManager
       ✓ fallback(): reverts when called by an account that is not the Active Pool
-    LUSDToken
+    NECTToken
       ✓ mint(): reverts when called by an account that is not BorrowerOperations
       ✓ burn(): reverts when called by an account that is not BO nor TroveM nor SP
       ✓ sendToPool(): reverts when called by an account that is not StabilityPool
@@ -59,7 +59,7 @@ $ hardhat test
     LockupContract
       ✓ withdrawPOLLEN(): reverts when caller is not beneficiary (68ms)
     POLLENStaking
-      ✓ increaseF_LUSD(): reverts when caller is not TroveManager
+      ✓ increaseF_NECT(): reverts when caller is not TroveManager
     POLLENToken
       ✓ sendToPOLLENStaking(): reverts when caller is not the POLLENSstaking (49ms)
     CommunityIssuance
@@ -69,60 +69,60 @@ $ hardhat test
   Contract: BorrowerOperations
     Without proxy
       ✓ addColl(): reverts when top-up would leave trove with ICR < MCR (278ms)
-      ✓ addColl(): Increases the activePool ETH and raw ether balance by correct amount (203ms)
+      ✓ addColl(): Increases the activePool iBGT and raw ibgt balance by correct amount (203ms)
       ✓ addColl(), active Trove: adds the correct collateral amount to the Trove (194ms)
       ✓ addColl(), active Trove: Trove is in sortedList before and after (213ms)
       ✓ addColl(), active Trove: updates the stake and updates the total stakes (225ms)
-      ✓ addColl(), active Trove: applies pending rewards and updates user's L_ETH, L_LUSDDebt snapshots (736ms)
+      ✓ addColl(), active Trove: applies pending rewards and updates user's L_iBGT, L_NECTDebt snapshots (736ms)
       ✓ addColl(), reverts if trove is non-existent or closed (831ms)
       ✓ addColl(): can add collateral in Recovery Mode (252ms)
       ✓ withdrawColl(): reverts when withdrawal would leave trove with ICR < MCR (349ms)
       ✓ withdrawColl(): reverts when calling address does not have active trove (328ms)
       ✓ withdrawColl(): reverts when system is in Recovery Mode (420ms)
-      ✓ withdrawColl(): reverts when requested ETH withdrawal is > the trove's collateral (508ms)
+      ✓ withdrawColl(): reverts when requested iBGT withdrawal is > the trove's collateral (508ms)
       ✓ withdrawColl(): reverts when withdrawal would bring the user's ICR < MCR (313ms)
       ✓ withdrawColl(): reverts if system is in Recovery Mode (323ms)
       ✓ withdrawColl(): doesn’t allow a user to completely withdraw all collateral from their Trove (due to gas compensation) (352ms)
       ✓ withdrawColl(): leaves the Trove active when the user withdraws less than all the collateral (263ms)
       ✓ withdrawColl(): reduces the Trove's collateral by the correct amount (316ms)
-      ✓ withdrawColl(): reduces ActivePool ETH and raw ether by correct amount (291ms)
+      ✓ withdrawColl(): reduces ActivePool iBGT and raw ibgt by correct amount (291ms)
       ✓ withdrawColl(): updates the stake and updates the total stakes (342ms)
-      ✓ withdrawColl(): sends the correct amount of ETH to the user (289ms)
-      ✓ withdrawColl(): applies pending rewards and updates user's L_ETH, L_LUSDDebt snapshots (1205ms)
-      ✓ withdrawLUSD(): reverts when withdrawal would leave trove with ICR < MCR (516ms)
-      ✓ withdrawLUSD(): decays a non-zero base rate (1192ms)
-      ✓ withdrawLUSD(): reverts if max fee > 100% (668ms)
-      ✓ withdrawLUSD(): reverts if max fee < 0.5% in Normal mode (639ms)
-      ✓ withdrawLUSD(): reverts if fee exceeds max fee percentage (938ms)
-      ✓ withdrawLUSD(): succeeds when fee is less than max fee percentage (1272ms)
-      ✓ withdrawLUSD(): doesn't change base rate if it is already zero (1044ms)
-      ✓ withdrawLUSD(): lastFeeOpTime doesn't update if less time than decay interval has passed since the last fee operation (899ms)
-      ✓ withdrawLUSD(): borrower can't grief the baseRate and stop it decaying by issuing debt at higher frequency than the decay granularity (852ms)
-      ✓ withdrawLUSD(): borrowing at non-zero base rate sends LUSD fee to POLLEN staking contract (1004ms)
-      ✓ withdrawLUSD(): borrowing at non-zero base records the (drawn debt + fee) on the Trove struct (923ms)
-      ✓ withdrawLUSD(): Borrowing at non-zero base rate increases the POLLEN staking contract LUSD fees-per-unit-staked (986ms)
-      ✓ withdrawLUSD(): Borrowing at non-zero base rate sends requested amount to the user (1562ms)
-      ✓ withdrawLUSD(): Borrowing at zero base rate changes LUSD fees-per-unit-staked (839ms)
-      ✓ withdrawLUSD(): Borrowing at zero base rate sends debt request to user (790ms)
-      ✓ withdrawLUSD(): reverts when calling address does not have active trove (370ms)
-      ✓ withdrawLUSD(): reverts when requested withdrawal amount is zero LUSD (459ms)
-      ✓ withdrawLUSD(): reverts when system is in Recovery Mode (649ms)
-      ✓ withdrawLUSD(): reverts when withdrawal would bring the trove's ICR < MCR (347ms)
-      ✓ withdrawLUSD(): reverts when a withdrawal would cause the TCR of the system to fall below the CCR (439ms)
-      ✓ withdrawLUSD(): reverts if system is in Recovery Mode (312ms)
-      ✓ withdrawLUSD(): increases the Trove's LUSD debt by the correct amount (208ms)
-      ✓ withdrawLUSD(): increases LUSD debt in ActivePool by correct amount (230ms)
-      ✓ withdrawLUSD(): increases user LUSDToken balance by correct amount (243ms)
-      ✓ repayLUSD(): reverts when repayment would leave trove with ICR < MCR (392ms)
-      ✓ repayLUSD(): Succeeds when it would leave trove with net debt >= minimum net debt (435ms)
-      ✓ repayLUSD(): reverts when it would leave trove with net debt < minimum net debt (256ms)
-      ✓ repayLUSD(): reverts when calling address does not have active trove (431ms)
-      ✓ repayLUSD(): reverts when attempted repayment is > the debt of the trove (418ms)
-      ✓ repayLUSD(): reduces the Trove's LUSD debt by the correct amount (403ms)
-      ✓ repayLUSD(): decreases LUSD debt in ActivePool by correct amount (406ms)
-      ✓ repayLUSD(): decreases user LUSDToken balance by correct amount (404ms)
-      ✓ repayLUSD(): can repay debt in Recovery Mode (557ms)
-      ✓ repayLUSD(): Reverts if borrower has insufficient LUSD balance to cover his debt repayment (1122ms)
+      ✓ withdrawColl(): sends the correct amount of iBGT to the user (289ms)
+      ✓ withdrawColl(): applies pending rewards and updates user's L_iBGT, L_NECTDebt snapshots (1205ms)
+      ✓ withdrawNECT(): reverts when withdrawal would leave trove with ICR < MCR (516ms)
+      ✓ withdrawNECT(): decays a non-zero base rate (1192ms)
+      ✓ withdrawNECT(): reverts if max fee > 100% (668ms)
+      ✓ withdrawNECT(): reverts if max fee < 0.5% in Normal mode (639ms)
+      ✓ withdrawNECT(): reverts if fee exceeds max fee percentage (938ms)
+      ✓ withdrawNECT(): succeeds when fee is less than max fee percentage (1272ms)
+      ✓ withdrawNECT(): doesn't change base rate if it is already zero (1044ms)
+      ✓ withdrawNECT(): lastFeeOpTime doesn't update if less time than decay interval has passed since the last fee operation (899ms)
+      ✓ withdrawNECT(): borrower can't grief the baseRate and stop it decaying by issuing debt at higher frequency than the decay granularity (852ms)
+      ✓ withdrawNECT(): borrowing at non-zero base rate sends NECT fee to POLLEN staking contract (1004ms)
+      ✓ withdrawNECT(): borrowing at non-zero base records the (drawn debt + fee) on the Trove struct (923ms)
+      ✓ withdrawNECT(): Borrowing at non-zero base rate increases the POLLEN staking contract NECT fees-per-unit-staked (986ms)
+      ✓ withdrawNECT(): Borrowing at non-zero base rate sends requested amount to the user (1562ms)
+      ✓ withdrawNECT(): Borrowing at zero base rate changes NECT fees-per-unit-staked (839ms)
+      ✓ withdrawNECT(): Borrowing at zero base rate sends debt request to user (790ms)
+      ✓ withdrawNECT(): reverts when calling address does not have active trove (370ms)
+      ✓ withdrawNECT(): reverts when requested withdrawal amount is zero NECT (459ms)
+      ✓ withdrawNECT(): reverts when system is in Recovery Mode (649ms)
+      ✓ withdrawNECT(): reverts when withdrawal would bring the trove's ICR < MCR (347ms)
+      ✓ withdrawNECT(): reverts when a withdrawal would cause the TCR of the system to fall below the CCR (439ms)
+      ✓ withdrawNECT(): reverts if system is in Recovery Mode (312ms)
+      ✓ withdrawNECT(): increases the Trove's NECT debt by the correct amount (208ms)
+      ✓ withdrawNECT(): increases NECT debt in ActivePool by correct amount (230ms)
+      ✓ withdrawNECT(): increases user NECTToken balance by correct amount (243ms)
+      ✓ repayNECT(): reverts when repayment would leave trove with ICR < MCR (392ms)
+      ✓ repayNECT(): Succeeds when it would leave trove with net debt >= minimum net debt (435ms)
+      ✓ repayNECT(): reverts when it would leave trove with net debt < minimum net debt (256ms)
+      ✓ repayNECT(): reverts when calling address does not have active trove (431ms)
+      ✓ repayNECT(): reverts when attempted repayment is > the debt of the trove (418ms)
+      ✓ repayNECT(): reduces the Trove's NECT debt by the correct amount (403ms)
+      ✓ repayNECT(): decreases NECT debt in ActivePool by correct amount (406ms)
+      ✓ repayNECT(): decreases user NECTToken balance by correct amount (404ms)
+      ✓ repayNECT(): can repay debt in Recovery Mode (557ms)
+      ✓ repayNECT(): Reverts if borrower has insufficient NECT balance to cover his debt repayment (1122ms)
       ✓ adjustTrove(): reverts when adjustment would leave trove with ICR < MCR (572ms)
       ✓ adjustTrove(): reverts if max fee < 0.5% in Normal mode (313ms)
       ✓ adjustTrove(): allows max fee < 0.5% in Recovery mode (577ms)
@@ -131,13 +131,13 @@ $ hardhat test
       ✓ adjustTrove(): doesn't change base rate if it is already zero (545ms)
       ✓ adjustTrove(): lastFeeOpTime doesn't update if less time than decay interval has passed since the last fee operation (819ms)
       ✓ adjustTrove(): borrower can't grief the baseRate and stop it decaying by issuing debt at higher frequency than the decay granularity (866ms)
-      ✓ adjustTrove(): borrowing at non-zero base rate sends LUSD fee to POLLEN staking contract (889ms)
+      ✓ adjustTrove(): borrowing at non-zero base rate sends NECT fee to POLLEN staking contract (889ms)
       ✓ adjustTrove(): borrowing at non-zero base records the (drawn debt + fee) on the Trove struct (1013ms)
-      ✓ adjustTrove(): Borrowing at non-zero base rate increases the POLLEN staking contract LUSD fees-per-unit-staked (837ms)
+      ✓ adjustTrove(): Borrowing at non-zero base rate increases the POLLEN staking contract NECT fees-per-unit-staked (837ms)
       ✓ adjustTrove(): Borrowing at non-zero base rate sends requested amount to the user (895ms)
-      ✓ adjustTrove(): Borrowing at zero base rate changes LUSD balance of POLLEN staking contract (783ms)
-      ✓ adjustTrove(): Borrowing at zero base rate changes POLLEN staking contract LUSD fees-per-unit-staked (881ms)
-      ✓ adjustTrove(): Borrowing at zero base rate sends total requested LUSD to the user (783ms)
+      ✓ adjustTrove(): Borrowing at zero base rate changes NECT balance of POLLEN staking contract (783ms)
+      ✓ adjustTrove(): Borrowing at zero base rate changes POLLEN staking contract NECT fees-per-unit-staked (881ms)
+      ✓ adjustTrove(): Borrowing at zero base rate sends total requested NECT to the user (783ms)
       ✓ adjustTrove(): reverts when calling address has no active trove (416ms)
       ✓ adjustTrove(): reverts in Recovery Mode when the adjustment would reduce the TCR (654ms)
       ✓ adjustTrove(): collateral withdrawal reverts in Recovery Mode (370ms)
@@ -147,8 +147,8 @@ $ hardhat test
       ✓ adjustTrove(): A trove with ICR > CCR in Recovery Mode can improve their ICR (524ms)
       ✓ adjustTrove(): debt increase in Recovery Mode charges no fee (543ms)
       ✓ adjustTrove(): reverts when change would cause the TCR of the system to fall below the CCR (587ms)
-      ✓ adjustTrove(): reverts when LUSD repaid is > debt of the trove (451ms)
-      ✓ adjustTrove(): reverts when attempted ETH withdrawal is >= the trove's collateral (683ms)
+      ✓ adjustTrove(): reverts when NECT repaid is > debt of the trove (451ms)
+      ✓ adjustTrove(): reverts when attempted iBGT withdrawal is >= the trove's collateral (683ms)
       ✓ adjustTrove(): reverts when change would cause the ICR of the trove to fall below the MCR (521ms)
       ✓ adjustTrove(): With 0 coll change, doesnt change borrower's coll or ActivePool coll (289ms)
       ✓ adjustTrove(): With 0 debt change, doesnt change borrower's debt or ActivePool debt (354ms)
@@ -158,18 +158,18 @@ $ hardhat test
       ✓ adjustTrove(): updates borrower's debt and coll with coll decrease, debt increase (346ms)
       ✓ adjustTrove(): updates borrower's stake and totalStakes with a coll increase (385ms)
       ✓ adjustTrove():  updates borrower's stake and totalStakes with a coll decrease (553ms)
-      ✓ adjustTrove(): changes LUSDToken balance by the requested decrease (529ms)
-      ✓ adjustTrove(): changes LUSDToken balance by the requested increase (577ms)
-      ✓ adjustTrove(): Changes the activePool ETH and raw ether balance by the requested decrease (1371ms)
-      ✓ adjustTrove(): Changes the activePool ETH and raw ether balance by the amount of ETH sent (548ms)
-      ✓ adjustTrove(): Changes the LUSD debt in ActivePool by requested decrease (541ms)
-      ✓ adjustTrove(): Changes the LUSD debt in ActivePool by requested increase (397ms)
+      ✓ adjustTrove(): changes NECTToken balance by the requested decrease (529ms)
+      ✓ adjustTrove(): changes NECTToken balance by the requested increase (577ms)
+      ✓ adjustTrove(): Changes the activePool iBGT and raw ibgt balance by the requested decrease (1371ms)
+      ✓ adjustTrove(): Changes the activePool iBGT and raw ibgt balance by the amount of iBGT sent (548ms)
+      ✓ adjustTrove(): Changes the NECT debt in ActivePool by requested decrease (541ms)
+      ✓ adjustTrove(): Changes the NECT debt in ActivePool by requested increase (397ms)
       ✓ adjustTrove(): new coll = 0 and new debt = 0 is not allowed, as gas compensation still counts toward ICR (385ms)
       ✓ adjustTrove(): Reverts if requested debt increase and amount is zero (292ms)
-      ✓ adjustTrove(): Reverts if requested coll withdrawal and ether is sent (288ms)
+      ✓ adjustTrove(): Reverts if requested coll withdrawal and ibgt is sent (288ms)
       ✓ adjustTrove(): Reverts if it’s zero adjustment (137ms)
       ✓ adjustTrove(): Reverts if requested coll withdrawal is greater than trove's collateral (402ms)
-      ✓ adjustTrove(): Reverts if borrower has insufficient LUSD balance to cover his debt repayment (496ms)
+      ✓ adjustTrove(): Reverts if borrower has insufficient NECT balance to cover his debt repayment (496ms)
       ✓ Internal _adjustTrove(): reverts when op is a withdrawal and _borrower param is not the msg.sender (475ms)
       ✓ closeTrove(): reverts when it would lower the TCR below CCR (471ms)
       ✓ closeTrove(): reverts when calling address does not have active trove (221ms)
@@ -180,13 +180,13 @@ $ hardhat test
       ✓ closeTrove(): sets Trove's stake to zero (504ms)
       ✓ closeTrove(): zero's the troves reward snapshots (1002ms)
       ✓ closeTrove(): sets trove's status to closed and removes it from sorted troves list (526ms)
-      ✓ closeTrove(): reduces ActivePool ETH and raw ether by correct amount (466ms)
+      ✓ closeTrove(): reduces ActivePool iBGT and raw ibgt by correct amount (466ms)
       ✓ closeTrove(): reduces ActivePool debt by correct amount (522ms)
       ✓ closeTrove(): updates the the total stakes (790ms)
-      ✓ closeTrove(): sends the correct amount of ETH to the user (390ms)
-      ✓ closeTrove(): subtracts the debt of the closed Trove from the Borrower's LUSDToken balance (405ms)
+      ✓ closeTrove(): sends the correct amount of iBGT to the user (390ms)
+      ✓ closeTrove(): subtracts the debt of the closed Trove from the Borrower's NECTToken balance (405ms)
       ✓ closeTrove(): applies pending rewards (1267ms)
-      ✓ closeTrove(): reverts if borrower has insufficient LUSD balance to repay his entire debt (347ms)
+      ✓ closeTrove(): reverts if borrower has insufficient NECT balance to repay his entire debt (347ms)
       ✓ openTrove(): emits a TroveUpdated event with the correct collateral and debt (820ms)
       ✓ openTrove(): Opens a trove with net debt >= minimum net debt (235ms)
       ✓ openTrove(): reverts if net debt < minimum net debt (294ms)
@@ -199,11 +199,11 @@ $ hardhat test
       ✓ openTrove(): reverts if fee exceeds max fee percentage (747ms)
       ✓ openTrove(): succeeds when fee is less than max fee percentage (930ms)
       ✓ openTrove(): borrower can't grief the baseRate and stop it decaying by issuing debt at higher frequency than the decay granularity (965ms)
-      ✓ openTrove(): borrowing at non-zero base rate sends LUSD fee to POLLEN staking contract (923ms)
+      ✓ openTrove(): borrowing at non-zero base rate sends NECT fee to POLLEN staking contract (923ms)
       ✓ openTrove(): borrowing at non-zero base records the (drawn debt + fee  + liq. reserve) on the Trove struct (865ms)
-      ✓ openTrove(): Borrowing at non-zero base rate increases the POLLEN staking contract LUSD fees-per-unit-staked (794ms)
+      ✓ openTrove(): Borrowing at non-zero base rate increases the POLLEN staking contract NECT fees-per-unit-staked (794ms)
       ✓ openTrove(): Borrowing at non-zero base rate sends requested amount to the user (832ms)
-      ✓ openTrove(): Borrowing at zero base rate changes the POLLEN staking contract LUSD fees-per-unit-staked (602ms)
+      ✓ openTrove(): Borrowing at zero base rate changes the POLLEN staking contract NECT fees-per-unit-staked (602ms)
       ✓ openTrove(): Borrowing at zero base rate charges minimum fee (316ms)
       ✓ openTrove(): reverts when system is in Recovery Mode and ICR < CCR (320ms)
       ✓ openTrove(): reverts when trove ICR < MCR (536ms)
@@ -215,14 +215,14 @@ $ hardhat test
       ✓ openTrove(): adds Trove owner to TroveOwners array (136ms)
       ✓ openTrove(): creates a stake and adds it to total stakes (281ms)
       ✓ openTrove(): inserts Trove to Sorted Troves list (370ms)
-      ✓ openTrove(): Increases the activePool ETH and raw ether balance by correct amount (294ms)
-      ✓ openTrove(): records up-to-date initial snapshots of L_ETH and L_LUSDDebt (639ms)
+      ✓ openTrove(): Increases the activePool iBGT and raw ibgt balance by correct amount (294ms)
+      ✓ openTrove(): records up-to-date initial snapshots of L_iBGT and L_NECTDebt (639ms)
       ✓ openTrove(): allows a user to open a Trove, then close it, then re-open it (687ms)
-      ✓ openTrove(): increases the Trove's LUSD debt by the correct amount (129ms)
-      ✓ openTrove(): increases LUSD debt in ActivePool by the debt of the trove (162ms)
-      ✓ openTrove(): increases user LUSDToken balance by correct amount (85ms)
+      ✓ openTrove(): increases the Trove's NECT debt by the correct amount (129ms)
+      ✓ openTrove(): increases NECT debt in ActivePool by the debt of the trove (162ms)
+      ✓ openTrove(): increases user NECTToken balance by correct amount (85ms)
       ✓ getCompositeDebt(): returns debt + gas comp
-      ✓ closeTrove(): fails if owner cannot receive ETH (440ms)
+      ✓ closeTrove(): fails if owner cannot receive iBGT (440ms)
       getNewICRFromTroveChange() returns the correct ICR
         ✓ collChange = 0, debtChange = 0
         ✓ collChange = 0, debtChange is positive
@@ -245,16 +245,16 @@ $ hardhat test
         ✓ collChange is negative, debtChange is positive (381ms)
 
   Contract: CollSurplusPool
-    ✓ CollSurplusPool::getETH(): Returns the ETH balance of the CollSurplusPool after redemption (2203ms)
+    ✓ CollSurplusPool::getiBGT(): Returns the iBGT balance of the CollSurplusPool after redemption (2203ms)
     ✓ CollSurplusPool: claimColl(): Reverts if caller is not Borrower Operations
     ✓ CollSurplusPool: claimColl(): Reverts if nothing to claim
-    ✓ CollSurplusPool: claimColl(): Reverts if owner cannot receive ETH surplus (723ms)
-    ✓ CollSurplusPool: reverts trying to send ETH to it
+    ✓ CollSurplusPool: claimColl(): Reverts if owner cannot receive iBGT surplus (723ms)
+    ✓ CollSurplusPool: reverts trying to send iBGT to it
     ✓ CollSurplusPool: accountSurplus: reverts if caller is not Trove Manager
 
   Contract: Deployment script - Sets correct contract addresses dependencies after deployment
     ✓ Sets the correct PriceFeed address in TroveManager
-    ✓ Sets the correct LUSDToken address in TroveManager
+    ✓ Sets the correct NECTToken address in TroveManager
     ✓ Sets the correct SortedTroves address in TroveManager
     ✓ Sets the correct BorrowerOperations address in TroveManager
     ✓ Sets the correct ActivePool address in TroveManager
@@ -267,7 +267,7 @@ $ hardhat test
     ✓ Sets the correct TroveManager address in ActivePool
     ✓ Sets the correct ActivePool address in StabilityPool
     ✓ Sets the correct BorrowerOperations address in StabilityPool
-    ✓ Sets the correct LUSDToken address in StabilityPool
+    ✓ Sets the correct NECTToken address in StabilityPool
     ✓ Sets the correct TroveManager address in StabilityPool
     ✓ Sets the correct TroveManager address in DefaultPool
     ✓ Sets the correct ActivePool address in DefaultPool
@@ -292,7 +292,7 @@ $ hardhat test
     ✓ Sets the correct StabilityPool address in CommunityIssuance
 
   Contract: DefaultPool
-    ✓ sendETHToActivePool(): fails if receiver cannot receive ETH
+    ✓ sendiBGTToActivePool(): fails if receiver cannot receive iBGT
 
   Contract: Fee arithmetic tests
     ✓ minutesPassedSinceLastFeeOp(): returns minutes passed for no time increase (197ms)
@@ -545,21 +545,21 @@ issuance fraction after: 949066037374286
 
   Contract: POLLENStaking revenue share tests
     ✓ stake(): reverts if amount is zero (74ms)
-    ✓ ETH fee per POLLEN staked increases when a redemption fee is triggered and totalStakes > 0 (1562ms)
-    ✓ ETH fee per POLLEN staked doesn't change when a redemption fee is triggered and totalStakes == 0 (3540ms)
-    ✓ LUSD fee per POLLEN staked increases when a redemption fee is triggered and totalStakes > 0 (1757ms)
-    ✓ LUSD fee per POLLEN staked doesn't change when a redemption fee is triggered and totalStakes == 0 (1705ms)
-    ✓ POLLEN Staking: A single staker earns all ETH and POLLEN fees that occur (2143ms)
-    ✓ stake(): Top-up sends out all accumulated ETH and LUSD gains to the staker (2138ms)
-    ✓ getPendingETHGain(): Returns the staker's correct pending ETH gain (1856ms)
-    ✓ getPendingLUSDGain(): Returns the staker's correct pending LUSD gain (1965ms)
-    ✓ POLLEN Staking: Multiple stakers earn the correct share of all ETH and POLLEN fees, based on their stake size (3133ms)
-    ✓ unstake(): reverts if caller has ETH gains and can't receive ETH (1149ms)
-    ✓ receive(): reverts when it receives ETH from an address that is not the Active Pool
+    ✓ iBGT fee per POLLEN staked increases when a redemption fee is triggered and totalStakes > 0 (1562ms)
+    ✓ iBGT fee per POLLEN staked doesn't change when a redemption fee is triggered and totalStakes == 0 (3540ms)
+    ✓ NECT fee per POLLEN staked increases when a redemption fee is triggered and totalStakes > 0 (1757ms)
+    ✓ NECT fee per POLLEN staked doesn't change when a redemption fee is triggered and totalStakes == 0 (1705ms)
+    ✓ POLLEN Staking: A single staker earns all iBGT and POLLEN fees that occur (2143ms)
+    ✓ stake(): Top-up sends out all accumulated iBGT and NECT gains to the staker (2138ms)
+    ✓ getPendingiBGTGain(): Returns the staker's correct pending iBGT gain (1856ms)
+    ✓ getPendingNECTGain(): Returns the staker's correct pending NECT gain (1965ms)
+    ✓ POLLEN Staking: Multiple stakers earn the correct share of all iBGT and POLLEN fees, based on their stake size (3133ms)
+    ✓ unstake(): reverts if caller has iBGT gains and can't receive iBGT (1149ms)
+    ✓ receive(): reverts when it receives iBGT from an address that is not the Active Pool
     ✓ unstake(): reverts if user has no stake
     ✓ Test requireCallerIsTroveManager
 
-  Contract: LUSDToken
+  Contract: NECTToken
     Basic token functions, without Proxy
       ✓ balanceOf(): gets the balance of the account
       ✓ totalSupply(): gets the total supply
@@ -627,22 +627,22 @@ issuance fraction after: 949066037374286
       ✓ setPOLLENAddress(): reverts when called by non-owner, with wrong address, or twice (216ms)
 
   Contract: StabilityPool
-    ✓ getETH(): gets the recorded ETH balance
-    ✓ getTotalLUSDDeposits(): gets the recorded LUSD balance
+    ✓ getiBGT(): gets the recorded iBGT balance
+    ✓ getTotalNECTDeposits(): gets the recorded NECT balance
 
   Contract: ActivePool
-    ✓ getETH(): gets the recorded ETH balance
-    ✓ getLUSDDebt(): gets the recorded LUSD balance
-    ✓ increaseLUSD(): increases the recorded LUSD balance by the correct amount
-    ✓ decreaseLUSD(): decreases the recorded LUSD balance by the correct amount
-    ✓ sendETH(): decreases the recorded ETH balance by the correct amount
+    ✓ getiBGT(): gets the recorded iBGT balance
+    ✓ getNECTDebt(): gets the recorded NECT balance
+    ✓ increaseNECT(): increases the recorded NECT balance by the correct amount
+    ✓ decreaseNECT(): decreases the recorded NECT balance by the correct amount
+    ✓ sendiBGT(): decreases the recorded iBGT balance by the correct amount
 
   Contract: DefaultPool
-    ✓ getETH(): gets the recorded LUSD balance
-    ✓ getLUSDDebt(): gets the recorded LUSD balance
-    ✓ increaseLUSD(): increases the recorded LUSD balance by the correct amount
-    ✓ decreaseLUSD(): decreases the recorded LUSD balance by the correct amount (57ms)
-    ✓ sendETHToActivePool(): decreases the recorded ETH balance by the correct amount (50ms)
+    ✓ getiBGT(): gets the recorded NECT balance
+    ✓ getNECTDebt(): gets the recorded NECT balance
+    ✓ increaseNECT(): increases the recorded NECT balance by the correct amount
+    ✓ decreaseNECT(): decreases the recorded NECT balance by the correct amount (57ms)
+    ✓ sendiBGTToActivePool(): decreases the recorded iBGT balance by the correct amount (50ms)
 
   Contract: PriceFeed
     ✓ C1 Chainlink working: fetchPrice should return the correct price, taking into account the number of decimal digits on the aggregator (286ms)
@@ -763,8 +763,8 @@ issuance fraction after: 949066037374286
       ✓ setAddresses should fail after address has already been set (42ms)
 
   Contract: BorrowerWrappers
-    ✓ proxy owner can recover ETH (85ms)
-    ✓ non proxy owner cannot recover ETH
+    ✓ proxy owner can recover iBGT (85ms)
+    ✓ non proxy owner cannot recover iBGT
     ✓ claimCollateralAndOpenTrove(): reverts if nothing to claim (388ms)
     ✓ claimCollateralAndOpenTrove(): without sending any value (1227ms)
     ✓ claimCollateralAndOpenTrove(): sending value in the transaction (3969ms)
@@ -772,9 +772,9 @@ issuance fraction after: 949066037374286
     ✓ claimSPRewardsAndRecycle(): (1272ms)
     ✓ claimStakingGainsAndRecycle(): only owner can call it (1384ms)
     ✓ claimStakingGainsAndRecycle(): reverts if user has no trove (1253ms)
-    ✓ claimStakingGainsAndRecycle(): with only ETH gain (1595ms)
-    ✓ claimStakingGainsAndRecycle(): with only LUSD gain (821ms)
-    ✓ claimStakingGainsAndRecycle(): with both ETH and LUSD gains (1593ms)
+    ✓ claimStakingGainsAndRecycle(): with only iBGT gain (1595ms)
+    ✓ claimStakingGainsAndRecycle(): with only NECT gain (821ms)
+    ✓ claimStakingGainsAndRecycle(): with both iBGT and NECT gains (1593ms)
 
   Contract: SortedTroves
     SortedTroves
@@ -812,97 +812,97 @@ totalPOLLENIssued_2: 30370113195977152000000
       ✓ withdrawFromSP(): Depositors with varying initial deposit withdraw correct POLLEN gain. No liquidations. No front end. (1925ms)
       ✓ withdrawFromSP(): Depositor withdraws correct POLLEN gain after serial pool-emptying liquidations. No front-ends. (5752ms)
       ✓ POLLEN issuance for a given period is not obtainable if the SP was empty during the period (551ms)
-      ✓ withdrawFromSP(): Several deposits of 100 LUSD span one scale factor change. Depositors withdraw correct POLLEN gains (6075ms)
+      ✓ withdrawFromSP(): Several deposits of 100 NECT span one scale factor change. Depositors withdraw correct POLLEN gains (6075ms)
       ✓ withdrawFromSP(): Depositors with equal initial deposit withdraw correct POLLEN gain. No liquidations. Front ends and kickback rates. (1660ms)
       ✓ withdrawFromSP(): Depositors with varying initial deposit withdraw correct POLLEN gain. Front ends and kickback rates (2813ms)
-      ✓ withdrawFromSP(): Several deposits of 10k LUSD span one scale factor change. Depositors withdraw correct POLLEN gains (4788ms)
+      ✓ withdrawFromSP(): Several deposits of 10k NECT span one scale factor change. Depositors withdraw correct POLLEN gains (4788ms)
 
   Contract: Pool Manager: Sum-Product rounding errors
-    - Rounding errors: 100 deposits of 100LUSD into SP, then 200 liquidations of 49LUSD
+    - Rounding errors: 100 deposits of 100NECT into SP, then 200 liquidations of 49NECT
 
   Contract: StabilityPool - Withdrawal of stability deposit - Reward calculations
     Stability Pool Withdrawal
-      ✓ withdrawFromSP(): Depositors with equal initial deposit withdraw correct compounded deposit and ETH Gain after one liquidation (757ms)
-      ✓ withdrawFromSP(): Depositors with equal initial deposit withdraw correct compounded deposit and ETH Gain after two identical liquidations (868ms)
-      ✓ withdrawFromSP():  Depositors with equal initial deposit withdraw correct compounded deposit and ETH Gain after three identical liquidations (1051ms)
-      ✓ withdrawFromSP(): Depositors with equal initial deposit withdraw correct compounded deposit and ETH Gain after two liquidations of increasing LUSD (965ms)
-      ✓ withdrawFromSP(): Depositors with equal initial deposit withdraw correct compounded deposit and ETH Gain after three liquidations of increasing LUSD (1152ms)
-      ✓ withdrawFromSP(): Depositors with varying deposits withdraw correct compounded deposit and ETH Gain after two identical liquidations (934ms)
-      ✓ withdrawFromSP(): Depositors with varying deposits withdraw correct compounded deposit and ETH Gain after three identical liquidations (1130ms)
-      ✓ withdrawFromSP(): Depositors with varying deposits withdraw correct compounded deposit and ETH Gain after three varying liquidations (1193ms)
+      ✓ withdrawFromSP(): Depositors with equal initial deposit withdraw correct compounded deposit and iBGT Gain after one liquidation (757ms)
+      ✓ withdrawFromSP(): Depositors with equal initial deposit withdraw correct compounded deposit and iBGT Gain after two identical liquidations (868ms)
+      ✓ withdrawFromSP():  Depositors with equal initial deposit withdraw correct compounded deposit and iBGT Gain after three identical liquidations (1051ms)
+      ✓ withdrawFromSP(): Depositors with equal initial deposit withdraw correct compounded deposit and iBGT Gain after two liquidations of increasing NECT (965ms)
+      ✓ withdrawFromSP(): Depositors with equal initial deposit withdraw correct compounded deposit and iBGT Gain after three liquidations of increasing NECT (1152ms)
+      ✓ withdrawFromSP(): Depositors with varying deposits withdraw correct compounded deposit and iBGT Gain after two identical liquidations (934ms)
+      ✓ withdrawFromSP(): Depositors with varying deposits withdraw correct compounded deposit and iBGT Gain after three identical liquidations (1130ms)
+      ✓ withdrawFromSP(): Depositors with varying deposits withdraw correct compounded deposit and iBGT Gain after three varying liquidations (1193ms)
 
-      ✓ withdrawFromSP(): A, B, C Deposit -> 2 liquidations -> D deposits -> 1 liquidation. All deposits and liquidations = 100 LUSD.  A, B, C, D withdraw correct LUSD deposit and ETH Gain (1512ms)
-      ✓ withdrawFromSP(): A, B, C Deposit -> 2 liquidations -> D deposits -> 2 liquidations. All deposits and liquidations = 100 LUSD.  A, B, C, D withdraw correct LUSD deposit and ETH Gain (1637ms)
-      ✓ withdrawFromSP(): A, B, C Deposit -> 2 liquidations -> D deposits -> 2 liquidations. Various deposit and liquidation vals.  A, B, C, D withdraw correct LUSD deposit and ETH Gain (1645ms)
-      ✓ withdrawFromSP(): A, B, C, D deposit -> 2 liquidations -> D withdraws -> 2 liquidations. All deposits and liquidations = 100 LUSD.  A, B, C, D withdraw correct LUSD deposit and ETH Gain (1704ms)
-      ✓ withdrawFromSP(): A, B, C, D deposit -> 2 liquidations -> D withdraws -> 2 liquidations. Various deposit and liquidation vals. A, B, C, D withdraw correct LUSD deposit and ETH Gain (1753ms)
-      ✓ withdrawFromSP(): A, B, D deposit -> 2 liquidations -> C makes deposit -> 1 liquidation -> D withdraws -> 1 liquidation. All deposits: 100 LUSD. Liquidations: 100,100,100,50.  A, B, C, D withdraw correct LUSD deposit and ETH Gain (1537ms)
+      ✓ withdrawFromSP(): A, B, C Deposit -> 2 liquidations -> D deposits -> 1 liquidation. All deposits and liquidations = 100 NECT.  A, B, C, D withdraw correct NECT deposit and iBGT Gain (1512ms)
+      ✓ withdrawFromSP(): A, B, C Deposit -> 2 liquidations -> D deposits -> 2 liquidations. All deposits and liquidations = 100 NECT.  A, B, C, D withdraw correct NECT deposit and iBGT Gain (1637ms)
+      ✓ withdrawFromSP(): A, B, C Deposit -> 2 liquidations -> D deposits -> 2 liquidations. Various deposit and liquidation vals.  A, B, C, D withdraw correct NECT deposit and iBGT Gain (1645ms)
+      ✓ withdrawFromSP(): A, B, C, D deposit -> 2 liquidations -> D withdraws -> 2 liquidations. All deposits and liquidations = 100 NECT.  A, B, C, D withdraw correct NECT deposit and iBGT Gain (1704ms)
+      ✓ withdrawFromSP(): A, B, C, D deposit -> 2 liquidations -> D withdraws -> 2 liquidations. Various deposit and liquidation vals. A, B, C, D withdraw correct NECT deposit and iBGT Gain (1753ms)
+      ✓ withdrawFromSP(): A, B, D deposit -> 2 liquidations -> C makes deposit -> 1 liquidation -> D withdraws -> 1 liquidation. All deposits: 100 NECT. Liquidations: 100,100,100,50.  A, B, C, D withdraw correct NECT deposit and iBGT Gain (1537ms)
       ✓ withdrawFromSP(): Depositor withdraws correct compounded deposit after liquidation empties the pool (3424ms)
       ✓ withdrawFromSP(): Pool-emptying liquidation increases epoch by one, resets scaleFactor to 0, and resets P to 1e18 (1678ms)
       ✓ withdrawFromSP(): Depositors withdraw correct compounded deposit after liquidation empties the pool (1100ms)
-      ✓ withdrawFromSP(): single deposit fully offset. After subsequent liquidations, depositor withdraws 0 deposit and *only* the ETH Gain from one liquidation (1049ms)
+      ✓ withdrawFromSP(): single deposit fully offset. After subsequent liquidations, depositor withdraws 0 deposit and *only* the iBGT Gain from one liquidation (1049ms)
       ✓ withdrawFromSP(): Depositor withdraws correct compounded deposit after liquidation empties the pool (4540ms)
-      ✓ withdrawFromSP(): deposit spans one scale factor change: Single depositor withdraws correct compounded deposit and ETH Gain after one liquidation (918ms)
-      ✓ withdrawFromSP(): Several deposits of varying amounts span one scale factor change. Depositors withdraw correct compounded deposit and ETH Gain after one liquidation (1187ms)
-      ✓ withdrawFromSP(): deposit spans one scale factor change: Single depositor withdraws correct compounded deposit and ETH Gain after one liquidation (778ms)
-      ✓ withdrawFromSP(): Several deposits of varying amounts span one scale factor change. Depositors withdraws correct compounded deposit and ETH Gain after one liquidation (3494ms)
+      ✓ withdrawFromSP(): deposit spans one scale factor change: Single depositor withdraws correct compounded deposit and iBGT Gain after one liquidation (918ms)
+      ✓ withdrawFromSP(): Several deposits of varying amounts span one scale factor change. Depositors withdraw correct compounded deposit and iBGT Gain after one liquidation (1187ms)
+      ✓ withdrawFromSP(): deposit spans one scale factor change: Single depositor withdraws correct compounded deposit and iBGT Gain after one liquidation (778ms)
+      ✓ withdrawFromSP(): Several deposits of varying amounts span one scale factor change. Depositors withdraws correct compounded deposit and iBGT Gain after one liquidation (3494ms)
 alice deposit: 0
       ✓ withdrawFromSP(): Deposit that decreases to less than 1e-9 of it's original value is reduced to 0 (365ms)
-      ✓ withdrawFromSP(): Several deposits of 10000 LUSD span one scale factor change. Depositors withdraws correct compounded deposit and ETH Gain after one liquidation (1676ms)
+      ✓ withdrawFromSP(): Several deposits of 10000 NECT span one scale factor change. Depositors withdraws correct compounded deposit and iBGT Gain after one liquidation (1676ms)
       ✓ withdrawFromSP(): 2 depositors can withdraw after each receiving half of a pool-emptying liquidation (1848ms)
-      ✓ withdrawFromSP(): Depositor's ETH gain stops increasing after two scale changes (4134ms)
-      ✓ withdrawFromSP(): Large liquidated coll/debt, deposits and ETH price (932ms)
-      ✓ withdrawFromSP(): Small liquidated coll/debt, large deposits and ETH price (832ms)
+      ✓ withdrawFromSP(): Depositor's iBGT gain stops increasing after two scale changes (4134ms)
+      ✓ withdrawFromSP(): Large liquidated coll/debt, deposits and iBGT price (932ms)
+      ✓ withdrawFromSP(): Small liquidated coll/debt, large deposits and iBGT price (832ms)
 
   Contract: StabilityPool - Withdrawal of stability deposit - Reward calculations
     Stability Pool Withdrawal
-      ✓ withdrawETHGainToTrove(): Depositors with equal initial deposit withdraw correct compounded deposit and ETH Gain after one liquidation (1227ms)
-      ✓ withdrawETHGainToTrove(): Depositors with equal initial deposit withdraw correct compounded deposit and ETH Gain after two identical liquidations (1400ms)
-      ✓ withdrawETHGainToTrove():  Depositors with equal initial deposit withdraw correct compounded deposit and ETH Gain after three identical liquidations (1827ms)
-      ✓ withdrawETHGainToTrove(): Depositors with equal initial deposit withdraw correct compounded deposit and ETH Gain after two liquidations of increasing LUSD (1597ms)
-      ✓ withdrawETHGainToTrove(): Depositors with equal initial deposit withdraw correct compounded deposit and ETH Gain after three liquidations of increasing LUSD (1711ms)
-      ✓ withdrawETHGainToTrove(): Depositors with varying deposits withdraw correct compounded deposit and ETH Gain after two identical liquidations (1782ms)
-      ✓ withdrawETHGainToTrove(): Depositors with varying deposits withdraw correct compounded deposit and ETH Gain after three identical liquidations (1798ms)
-      ✓ withdrawETHGainToTrove(): Depositors with varying deposits withdraw correct compounded deposit and ETH Gain after three varying liquidations (4488ms)
+      ✓ withdrawiBGTGainToTrove(): Depositors with equal initial deposit withdraw correct compounded deposit and iBGT Gain after one liquidation (1227ms)
+      ✓ withdrawiBGTGainToTrove(): Depositors with equal initial deposit withdraw correct compounded deposit and iBGT Gain after two identical liquidations (1400ms)
+      ✓ withdrawiBGTGainToTrove():  Depositors with equal initial deposit withdraw correct compounded deposit and iBGT Gain after three identical liquidations (1827ms)
+      ✓ withdrawiBGTGainToTrove(): Depositors with equal initial deposit withdraw correct compounded deposit and iBGT Gain after two liquidations of increasing NECT (1597ms)
+      ✓ withdrawiBGTGainToTrove(): Depositors with equal initial deposit withdraw correct compounded deposit and iBGT Gain after three liquidations of increasing NECT (1711ms)
+      ✓ withdrawiBGTGainToTrove(): Depositors with varying deposits withdraw correct compounded deposit and iBGT Gain after two identical liquidations (1782ms)
+      ✓ withdrawiBGTGainToTrove(): Depositors with varying deposits withdraw correct compounded deposit and iBGT Gain after three identical liquidations (1798ms)
+      ✓ withdrawiBGTGainToTrove(): Depositors with varying deposits withdraw correct compounded deposit and iBGT Gain after three varying liquidations (4488ms)
 
-      ✓ withdrawETHGainToTrove(): A, B, C Deposit -> 2 liquidations -> D deposits -> 1 liquidation. All deposits and liquidations = 100 LUSD.  A, B, C, D withdraw correct LUSD deposit and ETH Gain (2168ms)
-      ✓ withdrawETHGainToTrove(): A, B, C Deposit -> 2 liquidations -> D deposits -> 2 liquidations. All deposits and liquidations = 100 LUSD.  A, B, C, D withdraw correct LUSD deposit and ETH Gain (5085ms)
-      ✓ withdrawETHGainToTrove(): A, B, C Deposit -> 2 liquidations -> D deposits -> 2 liquidations. Various deposit and liquidation vals.  A, B, C, D withdraw correct LUSD deposit and ETH Gain (2304ms)
-      ✓ withdrawETHGainToTrove(): A, B, C, D deposit -> 2 liquidations -> D withdraws -> 2 liquidations. All deposits and liquidations = 100 LUSD.  A, B, C, D withdraw correct LUSD deposit and ETH Gain (2335ms)
-      ✓ withdrawETHGainToTrove(): A, B, C, D deposit -> 2 liquidations -> D withdraws -> 2 liquidations. Various deposit and liquidation vals. A, B, C, D withdraw correct LUSD deposit and ETH Gain (2145ms)
-      ✓ withdrawETHGainToTrove(): A, B, D deposit -> 2 liquidations -> C makes deposit -> 1 liquidation -> D withdraws -> 1 liquidation. All deposits: 100 LUSD. Liquidations: 100,100,100,50.  A, B, C, D withdraw correct LUSD deposit and ETH Gain (2543ms)
-      ✓ withdrawETHGainToTrove(): Depositor withdraws correct compounded deposit after liquidation empties the pool (1889ms)
-      ✓ withdrawETHGainToTrove(): Pool-emptying liquidation increases epoch by one, resets scaleFactor to 0, and resets P to 1e18 (1891ms)
-      ✓ withdrawETHGainToTrove(): Depositors withdraw correct compounded deposit after liquidation empties the pool (2324ms)
-      ✓ withdrawETHGainToTrove(): single deposit fully offset. After subsequent liquidations, depositor withdraws 0 deposit and *only* the ETH Gain from one liquidation (1719ms)
-      ✓ withdrawETHGainToTrove(): Depositor withdraws correct compounded deposit after liquidation empties the pool (3958ms)
-      ✓ withdrawETHGainToTrove(): deposit spans one scale factor change: Single depositor withdraws correct compounded deposit and ETH Gain after one liquidation (1276ms)
-      ✓ withdrawETHGainToTrove(): Several deposits of varying amounts span one scale factor change. Depositors withdraw correct compounded deposit and ETH Gain after one liquidation (4690ms)
-      ✓ withdrawETHGainToTrove(): deposit spans one scale factor change: Single depositor withdraws correct compounded deposit and ETH Gain after one liquidation (1460ms)
-      ✓ withdrawETHGainToTrove(): Several deposits of varying amounts span one scale factor change. Depositors withdraws correct compounded deposit and ETH Gain after one liquidation (1986ms)
+      ✓ withdrawiBGTGainToTrove(): A, B, C Deposit -> 2 liquidations -> D deposits -> 1 liquidation. All deposits and liquidations = 100 NECT.  A, B, C, D withdraw correct NECT deposit and iBGT Gain (2168ms)
+      ✓ withdrawiBGTGainToTrove(): A, B, C Deposit -> 2 liquidations -> D deposits -> 2 liquidations. All deposits and liquidations = 100 NECT.  A, B, C, D withdraw correct NECT deposit and iBGT Gain (5085ms)
+      ✓ withdrawiBGTGainToTrove(): A, B, C Deposit -> 2 liquidations -> D deposits -> 2 liquidations. Various deposit and liquidation vals.  A, B, C, D withdraw correct NECT deposit and iBGT Gain (2304ms)
+      ✓ withdrawiBGTGainToTrove(): A, B, C, D deposit -> 2 liquidations -> D withdraws -> 2 liquidations. All deposits and liquidations = 100 NECT.  A, B, C, D withdraw correct NECT deposit and iBGT Gain (2335ms)
+      ✓ withdrawiBGTGainToTrove(): A, B, C, D deposit -> 2 liquidations -> D withdraws -> 2 liquidations. Various deposit and liquidation vals. A, B, C, D withdraw correct NECT deposit and iBGT Gain (2145ms)
+      ✓ withdrawiBGTGainToTrove(): A, B, D deposit -> 2 liquidations -> C makes deposit -> 1 liquidation -> D withdraws -> 1 liquidation. All deposits: 100 NECT. Liquidations: 100,100,100,50.  A, B, C, D withdraw correct NECT deposit and iBGT Gain (2543ms)
+      ✓ withdrawiBGTGainToTrove(): Depositor withdraws correct compounded deposit after liquidation empties the pool (1889ms)
+      ✓ withdrawiBGTGainToTrove(): Pool-emptying liquidation increases epoch by one, resets scaleFactor to 0, and resets P to 1e18 (1891ms)
+      ✓ withdrawiBGTGainToTrove(): Depositors withdraw correct compounded deposit after liquidation empties the pool (2324ms)
+      ✓ withdrawiBGTGainToTrove(): single deposit fully offset. After subsequent liquidations, depositor withdraws 0 deposit and *only* the iBGT Gain from one liquidation (1719ms)
+      ✓ withdrawiBGTGainToTrove(): Depositor withdraws correct compounded deposit after liquidation empties the pool (3958ms)
+      ✓ withdrawiBGTGainToTrove(): deposit spans one scale factor change: Single depositor withdraws correct compounded deposit and iBGT Gain after one liquidation (1276ms)
+      ✓ withdrawiBGTGainToTrove(): Several deposits of varying amounts span one scale factor change. Depositors withdraw correct compounded deposit and iBGT Gain after one liquidation (4690ms)
+      ✓ withdrawiBGTGainToTrove(): deposit spans one scale factor change: Single depositor withdraws correct compounded deposit and iBGT Gain after one liquidation (1460ms)
+      ✓ withdrawiBGTGainToTrove(): Several deposits of varying amounts span one scale factor change. Depositors withdraws correct compounded deposit and iBGT Gain after one liquidation (1986ms)
 alice deposit: 0
-      ✓ withdrawETHGainToTrove(): Deposit that decreases to less than 1e-9 of it's original value is reduced to 0 (3725ms)
-      ✓ withdrawETHGainToTrove(): Several deposits of 10000 LUSD span one scale factor change. Depositors withdraws correct compounded deposit and ETH Gain after one liquidation (2361ms)
-      ✓ withdrawETHGainToTrove(): 2 depositors can withdraw after each receiving half of a pool-emptying liquidation (3814ms)
-      ✓ withdrawETHGainToTrove(): Large liquidated coll/debt, deposits and ETH price (959ms)
-      ✓ withdrawETHGainToTrove(): Small liquidated coll/debt, large deposits and ETH price (784ms)
+      ✓ withdrawiBGTGainToTrove(): Deposit that decreases to less than 1e-9 of it's original value is reduced to 0 (3725ms)
+      ✓ withdrawiBGTGainToTrove(): Several deposits of 10000 NECT span one scale factor change. Depositors withdraws correct compounded deposit and iBGT Gain after one liquidation (2361ms)
+      ✓ withdrawiBGTGainToTrove(): 2 depositors can withdraw after each receiving half of a pool-emptying liquidation (3814ms)
+      ✓ withdrawiBGTGainToTrove(): Large liquidated coll/debt, deposits and iBGT price (959ms)
+      ✓ withdrawiBGTGainToTrove(): Small liquidated coll/debt, large deposits and iBGT price (784ms)
 
   Contract: StabilityPool
     Stability Pool Mechanisms
-      ✓ provideToSP(): increases the Stability Pool LUSD balance (354ms)
+      ✓ provideToSP(): increases the Stability Pool NECT balance (354ms)
       ✓ provideToSP(): updates the user's deposit record in StabilityPool (355ms)
-      ✓ provideToSP(): reduces the user's LUSD balance by the correct amount (321ms)
-      ✓ provideToSP(): increases totalLUSDDeposits by correct amount (283ms)
+      ✓ provideToSP(): reduces the user's NECT balance by the correct amount (321ms)
+      ✓ provideToSP(): increases totalNECTDeposits by correct amount (283ms)
       ✓ provideToSP(): Correctly updates user snapshots of accumulated rewards per unit staked (4003ms)
       ✓ provideToSP(), multiple deposits: updates user's deposit and snapshots (2543ms)
-      ✓ provideToSP(): reverts if user tries to provide more than their LUSD balance (1030ms)
-      ✓ provideToSP(): reverts if user tries to provide 2^256-1 LUSD, which exceeds their balance (508ms)
-      ✓ provideToSP(): reverts if cannot receive ETH Gain (1073ms)
-      ✓ provideToSP(): doesn't impact other users' deposits or ETH gains (1906ms)
+      ✓ provideToSP(): reverts if user tries to provide more than their NECT balance (1030ms)
+      ✓ provideToSP(): reverts if user tries to provide 2^256-1 NECT, which exceeds their balance (508ms)
+      ✓ provideToSP(): reverts if cannot receive iBGT Gain (1073ms)
+      ✓ provideToSP(): doesn't impact other users' deposits or iBGT gains (1906ms)
       ✓ provideToSP(): doesn't impact system debt, collateral or TCR (2287ms)
       ✓ provideToSP(): doesn't impact any troves, including the caller's trove (1810ms)
       ✓ provideToSP(): doesn't protect the depositor's trove from liquidation (1082ms)
-      ✓ provideToSP(): providing 0 LUSD reverts (1091ms)
+      ✓ provideToSP(): providing 0 NECT reverts (1091ms)
       ✓ provideToSP(), new deposit: when SP > 0, triggers POLLEN reward event - increases the sum G (1072ms)
       ✓ provideToSP(), new deposit: when SP is empty, doesn't update G (4734ms)
       ✓ provideToSP(), new deposit: sets the correct front end tag (1128ms)
@@ -911,8 +911,8 @@ alice deposit: 0
       ✓ provideToSP(), new eligible deposit: tagged front end receives POLLEN rewards (1605ms)
       ✓ provideToSP(), new eligible deposit: tagged front end's stake increases (848ms)
       ✓ provideToSP(), new eligible deposit: tagged front end's snapshots update (1913ms)
-      ✓ provideToSP(), new deposit: depositor does not receive ETH gains (957ms)
-      ✓ provideToSP(), new deposit after past full withdrawal: depositor does not receive ETH gains (1928ms)
+      ✓ provideToSP(), new deposit: depositor does not receive iBGT gains (957ms)
+      ✓ provideToSP(), new deposit after past full withdrawal: depositor does not receive iBGT gains (1928ms)
       ✓ provideToSP(), topup: triggers POLLEN reward event - increases the sum G (1007ms)
       ✓ provideToSP(), topup from different front end: doesn't change the front end tag (1511ms)
       ✓ provideToSP(), topup: depositor receives POLLEN rewards (1487ms)
@@ -924,24 +924,24 @@ alice deposit: 0
       ✓ provideToSP(): reverts if provided tag is not a registered front end (587ms)
       ✓ withdrawFromSP(): reverts when user has no active deposit (597ms)
       ✓ withdrawFromSP(): reverts when amount > 0 and system has an undercollateralized trove (453ms)
-      ✓ withdrawFromSP(): partial retrieval - retrieves correct LUSD amount and the entire ETH Gain, and updates deposit (1102ms)
-      ✓ withdrawFromSP(): partial retrieval - leaves the correct amount of LUSD in the Stability Pool (1128ms)
-      ✓ withdrawFromSP(): full retrieval - leaves the correct amount of LUSD in the Stability Pool (1091ms)
-      ✓ withdrawFromSP(): Subsequent deposit and withdrawal attempt from same account, with no intermediate liquidations, withdraws zero ETH (1494ms)
-      ✓ withdrawFromSP(): it correctly updates the user's LUSD and ETH snapshots of entitled reward per unit staked (1049ms)
-      ✓ withdrawFromSP(): decreases StabilityPool ETH (3952ms)
+      ✓ withdrawFromSP(): partial retrieval - retrieves correct NECT amount and the entire iBGT Gain, and updates deposit (1102ms)
+      ✓ withdrawFromSP(): partial retrieval - leaves the correct amount of NECT in the Stability Pool (1128ms)
+      ✓ withdrawFromSP(): full retrieval - leaves the correct amount of NECT in the Stability Pool (1091ms)
+      ✓ withdrawFromSP(): Subsequent deposit and withdrawal attempt from same account, with no intermediate liquidations, withdraws zero iBGT (1494ms)
+      ✓ withdrawFromSP(): it correctly updates the user's NECT and iBGT snapshots of entitled reward per unit staked (1049ms)
+      ✓ withdrawFromSP(): decreases StabilityPool iBGT (3952ms)
       ✓ withdrawFromSP(): All depositors are able to withdraw from the SP to their account (2393ms)
-      ✓ withdrawFromSP(): increases depositor's LUSD token balance by the expected amount (2098ms)
-      ✓ withdrawFromSP(): doesn't impact other users Stability deposits or ETH gains (4954ms)
+      ✓ withdrawFromSP(): increases depositor's NECT token balance by the expected amount (2098ms)
+      ✓ withdrawFromSP(): doesn't impact other users Stability deposits or iBGT gains (4954ms)
       ✓ withdrawFromSP(): doesn't impact system debt, collateral or TCR  (1500ms)
       ✓ withdrawFromSP(): doesn't impact any troves, including the caller's trove (1085ms)
       ✓ withdrawFromSP(): succeeds when amount is 0 and system has an undercollateralized trove (933ms)
-      ✓ withdrawFromSP(): withdrawing 0 LUSD doesn't alter the caller's deposit or the total LUSD in the Stability Pool (993ms)
-      ✓ withdrawFromSP(): withdrawing 0 ETH Gain does not alter the caller's ETH balance, their trove collateral, or the ETH  in the Stability Pool (1139ms)
+      ✓ withdrawFromSP(): withdrawing 0 NECT doesn't alter the caller's deposit or the total NECT in the Stability Pool (993ms)
+      ✓ withdrawFromSP(): withdrawing 0 iBGT Gain does not alter the caller's iBGT balance, their trove collateral, or the iBGT  in the Stability Pool (1139ms)
       ✓ withdrawFromSP(): Request to withdraw > caller's deposit only withdraws the caller's compounded deposit (1260ms)
-      ✓ withdrawFromSP(): Request to withdraw 2^256-1 LUSD only withdraws the caller's compounded deposit (1229ms)
-      ✓ withdrawFromSP(): caller can withdraw full deposit and ETH gain during Recovery Mode (4371ms)
-      ✓ getDepositorETHGain(): depositor does not earn further ETH gains from liquidations while their compounded deposit == 0:  (1831ms)
+      ✓ withdrawFromSP(): Request to withdraw 2^256-1 NECT only withdraws the caller's compounded deposit (1229ms)
+      ✓ withdrawFromSP(): caller can withdraw full deposit and iBGT gain during Recovery Mode (4371ms)
+      ✓ getDepositoriBGTGain(): depositor does not earn further iBGT gains from liquidations while their compounded deposit == 0:  (1831ms)
       ✓ withdrawFromSP(): triggers POLLEN reward event - increases the sum G (982ms)
       ✓ withdrawFromSP(), partial withdrawal: doesn't change the front end tag (1421ms)
       ✓ withdrawFromSP(), partial withdrawal: depositor receives POLLEN rewards (1155ms)
@@ -952,22 +952,22 @@ alice deposit: 0
       ✓ withdrawFromSP(), full withdrawal: zero's depositor's snapshots (1434ms)
       ✓ withdrawFromSP(), full withdrawal that reduces front end stake to 0: zero’s the front end’s snapshots (1248ms)
       ✓ withdrawFromSP(), reverts when initial deposit value is 0 (1037ms)
-      ✓ withdrawETHGainToTrove(): reverts when user has no active deposit (1043ms)
-      ✓ withdrawETHGainToTrove(): Applies LUSDLoss to user's deposit, and redirects ETH reward to user's Trove (932ms)
-      ✓ withdrawETHGainToTrove(): reverts if it would leave trove with ICR < MCR (3920ms)
-      ✓ withdrawETHGainToTrove(): Subsequent deposit and withdrawal attempt from same account, with no intermediate liquidations, withdraws zero ETH (976ms)
-      ✓ withdrawETHGainToTrove(): decreases StabilityPool ETH and increases activePool ETH (976ms)
-      ✓ withdrawETHGainToTrove(): All depositors are able to withdraw their ETH gain from the SP to their Trove (5974ms)
-      ✓ withdrawETHGainToTrove(): All depositors withdraw, each withdraw their correct ETH gain (2591ms)
-      ✓ withdrawETHGainToTrove(): caller can withdraw full deposit and ETH gain to their trove during Recovery Mode (1629ms)
-      ✓ withdrawETHGainToTrove(): reverts if user has no trove (967ms)
-      ✓ withdrawETHGainToTrove(): triggers POLLEN reward event - increases the sum G (1298ms)
-      ✓ withdrawETHGainToTrove(), partial withdrawal: doesn't change the front end tag (4778ms)
-      ✓ withdrawETHGainToTrove(), eligible deposit: depositor receives POLLEN rewards (1607ms)
-      ✓ withdrawETHGainToTrove(), eligible deposit: tagged front end receives POLLEN rewards (1701ms)
-      ✓ withdrawETHGainToTrove(), eligible deposit: tagged front end's stake decreases (5345ms)
-      ✓ withdrawETHGainToTrove(), eligible deposit: tagged front end's snapshots update (1984ms)
-      ✓ withdrawETHGainToTrove(): reverts when depositor has no ETH gain (1172ms)
+      ✓ withdrawiBGTGainToTrove(): reverts when user has no active deposit (1043ms)
+      ✓ withdrawiBGTGainToTrove(): Applies NECTLoss to user's deposit, and redirects iBGT reward to user's Trove (932ms)
+      ✓ withdrawiBGTGainToTrove(): reverts if it would leave trove with ICR < MCR (3920ms)
+      ✓ withdrawiBGTGainToTrove(): Subsequent deposit and withdrawal attempt from same account, with no intermediate liquidations, withdraws zero iBGT (976ms)
+      ✓ withdrawiBGTGainToTrove(): decreases StabilityPool iBGT and increases activePool iBGT (976ms)
+      ✓ withdrawiBGTGainToTrove(): All depositors are able to withdraw their iBGT gain from the SP to their Trove (5974ms)
+      ✓ withdrawiBGTGainToTrove(): All depositors withdraw, each withdraw their correct iBGT gain (2591ms)
+      ✓ withdrawiBGTGainToTrove(): caller can withdraw full deposit and iBGT gain to their trove during Recovery Mode (1629ms)
+      ✓ withdrawiBGTGainToTrove(): reverts if user has no trove (967ms)
+      ✓ withdrawiBGTGainToTrove(): triggers POLLEN reward event - increases the sum G (1298ms)
+      ✓ withdrawiBGTGainToTrove(), partial withdrawal: doesn't change the front end tag (4778ms)
+      ✓ withdrawiBGTGainToTrove(), eligible deposit: depositor receives POLLEN rewards (1607ms)
+      ✓ withdrawiBGTGainToTrove(), eligible deposit: tagged front end receives POLLEN rewards (1701ms)
+      ✓ withdrawiBGTGainToTrove(), eligible deposit: tagged front end's stake decreases (5345ms)
+      ✓ withdrawiBGTGainToTrove(), eligible deposit: tagged front end's snapshots update (1984ms)
+      ✓ withdrawiBGTGainToTrove(): reverts when depositor has no iBGT gain (1172ms)
       ✓ registerFrontEnd(): registers the front end and chosen kickback rate (173ms)
       ✓ registerFrontEnd(): reverts if the front end is already registered (196ms)
       ✓ registerFrontEnd(): reverts if the kickback rate >1 (57ms)
@@ -977,7 +977,7 @@ alice deposit: 0
 totalStakesSnapshot after L1: 200000002000000000000000000000
 totalCollateralSnapshot after L1: 399000002000000000000000000000
 Snapshots ratio after L1: 501253135332064484
-B pending ETH reward after L1: 39799999602000003960000000000
+B pending iBGT reward after L1: 39799999602000003960000000000
 B stake after L1: 40000000000000000000000000000
 B stake after A1: 39999999999999999989974957243
 Snapshots ratio after A1: 501253135332064484
@@ -1016,7 +1016,7 @@ B stake after A11: 39999999999999999998008332745
   Contract: TroveManager - Redistribution reward calculations
     ✓ redistribution: A, B Open. B Liquidated. C, D Open. D Liquidated. Distributes correct rewards (1514ms)
     ✓ redistribution: A, B, C Open. C Liquidated. D, E, F Open. F Liquidated. Distributes correct rewards (1537ms)
-    ✓ redistribution: Sequence of alternate opening/liquidation: final surviving trove has ETH from all previously liquidated troves (1667ms)
+    ✓ redistribution: Sequence of alternate opening/liquidation: final surviving trove has iBGT from all previously liquidated troves (1667ms)
     ✓ redistribution: A,B,C,D,E open. Liq(A). B adds coll. Liq(C). B and D have correct coll and debt (1915ms)
     ✓ redistribution: A,B,C,D open. Liq(A). B adds coll. Liq(C). B and D have correct coll and debt (1962ms)
     ✓ redistribution: A,B,C Open. Liq(C). B adds coll. Liq(A). B acquires all coll and debt (1102ms)
@@ -1044,19 +1044,19 @@ B stake after A11: 39999999999999999998008332745
     ✓ liquidate(), with 100% < ICR < 110%: closes the Trove and removes it from the Trove array (965ms)
     ✓ liquidate(), with 100% < ICR < 110%: offsets as much debt as possible with the Stability Pool, then redistributes the remainder coll and debt (1034ms)
     ✓ liquidate(), with ICR > 110%, trove has lowest ICR, and StabilityPool is empty: does nothing (1245ms)
-    ✓ liquidate(), with 110% < ICR < TCR, and StabilityPool LUSD > debt to liquidate: offsets the trove entirely with the pool (1265ms)
-    ✓ liquidate(), with ICR% = 110 < TCR, and StabilityPool LUSD > debt to liquidate: offsets the trove entirely with the pool, there’s no collateral surplus (1382ms)
-    ✓ liquidate(), with  110% < ICR < TCR, and StabilityPool LUSD > debt to liquidate: removes stake and updates totalStakes (1361ms)
-    ✓ liquidate(), with  110% < ICR < TCR, and StabilityPool LUSD > debt to liquidate: updates system snapshots (1287ms)
-    ✓ liquidate(), with 110% < ICR < TCR, and StabilityPool LUSD > debt to liquidate: closes the Trove (6532ms)
-    ✓ liquidate(), with 110% < ICR < TCR, and StabilityPool LUSD > debt to liquidate: can liquidate troves out of order (2667ms)
-    ✓ liquidate(), with ICR > 110%, and StabilityPool LUSD < liquidated debt: Trove remains active (985ms)
-    ✓ liquidate(), with ICR > 110%, and StabilityPool LUSD < liquidated debt: Trove remains in TroveOwners array (1134ms)
-    ✓ liquidate(), with ICR > 110%, and StabilityPool LUSD < liquidated debt: nothing happens (1146ms)
-    ✓ liquidate(), with ICR > 110%, and StabilityPool LUSD < liquidated debt: updates system shapshots (1284ms)
-    ✓ liquidate(), with ICR > 110%, and StabilityPool LUSD < liquidated debt: causes correct Pool offset and ETH gain, and doesn't redistribute to active troves (1266ms)
-    ✓ liquidate(), with ICR > 110%, and StabilityPool LUSD < liquidated debt: ICR of non liquidated trove does not change (2161ms)
-    ✓ liquidate() with ICR > 110%, and StabilityPool LUSD < liquidated debt: total liquidated coll and debt is correct (1912ms)
+    ✓ liquidate(), with 110% < ICR < TCR, and StabilityPool NECT > debt to liquidate: offsets the trove entirely with the pool (1265ms)
+    ✓ liquidate(), with ICR% = 110 < TCR, and StabilityPool NECT > debt to liquidate: offsets the trove entirely with the pool, there’s no collateral surplus (1382ms)
+    ✓ liquidate(), with  110% < ICR < TCR, and StabilityPool NECT > debt to liquidate: removes stake and updates totalStakes (1361ms)
+    ✓ liquidate(), with  110% < ICR < TCR, and StabilityPool NECT > debt to liquidate: updates system snapshots (1287ms)
+    ✓ liquidate(), with 110% < ICR < TCR, and StabilityPool NECT > debt to liquidate: closes the Trove (6532ms)
+    ✓ liquidate(), with 110% < ICR < TCR, and StabilityPool NECT > debt to liquidate: can liquidate troves out of order (2667ms)
+    ✓ liquidate(), with ICR > 110%, and StabilityPool NECT < liquidated debt: Trove remains active (985ms)
+    ✓ liquidate(), with ICR > 110%, and StabilityPool NECT < liquidated debt: Trove remains in TroveOwners array (1134ms)
+    ✓ liquidate(), with ICR > 110%, and StabilityPool NECT < liquidated debt: nothing happens (1146ms)
+    ✓ liquidate(), with ICR > 110%, and StabilityPool NECT < liquidated debt: updates system shapshots (1284ms)
+    ✓ liquidate(), with ICR > 110%, and StabilityPool NECT < liquidated debt: causes correct Pool offset and iBGT gain, and doesn't redistribute to active troves (1266ms)
+    ✓ liquidate(), with ICR > 110%, and StabilityPool NECT < liquidated debt: ICR of non liquidated trove does not change (2161ms)
+    ✓ liquidate() with ICR > 110%, and StabilityPool NECT < liquidated debt: total liquidated coll and debt is correct (1912ms)
     ✓ liquidate(): Doesn't liquidate undercollateralized trove if it is the only trove in the system (652ms)
     ✓ liquidate(): Liquidates undercollateralized trove if there are two troves in the system (997ms)
     ✓ liquidate(): does nothing if trove has >= 110% ICR and the Stability Pool is empty (1019ms)
@@ -1064,7 +1064,7 @@ B stake after A11: 39999999999999999998008332745
     ✓ liquidate(): reverts if trove is non-existent (815ms)
     ✓ liquidate(): reverts if trove has been closed (1044ms)
     ✓ liquidate(): liquidates based on entire/collateral debt (including pending rewards), not raw collateral/debt (1878ms)
-    ✓ liquidate(): does not affect the SP deposit or ETH gain when called on an SP depositor's address that has no trove (708ms)
+    ✓ liquidate(): does not affect the SP deposit or iBGT gain when called on an SP depositor's address that has no trove (708ms)
     ✓ liquidate(): does not alter the liquidated user's token balance (1312ms)
     ✓ liquidate(), with 110% < ICR < TCR, can claim collateral, re-open, be reedemed and claim again (2055ms)
     ✓ liquidate(), with 110% < ICR < TCR, can claim collateral, after another claim from a redemption (2300ms)
@@ -1080,8 +1080,8 @@ B stake after A11: 39999999999999999998008332745
     ✓ liquidateTroves(): emits liquidation event with correct values when all troves have ICR > 110% and Stability Pool covers a subset of troves (1300ms)
     ✓ liquidateTroves():  emits liquidation event with correct values when all troves have ICR > 110% and Stability Pool covers a subset of troves, including a partial (1362ms)
     ✓ liquidateTroves(): does not affect the liquidated user's token balances (4805ms)
-    ✓ liquidateTroves(): Liquidating troves at 100 < ICR < 110 with SP deposits correctly impacts their SP deposit and ETH gain (1556ms)
-    ✓ liquidateTroves(): Liquidating troves at ICR <=100% with SP deposits does not alter their deposit or ETH gain (1391ms)
+    ✓ liquidateTroves(): Liquidating troves at 100 < ICR < 110 with SP deposits correctly impacts their SP deposit and iBGT gain (1556ms)
+    ✓ liquidateTroves(): Liquidating troves at ICR <=100% with SP deposits does not alter their deposit or iBGT gain (1391ms)
     ✓ liquidateTroves() with a non fullfilled liquidation: non liquidated trove remains active (1140ms)
     ✓ liquidateTroves() with a non fullfilled liquidation: non liquidated trove remains in TroveOwners Array (1378ms)
 gasUsed:  609826
@@ -1104,7 +1104,7 @@ gasUsed:  636956
     ✓ batchLiquidateTroves() with a non fullfilled liquidation: total liquidated coll and debt is correct (1320ms)
     ✓ batchLiquidateTroves() with a non fullfilled liquidation: emits correct liquidation event values (1238ms)
     ✓ batchLiquidateTroves() with a non fullfilled liquidation: ICR of non liquidated trove does not change (1416ms)
-    ✓ batchLiquidateTroves(), with 110% < ICR < TCR, and StabilityPool LUSD > debt to liquidate: can liquidate troves out of order (1357ms)
+    ✓ batchLiquidateTroves(), with 110% < ICR < TCR, and StabilityPool NECT > debt to liquidate: can liquidate troves out of order (1357ms)
     ✓ batchLiquidateTroves(), with 110% < ICR < TCR, and StabilityPool empty: doesn't liquidate any troves (1161ms)
     ✓ batchLiquidateTroves(): skips liquidation of troves with ICR > TCR, regardless of Stability Pool size (2686ms)
     ✓ batchLiquidateTroves(): emits liquidation event with correct values when all troves have ICR > 110% and Stability Pool covers a subset of troves (1530ms)
@@ -1112,12 +1112,12 @@ gasUsed:  636956
 
   Contract: TroveManager
     ✓ liquidate(): closes a Trove that has ICR < MCR (573ms)
-    ✓ liquidate(): decreases ActivePool ETH and LUSDDebt by correct amounts (567ms)
-    ✓ liquidate(): increases DefaultPool ETH and LUSD debt by correct amounts (553ms)
+    ✓ liquidate(): decreases ActivePool iBGT and NECTDebt by correct amounts (567ms)
+    ✓ liquidate(): increases DefaultPool iBGT and NECT debt by correct amounts (553ms)
     ✓ liquidate(): removes the Trove's stake from the total stakes (608ms)
     ✓ liquidate(): Removes the correct trove from the TroveOwners array, and moves the last array element to the new empty slot (1276ms)
     ✓ liquidate(): updates the snapshots of total stakes and total collateral (422ms)
-    ✓ liquidate(): updates the L_ETH and L_LUSDDebt reward-per-unit-staked totals (984ms)
+    ✓ liquidate(): updates the L_iBGT and L_NECTDebt reward-per-unit-staked totals (984ms)
     ✓ liquidate(): Liquidates undercollateralized trove if there are two troves in the system (503ms)
     ✓ liquidate(): reverts if trove is non-existent (303ms)
     ✓ liquidate(): reverts if trove has been closed (745ms)
@@ -1125,9 +1125,9 @@ gasUsed:  636956
     ✓ liquidate(): Given the same price and no other trove changes, complete Pool offsets restore the TCR to its value prior to the defaulters opening troves (2590ms)
     ✓ liquidate(): Pool offsets increase the TCR (6140ms)
     ✓ liquidate(): a pure redistribution reduces the TCR only as a result of compensation (2570ms)
-    ✓ liquidate(): does not affect the SP deposit or ETH gain when called on an SP depositor's address that has no trove (964ms)
-    ✓ liquidate(): does not liquidate a SP depositor's trove with ICR > 110%, and does not affect their SP deposit or ETH gain (892ms)
-    ✓ liquidate(): liquidates a SP depositor's trove with ICR < 110%, and the liquidation correctly impacts their SP deposit and ETH gain (1141ms)
+    ✓ liquidate(): does not affect the SP deposit or iBGT gain when called on an SP depositor's address that has no trove (964ms)
+    ✓ liquidate(): does not liquidate a SP depositor's trove with ICR > 110%, and does not affect their SP deposit or iBGT gain (892ms)
+    ✓ liquidate(): liquidates a SP depositor's trove with ICR < 110%, and the liquidation correctly impacts their SP deposit and iBGT gain (1141ms)
     ✓ liquidate(): does not alter the liquidated user's token balance (1104ms)
     ✓ liquidate(): liquidates based on entire/collateral debt (including pending rewards), not raw collateral/debt (1573ms)
     ✓ liquidate(): when SP > 0, triggers POLLEN reward event - increases the sum G (1081ms)
@@ -1142,7 +1142,7 @@ gasUsed:  636956
     ✓ liquidateTroves(): does not affect the liquidated user's token balances (999ms)
     ✓ liquidateTroves(): A liquidation sequence containing Pool offsets increases the TCR (6204ms)
     ✓ liquidateTroves(): A liquidation sequence of pure redistributions decreases the TCR, due to gas compensation, but up to 0.5% (1929ms)
-    ✓ liquidateTroves(): Liquidating troves with SP deposits correctly impacts their SP deposit and ETH gain (1214ms)
+    ✓ liquidateTroves(): Liquidating troves with SP deposits correctly impacts their SP deposit and iBGT gain (1214ms)
     ✓ liquidateTroves(): when SP > 0, triggers POLLEN reward event - increases the sum G (5057ms)
     ✓ liquidateTroves(): when SP is empty, doesn't update G (1722ms)
     ✓ batchLiquidateTroves(): liquidates a Trove that a) was skipped in a previous liquidation and b) has pending rewards (1912ms)
@@ -1156,7 +1156,7 @@ gasUsed:  636956
     ✓ batchLiquidateTroves(): when SP is empty, doesn't update G (1655ms)
     ✓ getRedemptionHints(): gets the address of the first Trove and the final ICR of the last Trove involved in a redemption (621ms)
     ✓ getRedemptionHints(): returns 0 as partialRedemptionHintNICR when reaching _maxIterations (715ms)
-    ✓ redeemCollateral(): cancels the provided LUSD with debt from Troves with the lowest ICRs and sends an equivalent amount of Ether (838ms)
+    ✓ redeemCollateral(): cancels the provided NECT with debt from Troves with the lowest ICRs and sends an equivalent amount of iBGT (838ms)
     ✓ redeemCollateral(): with invalid first hint, zero address (991ms)
     ✓ redeemCollateral(): with invalid first hint, non-existent trove (1003ms)
     ✓ redeemCollateral(): with invalid first hint, trove below MCR (1392ms)
@@ -1174,32 +1174,32 @@ gasUsed:  636956
     ✓ redeemCollateral(): reverts if max fee < 0.5% (2011ms)
     ✓ redeemCollateral(): reverts if fee exceeds max fee percentage (2899ms)
     ✓ redeemCollateral(): succeeds if fee is less than max fee percentage (3127ms)
-    ✓ redeemCollateral(): doesn't affect the Stability Pool deposits or ETH gain of redeemed-from troves (2311ms)
-    ✓ redeemCollateral(): caller can redeem their entire LUSDToken balance (1086ms)
-    ✓ redeemCollateral(): reverts when requested redemption amount exceeds caller's LUSD token balance (1320ms)
-    ✓ redeemCollateral(): value of issued ETH == face value of redeemed LUSD (assuming 1 LUSD has value of $1) (1353ms)
+    ✓ redeemCollateral(): doesn't affect the Stability Pool deposits or iBGT gain of redeemed-from troves (2311ms)
+    ✓ redeemCollateral(): caller can redeem their entire NECTToken balance (1086ms)
+    ✓ redeemCollateral(): reverts when requested redemption amount exceeds caller's NECT token balance (1320ms)
+    ✓ redeemCollateral(): value of issued iBGT == face value of redeemed NECT (assuming 1 NECT has value of $1) (1353ms)
     ✓ redeemCollateral(): reverts if there is zero outstanding system debt (66ms)
     ✓ redeemCollateral(): reverts if caller's tries to redeem more than the outstanding system debt (367ms)
     ✓ redeemCollateral(): a redemption made when base rate is zero increases the base rate (1187ms)
     ✓ redeemCollateral(): a redemption made when base rate is non-zero increases the base rate, for negligible time passed (1987ms)
     ✓ redeemCollateral(): lastFeeOpTime doesn't update if less time than decay interval has passed since the last fee operation [ @skip-on-coverage ] (2515ms)
-    ✓ redeemCollateral(): a redemption made at zero base rate send a non-zero ETHFee to POLLEN staking contract (5136ms)
-    ✓ redeemCollateral(): a redemption made at zero base increases the ETH-fees-per-POLLEN-staked in POLLEN Staking contract (1207ms)
-    ✓ redeemCollateral(): a redemption made at a non-zero base rate send a non-zero ETHFee to POLLEN staking contract (1730ms)
-    ✓ redeemCollateral(): a redemption made at a non-zero base rate increases ETH-per-POLLEN-staked in the staking contract (5971ms)
-    ✓ redeemCollateral(): a redemption sends the ETH remainder (ETHDrawn - ETHFee) to the redeemer (1113ms)
+    ✓ redeemCollateral(): a redemption made at zero base rate send a non-zero iBGTFee to POLLEN staking contract (5136ms)
+    ✓ redeemCollateral(): a redemption made at zero base increases the iBGT-fees-per-POLLEN-staked in POLLEN Staking contract (1207ms)
+    ✓ redeemCollateral(): a redemption made at a non-zero base rate send a non-zero iBGTFee to POLLEN staking contract (1730ms)
+    ✓ redeemCollateral(): a redemption made at a non-zero base rate increases iBGT-per-POLLEN-staked in the staking contract (5971ms)
+    ✓ redeemCollateral(): a redemption sends the iBGT remainder (iBGTDrawn - iBGTFee) to the redeemer (1113ms)
     ✓ redeemCollateral(): a full redemption (leaving trove with 0 debt), closes the trove (1553ms)
     ✓ redeemCollateral(): emits correct debt and coll values in each redeemed trove's TroveUpdated event (1416ms)
-    ✓ redeemCollateral(): a redemption that closes a trove leaves the trove's ETH surplus (collateral - ETH drawn) available for the trove owner to claim (5373ms)
-    ✓ redeemCollateral(): a redemption that closes a trove leaves the trove's ETH surplus (collateral - ETH drawn) available for the trove owner after re-opening trove (2154ms)
+    ✓ redeemCollateral(): a redemption that closes a trove leaves the trove's iBGT surplus (collateral - iBGT drawn) available for the trove owner to claim (5373ms)
+    ✓ redeemCollateral(): a redemption that closes a trove leaves the trove's iBGT surplus (collateral - iBGT drawn) available for the trove owner after re-opening trove (2154ms)
     ✓ redeemCollateral(): reverts if fee eats up all returned collateral (1412ms)
-    ✓ getPendingLUSDDebtReward(): Returns 0 if there is no pending LUSDDebt reward (618ms)
-    ✓ getPendingETHReward(): Returns 0 if there is no pending ETH reward (620ms)
+    ✓ getPendingNECTDebtReward(): Returns 0 if there is no pending NECTDebt reward (618ms)
+    ✓ getPendingiBGTReward(): Returns 0 if there is no pending iBGT reward (620ms)
     ✓ computeICR(): Returns 0 if trove's coll is worth 0
-    ✓ computeICR(): Returns 2^256-1 for ETH:USD = 100, coll = 1 ETH, debt = 100 LUSD
-    ✓ computeICR(): returns correct ICR for ETH:USD = 100, coll = 200 ETH, debt = 30 LUSD
-    ✓ computeICR(): returns correct ICR for ETH:USD = 250, coll = 1350 ETH, debt = 127 LUSD
-    ✓ computeICR(): returns correct ICR for ETH:USD = 100, coll = 1 ETH, debt = 54321 LUSD
+    ✓ computeICR(): Returns 2^256-1 for iBGT:USD = 100, coll = 1 iBGT, debt = 100 NECT
+    ✓ computeICR(): returns correct ICR for iBGT:USD = 100, coll = 200 iBGT, debt = 30 NECT
+    ✓ computeICR(): returns correct ICR for iBGT:USD = 250, coll = 1350 iBGT, debt = 127 NECT
+    ✓ computeICR(): returns correct ICR for iBGT:USD = 100, coll = 1 iBGT, debt = 54321 NECT
     ✓ computeICR(): Returns 2^256-1 if trove has non-zero coll and zero debt
     ✓ checkRecoveryMode(): Returns true when TCR < 150% (351ms)
     ✓ checkRecoveryMode(): Returns false when TCR == 150% (366ms)

@@ -44,7 +44,7 @@ export const CollateralSurplusAction: React.FC = () => {
         id={myTransactionId}
         send={beraborrow.claimCollateralSurplus.bind(beraborrow, undefined)}
       >
-        <Button sx={{ mx: 2 }}>Claim {collateralSurplusBalance.prettify()} ETH</Button>
+        <Button sx={{ mx: 2 }}>Claim {collateralSurplusBalance.prettify()} iBGT</Button>
       </Transaction>
     </Flex>
   ) : null;

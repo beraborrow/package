@@ -14,14 +14,10 @@ const alchemyUrl = () => {
         alchemyAPIKey = secrets.alchemyAPIKey
     }
 
-    return `https://eth-mainnet.alchemyapi.io/v2/${alchemyAPIKey}`
+    return `https://artio.rpc.berachain.com/`
 }
 
 module.exports = {
-    paths: {
-        // contracts: "./contracts",
-        // artifacts: "./artifacts"
-    },
     solidity: {
         compilers: [
             {

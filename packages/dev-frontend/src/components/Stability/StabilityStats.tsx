@@ -87,7 +87,7 @@ export const StabilityStats: React.FC = () => {
             label="Staked SEI APR"
             inputId="trove-price"
             amount={trove.collateral.prettify(4)}
-            unit="ETH"
+            unit="iBGT"
           /> */}
           {/* <DisabledEditableRow
             label="Borrow Interest rate"

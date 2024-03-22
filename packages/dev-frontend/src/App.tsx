@@ -38,12 +38,12 @@ const berachain = {
 } as const satisfies Chain;
 
 if (isDemoMode) {
-  const ethereum = new DisposableWalletProvider(
+  const berachain = new DisposableWalletProvider(
     import.meta.env.VITE_APP_RPC_URL || `http://${window.location.hostname || "localhost"}:8545`,
     "0x4d5db4107d237df6a3d58ee5f70ae63d73d7658d4026f2eefd2f204c81682cb7"
   );
 
-  Object.assign(window, { ethereum });
+  Object.assign(window, { berachain });
 }
 
 // Start pre-fetching the config
@@ -71,7 +71,7 @@ const UnsupportedMainnetFallback: React.FC = () => (
 
     <Paragraph>
       If you'd like to use the BeraBorrow Protocol on mainnet, please pick a frontend{" "}
-      <Link href="https://www.beraborrow.org/frontend">
+      <Link href="https://www.beraborrow.com/frontend">
         here <Icon name="external-link-alt" size="xs" />
       </Link>
       .

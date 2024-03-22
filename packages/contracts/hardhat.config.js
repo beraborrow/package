@@ -19,19 +19,8 @@ const getSecret = (secretKey, defaultValue='') => {
 
     return secret
 }
-const alchemyUrl = () => {
-    return `https://eth-mainnet.alchemyapi.io/v2/${getSecret('alchemyAPIKey')}`
-}
-
-const alchemyUrlRinkeby = () => {
-    return `https://eth-rinkeby.alchemyapi.io/v2/${getSecret('alchemyAPIKeyRinkeby')}`
-}
 
 module.exports = {
-    paths: {
-        // contracts: "./contracts",
-        // artifacts: "./artifacts"
-    },
     solidity: {
         compilers: [
             {
@@ -90,22 +79,6 @@ module.exports = {
                 url: `https://ethereum-rpc.publicnode.com`,
                 enabled: true
             }
-        },
-        mainnet: {
-            url: alchemyUrl(),
-            gasPrice: process.env.GAS_PRICE ? parseInt(process.env.GAS_PRICE) : 20000000000,
-            accounts: [
-                getSecret('DEPLOYER_PRIVATEKEY', ''),
-                getSecret('ACCOUNT2_PRIVATEKEY', '')
-            ]
-        },
-        goerli: {
-            url: "https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
-            gasPrice: process.env.GAS_PRICE ? parseInt(process.env.GAS_PRICE) : 20000000000,
-            accounts: [
-                getSecret('DEPLOYER_PRIVATEKEY', ''),
-                getSecret('ACCOUNT2_PRIVATEKEY', '')
-            ]
         },
         bera: {
             url: "https://artio.rpc.berachain.com/", // https://rpc.ankr.com/berachain_testnet

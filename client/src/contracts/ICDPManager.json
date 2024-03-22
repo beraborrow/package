@@ -158,7 +158,7 @@
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "redeemedETH",
+          "name": "redeemediBGT",
           "type": "uint256"
         }
       ],

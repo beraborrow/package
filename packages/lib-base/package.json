@@ -6,11 +6,11 @@
     "BeraBorrow",
     "protocol",
     "DeFi",
-    "Ethereum"
+    "Berachain"
   ],
   "homepage": "https://github.com/beraborrow/package#readme",
   "license": "MIT",
-  "author": "Daniel Simon <dani@beraborrow.org>",
+  "author": "Daniel Simon <dani@beraborrow.com>",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "repository": "https://github.com/beraborrow/dev",

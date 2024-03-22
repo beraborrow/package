@@ -73,7 +73,7 @@ export const TroveEditor: React.FC<TroveEditorProps> = ({
               <div>iBGT to be redeemed</div>
               {/* <div className="flex flex-row">
                   <div>Balance</div>
-                  <div className="ml-2 font-normal">{`${availableEth.prettify(4)}`} iBGT</div>
+                  <div className="ml-2 font-normal">{`${availableiBGT.prettify(4)}`} iBGT</div>
               </div> */}
           </div>
           <div className={`flex flex-row items-center justify-between border border-[#FFEDD4] rounded-[180px] px-5 py-[14px]`}>

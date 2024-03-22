@@ -127,7 +127,7 @@ contract('Gas cost tests', async accounts => {
   // --- openTrove() ---
 
   // it("", async () => {
-  //   const message = 'openTrove(), single account, 0 existing Troves in system. Adds 10 ether and issues 100 NECT'
+  //   const message = 'openTrove(), single account, 0 existing Troves in system. Adds 10 ibgt and issues 100 NECT'
   //   const tx = await borrowerOperations.openTrove(_100pct, dec(100, 18), accounts[2], ZERO_ADDRESS, { from: accounts[2], value: dec(10, 'ether') })
   //   const gas = th.gasUsed(tx)
   //   th.logGas(gas, message)
@@ -136,7 +136,7 @@ contract('Gas cost tests', async accounts => {
   // })
 
   // it("", async () => {
-  //   const message = 'openTrove(), single account, 1 existing Trove in system. Adds 10 ether and issues 100 NECT'
+  //   const message = 'openTrove(), single account, 1 existing Trove in system. Adds 10 ibgt and issues 100 NECT'
   //   await borrowerOperations.openTrove(_100pct, dec(100, 18), accounts[1], ZERO_ADDRESS, { from: accounts[1], value: dec(10, 'ether') })
 
   //   const tx = await borrowerOperations.openTrove(_100pct, dec(100, 18), accounts[2], ZERO_ADDRESS, { from: accounts[2], value: dec(10, 'ether') })
@@ -147,7 +147,7 @@ contract('Gas cost tests', async accounts => {
   // })
 
   // it("", async () => {
-  //   const message = 'openTrove(), single account, Inserts between 2 existing CDs in system. Adds 10 ether and issues 80 NECT. '
+  //   const message = 'openTrove(), single account, Inserts between 2 existing CDs in system. Adds 10 ibgt and issues 80 NECT. '
 
   //   await borrowerOperations.openTrove(_100pct, dec(100, 18), accounts[1], ZERO_ADDRESS, { from: accounts[1], value: dec(10, 'ether') })
   //   await borrowerOperations.openTrove(_100pct, dec(50, 18), accounts[2], ZERO_ADDRESS, { from: accounts[2], value: dec(10, 'ether') })
@@ -161,7 +161,7 @@ contract('Gas cost tests', async accounts => {
   // })
 
   // it("", async () => {
-  //   const message = 'openTrove(), 10 accounts, each account adds 10 ether and issues 100 NECT'
+  //   const message = 'openTrove(), 10 accounts, each account adds 10 ibgt and issues 100 NECT'
 
   //   const amountiBGT = dec(10, 'ether')
   //   const amountNECT = 0
@@ -173,7 +173,7 @@ contract('Gas cost tests', async accounts => {
   // })
 
   // it("", async () => {
-  //   const message = 'openTrove(), 10 accounts, each account adds 10 ether and issues less NECT than the previous one'
+  //   const message = 'openTrove(), 10 accounts, each account adds 10 ibgt and issues less NECT than the previous one'
   //   const amountiBGT = dec(10, 'ether')
   //   const amountNECT = 200
   //   const gasResults = await th.openTrove_allAccounts_decreasingNECTAmounts(_10_Accounts, contracts, amountiBGT, amountNECT)
@@ -184,7 +184,7 @@ contract('Gas cost tests', async accounts => {
   // })
 
   it("", async () => {
-    const message = 'openTrove(), 50 accounts, each account adds random ether and random NECT'
+    const message = 'openTrove(), 50 accounts, each account adds random ibgt and random NECT'
     const amountiBGT = dec(10, 'ether')
     const amountNECT = 0
     const gasResults = await th.openTrove_allAccounts_randomiBGT_randomNECT(1, 9, _50_Accounts, contracts, 2, 100, true)
@@ -197,7 +197,7 @@ contract('Gas cost tests', async accounts => {
   // --- adjustTrove ---
 
   // it("", async () => {
-  //   const message = 'adjustTrove(). iBGT/NECT Increase/Increase. 10 accounts, each account adjusts up -  1 ether and 100 NECT'
+  //   const message = 'adjustTrove(). iBGT/NECT Increase/Increase. 10 accounts, each account adjusts up -  1 ibgt and 100 NECT'
   //   await borrowerOperations.openTrove(_100pct, 0, accounts[999], ZERO_ADDRESS, { from: accounts[999], value: dec(100, 'ether') })
 
   //   const amountiBGT = dec(10, 'ether')
@@ -216,7 +216,7 @@ contract('Gas cost tests', async accounts => {
   // })
 
   // it("", async () => {
-  //   const message = 'adjustTrove(). iBGT/NECT Decrease/Decrease. 10 accounts, each account adjusts down by 0.1 ether and 10 NECT'
+  //   const message = 'adjustTrove(). iBGT/NECT Decrease/Decrease. 10 accounts, each account adjusts down by 0.1 ibgt and 10 NECT'
   //   await borrowerOperations.openTrove(_100pct, 0, accounts[999], ZERO_ADDRESS, { from: accounts[999], value: dec(100, 'ether') })
 
   //   const amountiBGT = dec(10, 'ether')
@@ -234,7 +234,7 @@ contract('Gas cost tests', async accounts => {
   // })
 
   // it("", async () => {
-  //   const message = 'adjustTrove(). iBGT/NECT Increase/Decrease. 10 accounts, each account adjusts up by 0.1 ether and down by 10 NECT'
+  //   const message = 'adjustTrove(). iBGT/NECT Increase/Decrease. 10 accounts, each account adjusts up by 0.1 ibgt and down by 10 NECT'
   //   await borrowerOperations.openTrove(_100pct, 0, accounts[999], ZERO_ADDRESS, { from: accounts[999], value: dec(100, 'ether') })
 
   //   const amountiBGT = dec(10, 'ether')
@@ -303,7 +303,7 @@ contract('Gas cost tests', async accounts => {
   })
 
   it("", async () => {
-    const message = 'closeTrove(), 20 accounts, each account adds 10 ether and issues less NECT than the previous one. First 10 accounts close their trove. '
+    const message = 'closeTrove(), 20 accounts, each account adds 10 ibgt and issues less NECT than the previous one. First 10 accounts close their trove. '
 
     await th.openTrove_allAccounts_decreasingNECTAmounts(_20_Accounts, contracts, dec(10, 'ether'), 200)
 
@@ -322,7 +322,7 @@ contract('Gas cost tests', async accounts => {
   // --- addColl() ---
 
   // it("", async () => {
-  //   const message = 'addColl(), second deposit, 0 other Troves in system. Adds 10 ether'
+  //   const message = 'addColl(), second deposit, 0 other Troves in system. Adds 10 ibgt'
   //   await th.openTrove_allAccounts([accounts[2]], contracts, dec(10, 'ether'), 0)
 
   //   const tx = await borrowerOperations.addColl(accounts[2], accounts[2], { from: accounts[2], value: dec(10, 'ether') })
@@ -333,7 +333,7 @@ contract('Gas cost tests', async accounts => {
   // })
 
   // it("", async () => {
-  //   const message = 'addColl(), second deposit, 10 existing Troves in system. Adds 10 ether'
+  //   const message = 'addColl(), second deposit, 10 existing Troves in system. Adds 10 ibgt'
   //   await th.openTrove_allAccounts(_10_Accounts, contracts, dec(10, 'ether'), 0)
 
   //   await th.openTrove_allAccounts([accounts[99]], contracts, dec(10, 'ether'), 0)
@@ -345,7 +345,7 @@ contract('Gas cost tests', async accounts => {
   // })
 
   // it("", async () => {
-  //   const message = 'addColl(), second deposit, 10 accounts, each account adds 10 ether'
+  //   const message = 'addColl(), second deposit, 10 accounts, each account adds 10 ibgt'
   //   await th.openTrove_allAccounts(_10_Accounts, contracts, dec(10, 'ether'), 0)
 
   //   const gasResults = await th.addColl_allAccounts(_10_Accounts, contracts, dec(10, 'ether'))
@@ -370,7 +370,7 @@ contract('Gas cost tests', async accounts => {
   // --- withdrawColl() ---
 
   // it("", async () => {
-  //   const message = 'withdrawColl(), first withdrawal. 10 accounts in system. 1 account withdraws 5 ether'
+  //   const message = 'withdrawColl(), first withdrawal. 10 accounts in system. 1 account withdraws 5 ibgt'
   //   await th.openTrove_allAccounts(_10_Accounts, contracts, dec(10, 'ether'), 0)
 
   //   const tx = await borrowerOperations.withdrawColl(dec(5, 'ether'), accounts[9], ZERO_ADDRESS, { from: accounts[9] })
@@ -381,7 +381,7 @@ contract('Gas cost tests', async accounts => {
   // })
 
   // it("", async () => {
-  //   const message = 'withdrawColl(), first withdrawal, 10 accounts, each account withdraws 5 ether'
+  //   const message = 'withdrawColl(), first withdrawal, 10 accounts, each account withdraws 5 ibgt'
   //   await th.openTrove_allAccounts(_10_Accounts, contracts, dec(10, 'ether'), 0)
 
   //   const gasResults = await th.withdrawColl_allAccounts(_10_Accounts, contracts, dec(5, 'ether'))
@@ -392,7 +392,7 @@ contract('Gas cost tests', async accounts => {
   // })
 
   // it("", async () => {
-  //   const message = 'withdrawColl(), second withdrawal, 10 accounts, each account withdraws 5 ether'
+  //   const message = 'withdrawColl(), second withdrawal, 10 accounts, each account withdraws 5 ibgt'
   //   await th.openTrove_allAccounts(_10_Accounts, contracts, dec(10, 'ether'), 0)
   //   await th.withdrawColl_allAccounts(_10_Accounts, contracts, dec(1, 'ether'))
 
@@ -555,7 +555,7 @@ contract('Gas cost tests', async accounts => {
   })
 
   it("", async () => {
-    const message = 'getCurrentICR(), new Troves with 10 ether and no withdrawals'
+    const message = 'getCurrentICR(), new Troves with 10 ibgt and no withdrawals'
     await th.openTrove_allAccounts(_10_Accounts, contracts, dec(10, 'ether'), 0)
     const gasResults = await th.getCurrentICR_allAccounts(_10_Accounts, contracts, functionCaller)
     th.logGasMetrics(gasResults, message)
@@ -565,7 +565,7 @@ contract('Gas cost tests', async accounts => {
   })
 
   it("", async () => {
-    const message = 'getCurrentICR(), Troves with 10 ether and 100 NECT withdrawn'
+    const message = 'getCurrentICR(), Troves with 10 ibgt and 100 NECT withdrawn'
     await th.openTrove_allAccounts(_10_Accounts, contracts, dec(10, 'ether'), 0)
     await th.withdrawNECT_allAccounts(_10_Accounts, contracts, dec(100, 18))
 
@@ -577,7 +577,7 @@ contract('Gas cost tests', async accounts => {
   })
 
   it("", async () => {
-    const message = 'getCurrentICR(), Troves with 10 ether and random NECT amount withdrawn'
+    const message = 'getCurrentICR(), Troves with 10 ibgt and random NECT amount withdrawn'
     await th.openTrove_allAccounts(_10_Accounts, contracts, dec(10, 'ether'), 0)
     await th.withdrawNECT_allAccounts_randomAmount(1, 1300, _10_Accounts, contracts)
 
@@ -613,7 +613,7 @@ contract('Gas cost tests', async accounts => {
   })
 
   it("", async () => {
-    const message = 'getCurrentICR(), new Troves with 10 ether and no withdrawals,  WITH pending rewards'
+    const message = 'getCurrentICR(), new Troves with 10 ibgt and no withdrawals,  WITH pending rewards'
     await th.openTrove_allAccounts(_10_Accounts, contracts, dec(10, 'ether'), dec(100, 18))
 
     // acct 999 adds coll, withdraws NECT, sits at 111% ICR
@@ -631,7 +631,7 @@ contract('Gas cost tests', async accounts => {
   })
 
   it("", async () => {
-    const message = 'getCurrentICR(), Troves with 10 ether and 100 NECT withdrawn, WITH pending rewards'
+    const message = 'getCurrentICR(), Troves with 10 ibgt and 100 NECT withdrawn, WITH pending rewards'
     await th.openTrove_allAccounts(_10_Accounts, contracts, dec(10, 'ether'), dec(100, 18))
 
     // acct 999 adds coll, withdraws NECT, sits at 111% ICR
@@ -650,7 +650,7 @@ contract('Gas cost tests', async accounts => {
   })
 
   it("", async () => {
-    const message = 'getCurrentICR(), Troves with 10 ether and random NECT amount withdrawn, WITH pending rewards'
+    const message = 'getCurrentICR(), Troves with 10 ibgt and random NECT amount withdrawn, WITH pending rewards'
     await th.openTrove_allAccounts(_10_Accounts, contracts, dec(10, 'ether'), dec(100, 18))
 
     // acct 999 adds coll, withdraws NECT, sits at 111% ICR
@@ -707,7 +707,7 @@ contract('Gas cost tests', async accounts => {
     await th.openTrove_allAccounts(_10_Accounts, contracts, dec(10, 'ether'), 0)
     await th.withdrawNECT_allAccounts(_10_Accounts, contracts, dec(100, 18))
 
-    // Whale adds 200 ether, withdraws 500 NECT, redeems 101 NECT
+    // Whale adds 200 ibgt, withdraws 500 NECT, redeems 101 NECT
     await borrowerOperations.openTrove(_100pct, 0, whale, ZERO_ADDRESS, { from: whale, value: dec(200, 'ether') })
     await borrowerOperations.withdrawNECT(_100pct, dec(500, 18), whale, ZERO_ADDRESS, { from: whale })
 
@@ -723,7 +723,7 @@ contract('Gas cost tests', async accounts => {
     await th.openTrove_allAccounts(_10_Accounts, contracts, dec(10, 'ether'), 0)
     await th.withdrawNECT_allAccounts(_10_Accounts, contracts, dec(100, 18))
 
-    // Whale adds 200 ether, withdraws 500 NECT, redeems 500 NECT
+    // Whale adds 200 ibgt, withdraws 500 NECT, redeems 500 NECT
     await borrowerOperations.openTrove(_100pct, 0, whale, ZERO_ADDRESS, { from: whale, value: dec(200, 'ether') })
     await borrowerOperations.withdrawNECT(_100pct, dec(500, 18), whale, ZERO_ADDRESS, { from: whale })
 
@@ -739,7 +739,7 @@ contract('Gas cost tests', async accounts => {
     await th.openTrove_allAccounts(_10_Accounts, contracts, dec(10, 'ether'), 0)
     await th.withdrawNECT_allAccounts(_10_Accounts, contracts, dec(100, 18))
 
-    // Whale adds 200 ether, withdraws 450 NECT, redeems 500 NECT
+    // Whale adds 200 ibgt, withdraws 450 NECT, redeems 500 NECT
     await borrowerOperations.openTrove(_100pct, 0, whale, ZERO_ADDRESS, { from: whale, value: dec(200, 'ether') })
     await borrowerOperations.withdrawNECT(_100pct, dec(450, 18), whale, ZERO_ADDRESS, { from: whale })
 
@@ -755,7 +755,7 @@ contract('Gas cost tests', async accounts => {
     await th.openTrove_allAccounts(_10_Accounts, contracts, dec(10, 'ether'), 0)
     await th.withdrawNECT_allAccounts(_10_Accounts, contracts, dec(100, 18))
 
-    // Whale adds 200 ether, withdraws 1000 NECT, redeems 500 NECT
+    // Whale adds 200 ibgt, withdraws 1000 NECT, redeems 500 NECT
     await borrowerOperations.openTrove(_100pct, 0, whale, ZERO_ADDRESS, { from: whale, value: dec(200, 'ether') })
     await borrowerOperations.withdrawNECT(_100pct, dec(1000, 18), whale, ZERO_ADDRESS, { from: whale })
     
@@ -771,7 +771,7 @@ contract('Gas cost tests', async accounts => {
     await th.openTrove_allAccounts(_20_Accounts, contracts, dec(10, 'ether'), 0)
     await th.withdrawNECT_allAccounts(_20_Accounts, contracts, dec(100, 18))
 
-    // Whale adds 200 ether, withdraws 1500 NECT, redeems 1500 NECT
+    // Whale adds 200 ibgt, withdraws 1500 NECT, redeems 1500 NECT
     await borrowerOperations.openTrove(_100pct, 0, whale, ZERO_ADDRESS, { from: whale, value: dec(200, 'ether') })
     await borrowerOperations.withdrawNECT(_100pct, dec(1500, 18), whale, ZERO_ADDRESS, { from: whale })
     
@@ -787,7 +787,7 @@ contract('Gas cost tests', async accounts => {
     await th.openTrove_allAccounts(_30_Accounts, contracts, dec(10, 'ether'), 0)
     await th.withdrawNECT_allAccounts(_30_Accounts, contracts, dec(100, 18))
 
-    // Whale adds 200 ether, withdraws 2000 NECT, redeems 2000 NECT
+    // Whale adds 200 ibgt, withdraws 2000 NECT, redeems 2000 NECT
     await borrowerOperations.openTrove(_100pct, 0, whale, ZERO_ADDRESS, { from: whale, value: dec(200, 'ether') })
     await borrowerOperations.withdrawNECT(_100pct, dec(2000, 18), whale, ZERO_ADDRESS, { from: whale })
     
@@ -870,7 +870,7 @@ contract('Gas cost tests', async accounts => {
     await th.openTrove_allAccounts(_10_Accounts, contracts, dec(10, 'ether'), 0)
     await th.withdrawNECT_allAccounts(_10_Accounts, contracts, dec(100, 18))
 
-    // Whale adds 200 ether, withdraws 500 NECT, redeems 500 NECT
+    // Whale adds 200 ibgt, withdraws 500 NECT, redeems 500 NECT
     await borrowerOperations.openTrove(_100pct, 0, whale, ZERO_ADDRESS, { from: whale, value: dec(200, 'ether') })
     await borrowerOperations.withdrawNECT(_100pct, dec(500, 18), whale, ZERO_ADDRESS, { from: whale })
 
@@ -894,7 +894,7 @@ contract('Gas cost tests', async accounts => {
     await th.openTrove_allAccounts(_10_Accounts, contracts, dec(10, 'ether'), 0)
     await th.withdrawNECT_allAccounts(_10_Accounts, contracts, dec(100, 18))
 
-    // Whale adds 200 ether, withdraws 1000 NECT, redeems 500 NECT
+    // Whale adds 200 ibgt, withdraws 1000 NECT, redeems 500 NECT
     await borrowerOperations.openTrove(_100pct, 0, whale, ZERO_ADDRESS, { from: whale, value: dec(200, 'ether') })
     await borrowerOperations.withdrawNECT(_100pct, dec(1000, 18), whale, ZERO_ADDRESS, { from: whale })
 
@@ -918,7 +918,7 @@ contract('Gas cost tests', async accounts => {
     await th.openTrove_allAccounts(_20_Accounts, contracts, dec(10, 'ether'), 0)
     await th.withdrawNECT_allAccounts(_20_Accounts, contracts, dec(100, 18))
 
-    // Whale adds 200 ether, withdraws 1500 NECT, redeems 1500 NECT
+    // Whale adds 200 ibgt, withdraws 1500 NECT, redeems 1500 NECT
     await borrowerOperations.openTrove(_100pct, 0, whale, ZERO_ADDRESS, { from: whale, value: dec(200, 'ether') })
     await borrowerOperations.withdrawNECT(_100pct, dec(1500, 18), whale, ZERO_ADDRESS, { from: whale })
 
@@ -942,7 +942,7 @@ contract('Gas cost tests', async accounts => {
     await th.openTrove_allAccounts(_30_Accounts, contracts, dec(10, 'ether'), 0)
     await th.withdrawNECT_allAccounts(_30_Accounts, contracts, dec(100, 18))
 
-    // Whale adds 200 ether, withdraws 2000 NECT, redeems 2000 NECT
+    // Whale adds 200 ibgt, withdraws 2000 NECT, redeems 2000 NECT
     await borrowerOperations.openTrove(_100pct, 0, whale, ZERO_ADDRESS, { from: whale, value: dec(200, 'ether') })
     await borrowerOperations.withdrawNECT(_100pct, dec(2000, 18), whale, ZERO_ADDRESS, { from: whale })
 
@@ -1233,12 +1233,12 @@ contract('Gas cost tests', async accounts => {
 
   // it("", async () => {
   //   const message = 'provideToSP(), with pending rewards in system. deposit part of issued NECT: all accounts make second deposit, provide 50 NECT'
-  //   // 9 accts each open Trove with 10 ether, withdraw 180 NECT, and provide 50 NECT to Stability Pool
+  //   // 9 accts each open Trove with 10 ibgt, withdraw 180 NECT, and provide 50 NECT to Stability Pool
   //   await th.openTrove_allAccounts(accounts.slice(2, 12), contracts, dec(10, 'ether'), 0)
   //   await th.withdrawNECT_allAccounts(accounts.slice(2, 12), contracts, dec(130, 18))
   //   await th.provideToSP_allAccounts(accounts.slice(2, 12), stabilityPool, dec(50, 18))
 
-  //   //1 acct open Trove with 1 ether and withdraws 170 NECT
+  //   //1 acct open Trove with 1 ibgt and withdraws 170 NECT
   //   await borrowerOperations.openTrove(_100pct, dec(130, 18), accounts[1], ZERO_ADDRESS, { from: accounts[1], value: dec(1, 'ether') })
 
   //   // >>FF time and one account tops up, triggers POLLEN gains for all
@@ -1267,12 +1267,12 @@ contract('Gas cost tests', async accounts => {
 
   // it("", async () => {
   //   const message = 'provideToSP(), with pending rewards in system. deposit all issued NECT: all accounts make second deposit, provide 90 NECT'
-  //   // 10 accts each open Trove with 10 ether, withdraw 180 NECT, and provide 90 NECT to Stability Pool
+  //   // 10 accts each open Trove with 10 ibgt, withdraw 180 NECT, and provide 90 NECT to Stability Pool
   //   await th.openTrove_allAccounts(accounts.slice(2, 12), contracts, dec(10, 'ether'), 0)
   //   await th.withdrawNECT_allAccounts(accounts.slice(2, 12), contracts, dec(130, 18))
   //   await th.provideToSP_allAccounts(accounts.slice(2, 12), stabilityPool, dec(50, 18))
 
-  //   //1 acct open Trove with 1 ether and withdraws 180 NECT
+  //   //1 acct open Trove with 1 ibgt and withdraws 180 NECT
   //   await borrowerOperations.openTrove(_100pct, dec(130, 18), accounts[1], ZERO_ADDRESS, { from: accounts[1], value: dec(1, 'ether') })
 
   //   // >>FF time and one account tops up, triggers POLLEN gains for all
@@ -1301,11 +1301,11 @@ contract('Gas cost tests', async accounts => {
 
   it("", async () => {
     const message = 'provideToSP(), with pending rewards in system. deposit part of issued NECT: all make second deposit, provide random NECT amount'
-    // 10 accts each open Trove with 10 ether, withdraw 180 NECT, and provide 90 NECT to Stability Pool
+    // 10 accts each open Trove with 10 ibgt, withdraw 180 NECT, and provide 90 NECT to Stability Pool
     await th.openTrove_allAccounts(accounts.slice(2, 12), contracts, dec(10, 'ether'), dec(130, 18))
     await th.provideToSP_allAccounts(accounts.slice(2, 12), stabilityPool, dec(50, 18))
 
-    //1 acct open Trove with 1 ether and withdraws 180 NECT
+    //1 acct open Trove with 1 ibgt and withdraws 180 NECT
     await borrowerOperations.openTrove(_100pct, dec(130, 18), accounts[1], ZERO_ADDRESS, { from: accounts[1], value: dec(1, 'ether') })
 
     // >>FF time and one account tops up, triggers POLLEN gains for all
@@ -1404,11 +1404,11 @@ contract('Gas cost tests', async accounts => {
 
   // it("", async () => {
   //   const message = 'withdrawFromSP(), pending rewards in system. Stability Pool depositors make partial withdrawal - 90 NECT of 130 NECT deposit'
-  //   // 10 accts each open Trove with 10 ether, withdraw 180 NECT, and provide 180 NECT to Stability Pool
+  //   // 10 accts each open Trove with 10 ibgt, withdraw 180 NECT, and provide 180 NECT to Stability Pool
   //   await th.openTrove_allAccounts(accounts.slice(2, 12), contracts, dec(10, 'ether'), dec(130, 18))
   //   await th.provideToSP_allAccounts(accounts.slice(2, 12), stabilityPool, dec(130, 18))
 
-  //   //1 acct open Trove with 1 ether and withdraws 170 NECT
+  //   //1 acct open Trove with 1 ibgt and withdraws 170 NECT
   //   await borrowerOperations.openTrove(_100pct, 0, accounts[1], ZERO_ADDRESS, { from: accounts[1], value: dec(1, 'ether') })
   //   await borrowerOperations.withdrawNECT(_100pct, dec(130, 18), accounts[1], ZERO_ADDRESS, { from: accounts[1] })
 
@@ -1437,11 +1437,11 @@ contract('Gas cost tests', async accounts => {
 
   it("", async () => {
     const message = 'withdrawFromSP(), pending rewards in system. Stability Pool depositors make full withdrawal - 130 NECT of 130 NECT deposit'
-    // 10 accts each open Trove with 10 ether, withdraw 180 NECT, and provide 180 NECT to Stability Pool
+    // 10 accts each open Trove with 10 ibgt, withdraw 180 NECT, and provide 180 NECT to Stability Pool
     await th.openTrove_allAccounts(accounts.slice(2, 12), contracts, dec(10, 'ether'), dec(130, 18))
     await th.provideToSP_allAccounts(accounts.slice(2, 12), stabilityPool, dec(130, 18))
 
-    //1 acct open Trove with 1 ether and withdraws 170 NECT
+    //1 acct open Trove with 1 ibgt and withdraws 170 NECT
     await borrowerOperations.openTrove(_100pct, 0, accounts[1], ZERO_ADDRESS, { from: accounts[1], value: dec(1, 'ether') })
     await borrowerOperations.withdrawNECT(_100pct, dec(130, 18), accounts[1], ZERO_ADDRESS, { from: accounts[1] })
 
@@ -1471,11 +1471,11 @@ contract('Gas cost tests', async accounts => {
 
   it("", async () => {
     const message = 'withdrawFromSP(), pending rewards in system. Stability Pool depositors make partial withdrawal - random amount of NECT'
-    // 10 accts each open Trove with 10 ether, withdraw 180 NECT, and provide 130 NECT to Stability Pool
+    // 10 accts each open Trove with 10 ibgt, withdraw 180 NECT, and provide 130 NECT to Stability Pool
     await th.openTrove_allAccounts(accounts.slice(2, 12), contracts, dec(10, 'ether'), dec(130, 18))
     await th.provideToSP_allAccounts(accounts.slice(2, 12), stabilityPool, dec(130, 18))
 
-    //1 acct open Trove with 1 ether and withdraws 170 NECT
+    //1 acct open Trove with 1 ibgt and withdraws 170 NECT
     await borrowerOperations.openTrove(_100pct, 0, accounts[1], ZERO_ADDRESS, { from: accounts[1], value: dec(1, 'ether') })
     await borrowerOperations.withdrawNECT(_100pct, dec(130, 18), accounts[1], ZERO_ADDRESS, { from: accounts[1] })
 
@@ -1507,11 +1507,11 @@ contract('Gas cost tests', async accounts => {
   // --- withdrawiBGTGainToTrove() - deposit has pending rewards ---
   // it("", async () => {
   //   const message = 'withdrawiBGTGainToTrove(), pending rewards in system. Accounts withdraw 180 NECT, provide 180 NECT, then withdraw all to SP after a liquidation'
-  //   // 10 accts each open Trove with 10 ether, withdraw 180 NECT, and provide 130 NECT to Stability Pool
+  //   // 10 accts each open Trove with 10 ibgt, withdraw 180 NECT, and provide 130 NECT to Stability Pool
   //   await th.openTrove_allAccounts(accounts.slice(2, 12), contracts, dec(10, 'ether'), dec(130, 18))
   //   await th.provideToSP_allAccounts(accounts.slice(2, 12), stabilityPool, dec(130, 18))
 
-  //   //1 acct open Trove with 1 ether and withdraws 170 NECT
+  //   //1 acct open Trove with 1 ibgt and withdraws 170 NECT
   //   await borrowerOperations.openTrove(_100pct, 0, accounts[1], ZERO_ADDRESS, { from: accounts[1], value: dec(1, 'ether') })
   //   await borrowerOperations.withdrawNECT(_100pct, dec(130, 18), accounts[1], ZERO_ADDRESS, { from: accounts[1] })
 
@@ -1540,11 +1540,11 @@ contract('Gas cost tests', async accounts => {
 
   it("", async () => {
     const message = 'withdrawiBGTGainToTrove(), pending rewards in system. Accounts withdraw 180 NECT, provide a random amount, then withdraw all to SP after a liquidation'
-    // 20 accts each open Trove with 10 ether, withdraw 180 NECT, and provide 180 NECT to Stability Pool
+    // 20 accts each open Trove with 10 ibgt, withdraw 180 NECT, and provide 180 NECT to Stability Pool
     await th.openTrove_allAccounts(accounts.slice(2, 22), contracts, dec(10, 'ether'), dec(130, 18))
     await await th.provideToSP_allAccounts_randomAmount(1, 129, accounts.slice(2, 22), stabilityPool)
 
-    //1 acct open Trove with 1 ether and withdraws 180 NECT
+    //1 acct open Trove with 1 ibgt and withdraws 180 NECT
     await borrowerOperations.openTrove(_100pct, 0, accounts[1], ZERO_ADDRESS, { from: accounts[1], value: dec(1, 'ether') })
     await borrowerOperations.withdrawNECT(_100pct, dec(130, 18), accounts[1], ZERO_ADDRESS, { from: accounts[1] })
 
@@ -1576,11 +1576,11 @@ contract('Gas cost tests', async accounts => {
   // Pure redistribution WITH pending rewards
   it("", async () => {
     const message = 'Single liquidate() call. Liquidee has pending rewards. Pure redistribution'
-    // 10 accts each open Trove with 10 ether, withdraw 180 NECT
+    // 10 accts each open Trove with 10 ibgt, withdraw 180 NECT
     await th.openTrove_allAccounts(accounts.slice(100, 110), contracts, dec(10, 'ether'), 0)
     await th.withdrawNECT_allAccounts(accounts.slice(100, 110), contracts, dec(130, 18))
 
-    //6s acct open Trove with 1 ether and withdraw 180 NECT (inc gas comp)
+    //6s acct open Trove with 1 ibgt and withdraw 180 NECT (inc gas comp)
     await th.openTrove_allAccounts(accounts.slice(0, 6), contracts, dec(1, 'ether'), dec(130, 18))
     // Price drops, account[1]'s ICR falls below MCR
     await priceFeed.setPrice(dec(100, 18))
@@ -1608,13 +1608,13 @@ contract('Gas cost tests', async accounts => {
 
   it("", async () => {
     const message = 'Series of liquidate() calls. Liquidee has pending rewards. Pure redistribution'
-    // 100 accts each open Trove with 10 ether, withdraw 180 NECT
+    // 100 accts each open Trove with 10 ibgt, withdraw 180 NECT
     await th.openTrove_allAccounts(accounts.slice(100, 200), contracts, dec(10, 'ether'), 0)
     await th.withdrawNECT_allAccounts(accounts.slice(100, 200), contracts, dec(130, 18))
 
     const liquidationAcctRange = accounts.slice(1, 10)
 
-    // Accts open Trove with 1 ether and withdraws 180 NECT (inc gas comp)
+    // Accts open Trove with 1 ibgt and withdraws 180 NECT (inc gas comp)
     await th.openTrove_allAccounts(liquidationAcctRange, contracts, dec(1, 'ether'), 0)
     await th.withdrawNECT_allAccounts(liquidationAcctRange, contracts, dec(130, 18))
 
@@ -1641,11 +1641,11 @@ contract('Gas cost tests', async accounts => {
   // Pure redistribution with NO pending rewards
   it("", async () => {
     const message = 'Single liquidate() call. Liquidee has NO pending rewards. Pure redistribution'
-    // 10 accts each open Trove with 10 ether, withdraw 180 NECT
+    // 10 accts each open Trove with 10 ibgt, withdraw 180 NECT
     await th.openTrove_allAccounts(accounts.slice(100, 110), contracts, dec(10, 'ether'), 0)
     await th.withdrawNECT_allAccounts(accounts.slice(100, 110), contracts, dec(130, 18))
 
-    //2 acct open Trove with 1 ether and withdraws 180 NECT (inc gas comp)
+    //2 acct open Trove with 1 ibgt and withdraws 180 NECT (inc gas comp)
     await th.openTrove_allAccounts(accounts.slice(2, 4), contracts, dec(1, 'ether'), 0)
     await borrowerOperations.withdrawNECT(_100pct, dec(130, 18), accounts[2], ZERO_ADDRESS, { from: accounts[2] })
     await borrowerOperations.withdrawNECT(_100pct, dec(130, 18), accounts[3], ZERO_ADDRESS, { from: accounts[3] })
@@ -1679,7 +1679,7 @@ contract('Gas cost tests', async accounts => {
   it("", async () => {
     const message = 'Series of liquidate() calls. Liquidee has NO pending rewards. Pure redistribution'
 
-    // 10 accts each open Trove with 10 ether, withdraw 180 NECT
+    // 10 accts each open Trove with 10 ibgt, withdraw 180 NECT
 
     await th.openTrove_allAccounts(accounts.slice(100, 110), contracts, dec(10, 'ether'), 0)
     await th.withdrawNECT_allAccounts(accounts.slice(100, 110), contracts, dec(130, 18))
@@ -1711,11 +1711,11 @@ contract('Gas cost tests', async accounts => {
   // Pure offset with NO pending rewards
   it("", async () => {
     const message = 'Single liquidate() call. Liquidee has NO pending rewards. Pure offset with SP'
-    // 10 accts each open Trove with 10 ether, withdraw 180 NECT
+    // 10 accts each open Trove with 10 ibgt, withdraw 180 NECT
     await th.openTrove_allAccounts(accounts.slice(100, 110), contracts, dec(10, 'ether'), 0)
     await th.withdrawNECT_allAccounts(accounts.slice(100, 110), contracts, dec(130, 18))
 
-    //3 acct open Trove with 1 ether and withdraws 180 NECT (inc gas comp)
+    //3 acct open Trove with 1 ibgt and withdraws 180 NECT (inc gas comp)
     await th.openTrove_allAccounts(accounts.slice(0, 4), contracts, dec(1, 'ether'), 0)
     await borrowerOperations.withdrawNECT(_100pct, dec(130, 18), accounts[1], ZERO_ADDRESS, { from: accounts[1] })
     await borrowerOperations.withdrawNECT(_100pct, dec(130, 18), accounts[2], ZERO_ADDRESS, { from: accounts[2] })
@@ -1748,11 +1748,11 @@ contract('Gas cost tests', async accounts => {
   // Pure offset WITH pending rewards
   it("", async () => {
     const message = 'Single liquidate() call. Liquidee has pending rewards. Pure offset with SP'
-    // 10 accts each open Trove with 10 ether, withdraw 180 NECT
+    // 10 accts each open Trove with 10 ibgt, withdraw 180 NECT
     await th.openTrove_allAccounts(accounts.slice(100, 110), contracts, dec(10, 'ether'), 0)
     await th.withdrawNECT_allAccounts(accounts.slice(100, 110), contracts, dec(130, 18))
 
-    // 5 acct open Trove with 1 ether and withdraws 180 NECT (inc gas comp)
+    // 5 acct open Trove with 1 ibgt and withdraws 180 NECT (inc gas comp)
     await th.openTrove_allAccounts(accounts.slice(0, 5), contracts, dec(1, 'ether'), 0)
     await borrowerOperations.withdrawNECT(_100pct, dec(130, 18), accounts[1], ZERO_ADDRESS, { from: accounts[1] })
     await borrowerOperations.withdrawNECT(_100pct, dec(130, 18), accounts[2], ZERO_ADDRESS, { from: accounts[2] })
@@ -1792,11 +1792,11 @@ contract('Gas cost tests', async accounts => {
   // Partial offset + redistribution WITH pending rewards
   it("", async () => {
     const message = 'Single liquidate() call. Liquidee has pending rewards. Partial offset + redistribution'
-    // 10 accts each open Trove with 10 ether, withdraw 180 NECT
+    // 10 accts each open Trove with 10 ibgt, withdraw 180 NECT
     await th.openTrove_allAccounts(accounts.slice(100, 110), contracts, dec(10, 'ether'), 0)
     await th.withdrawNECT_allAccounts(accounts.slice(100, 110), contracts, dec(130, 18))
 
-    //4 acct open Trove with 1 ether and withdraws 180 NECT (inc gas comp)
+    //4 acct open Trove with 1 ibgt and withdraws 180 NECT (inc gas comp)
     await th.openTrove_allAccounts(accounts.slice(0, 4), contracts, dec(1, 'ether'), 0)
     await borrowerOperations.withdrawNECT(_100pct, dec(130, 18), accounts[1], ZERO_ADDRESS, { from: accounts[1] })
     await borrowerOperations.withdrawNECT(_100pct, dec(130, 18), accounts[2], ZERO_ADDRESS, { from: accounts[2] })
@@ -1831,11 +1831,11 @@ contract('Gas cost tests', async accounts => {
   // Partial offset + redistribution with NO pending rewards
   it("", async () => {
     const message = 'Single liquidate() call. Liquidee has NO pending rewards. Partial offset + redistribution'
-    // 10 accts each open Trove with 10 ether, withdraw 180 NECT
+    // 10 accts each open Trove with 10 ibgt, withdraw 180 NECT
     await th.openTrove_allAccounts(accounts.slice(100, 110), contracts, dec(10, 'ether'), 0)
     await th.withdrawNECT_allAccounts(accounts.slice(100, 110), contracts, dec(130, 18))
 
-    //2 acct open Trove with 1 ether and withdraws 180 NECT (inc gas comp)
+    //2 acct open Trove with 1 ibgt and withdraws 180 NECT (inc gas comp)
     await th.openTrove_allAccounts(accounts.slice(2, 4), contracts, dec(1, 'ether'), 0)
     await borrowerOperations.withdrawNECT(_100pct, dec(130, 18), accounts[2], ZERO_ADDRESS, { from: accounts[2] })
     await borrowerOperations.withdrawNECT(_100pct, dec(130, 18), accounts[3], ZERO_ADDRESS, { from: accounts[3] })
@@ -1876,10 +1876,10 @@ contract('Gas cost tests', async accounts => {
   // With pending dist. rewards and SP gains (still closes) - partial offset (Highest gas cost scenario in Normal Mode)
   it("", async () => {
     const message = 'liquidate() 1 Trove, liquidated Trove has pending SP rewards and redistribution rewards, offset + redistribution.'
-    // 10 accts each open Trove with 10 ether
+    // 10 accts each open Trove with 10 ibgt
     await th.openTrove_allAccounts(accounts.slice(100, 110), contracts, dec(10, 'ether'), 0)
 
-    //Account 99 and 98 each open Trove with 1 ether, and withdraw 180 NECT (inc gas comp)
+    //Account 99 and 98 each open Trove with 1 ibgt, and withdraw 180 NECT (inc gas comp)
     await th.openTrove_allAccounts([accounts[99]], contracts, dec(1, 'ether'), 0)
     await borrowerOperations.withdrawNECT(_100pct, dec(130, 18), accounts[99], ZERO_ADDRESS, { from: accounts[99] })
     await th.openTrove_allAccounts([accounts[98]], contracts, dec(1, 'ether'), 0)
@@ -1888,7 +1888,7 @@ contract('Gas cost tests', async accounts => {
     // Acct 99 deposits 1 NECT to SP
     await stabilityPool.provideToSP(dec(1, 18), ZERO_ADDRESS, { from: accounts[99] })
 
-    //Account 97 opens Trove with 1 ether and withdraws 180 NECT (inc gas comp)
+    //Account 97 opens Trove with 1 ibgt and withdraws 180 NECT (inc gas comp)
     await th.openTrove_allAccounts([accounts[97]], contracts, dec(1, 'ether'), 0)
     await borrowerOperations.withdrawNECT(_100pct, dec(130, 18), accounts[97], ZERO_ADDRESS, { from: accounts[97] })
 
@@ -1934,13 +1934,13 @@ contract('Gas cost tests', async accounts => {
   // pure offset
   it("", async () => {
     const message = 'liquidate() 1 Trove Normal Mode, 30 active Troves, no iBGT gain in pool, pure offset with SP'
-    // 30 accts each open Trove with 10 ether, withdraw 180 NECT, and provide 180 NECT to Stability Pool
+    // 30 accts each open Trove with 10 ibgt, withdraw 180 NECT, and provide 180 NECT to Stability Pool
     await th.openTrove_allAccounts(accounts.slice(100, 130), contracts, dec(10, 'ether'), 0)
     await th.withdrawNECT_allAccounts(accounts.slice(100, 130), contracts, dec(130, 18))
 
     await stabilityPool.provideToSP(dec(130, 18), ZERO_ADDRESS, { from: accounts[100] })
 
-    //1 acct open Trove with 1 ether and withdraws 180 NECT (inc gas comp)
+    //1 acct open Trove with 1 ibgt and withdraws 180 NECT (inc gas comp)
     await th.openTrove_allAccounts([accounts[1]], contracts, dec(1, 'ether'), 0)
     await borrowerOperations.withdrawNECT(_100pct, dec(130, 18), accounts[1], ZERO_ADDRESS, { from: accounts[1] })
 

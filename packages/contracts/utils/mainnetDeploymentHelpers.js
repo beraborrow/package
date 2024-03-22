@@ -104,8 +104,8 @@ class MainnetDeploymentHelper {
       nectTokenParams
     )
 
-    if (!this.configParams.ETHERSCAN_BASE_URL) {
-      console.log('No Etherscan Url defined, skipping verification')
+    if (!this.configParams.BERASCAN_BASE_URL) {
+      console.log('No Berchain scan Url defined, skipping verification')
     } else {
       await this.verifyContract('priceFeed', deploymentState)
       await this.verifyContract('sortedTroves', deploymentState)
@@ -193,8 +193,8 @@ class MainnetDeploymentHelper {
       pollenTokenParams
     )
 
-    if (!this.configParams.ETHERSCAN_BASE_URL) {
-      console.log('No Etherscan Url defined, skipping verification')
+    if (!this.configParams.BERASCAN_BASE_URL) {
+      console.log('No Berchain scan Url defined, skipping verification')
     } else {
       await this.verifyContract('pollenStaking', deploymentState)
       await this.verifyContract('lockupContractFactory', deploymentState)
@@ -215,8 +215,8 @@ class MainnetDeploymentHelper {
     const unipoolFactory = await this.getFactory("Unipool")
     const unipool = await this.loadOrDeploy(unipoolFactory, 'unipool', deploymentState)
 
-    if (!this.configParams.ETHERSCAN_BASE_URL) {
-      console.log('No Etherscan Url defined, skipping verification')
+    if (!this.configParams.BERASCAN_BASE_URL) {
+      console.log('No Berchain scan Url defined, skipping verification')
     } else {
       await this.verifyContract('unipool', deploymentState)
     }
@@ -237,8 +237,8 @@ class MainnetDeploymentHelper {
       multiTroveGetterParams
     )
 
-    if (!this.configParams.ETHERSCAN_BASE_URL) {
-      console.log('No Etherscan Url defined, skipping verification')
+    if (!this.configParams.BERASCAN_BASE_URL) {
+      console.log('No Berchain scan Url defined, skipping verification')
     } else {
       await this.verifyContract('multiTroveGetter', deploymentState, multiTroveGetterParams)
     }
@@ -373,13 +373,13 @@ class MainnetDeploymentHelper {
       ))
   }
 
-  async connectUnipoolMainnet(uniPool, POLLENContracts, NECTWETHPairAddr, duration) {
+  async connectUnipoolMainnet(uniPool, POLLENContracts, NECTWiBGTPairAddr, duration) {
     const gasPrice = this.configParams.GAS_PRICE
     await this.isOwnershipRenounced(uniPool) ||
-      await this.sendAndWaitForTransaction(uniPool.setParams(POLLENContracts.pollenToken.address, NECTWETHPairAddr, duration, {gasPrice}))
+      await this.sendAndWaitForTransaction(uniPool.setParams(POLLENContracts.pollenToken.address, NECTiBGTPairAddr, duration, {gasPrice}))
   }
 
-  // --- Verify on Ethrescan ---
+  // --- Verify on Berchain scan ---
   async verifyContract(name, deploymentState, constructorArguments=[]) {
     return
     if (!deploymentState[name] || !deploymentState[name].address) {
@@ -405,7 +405,7 @@ class MainnetDeploymentHelper {
       }
     }
 
-    deploymentState[name].verification = `${this.configParams.ETHERSCAN_BASE_URL}/${deploymentState[name].address}#code`
+    deploymentState[name].verification = `${this.configParams.BERASCAN_BASE_URL}/${deploymentState[name].address}#code`
 
     this.saveDeployment(deploymentState)
   }

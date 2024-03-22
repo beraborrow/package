@@ -44,10 +44,10 @@ export const ReadOnlyStake: React.FC = () => {
 
         <StaticRow
           label="Redemption gain"
-          inputId="stake-gain-eth"
+          inputId="stake-gain-ibgt"
           amount={pollenStake.collateralGain.prettify(4)}
           color={pollenStake.collateralGain.nonZero && "success"}
-          unit="ETH"
+          unit="iBGT"
         />
 
         <StaticRow

@@ -32,7 +32,7 @@ const selector = (state: BeraBorrowStoreState) => {
 };
 
 const TRANSACTION_ID = "trove-creation";
-const GAS_ROOM_ETH = Decimal.from(0.1);
+const GAS_ROOM_iBGT = Decimal.from(0.1);
 
 const feeFrom = (original: Trove, edited: Trove, borrowingRate: Decimal): Decimal => {
   const change = original.whatChanged(edited, borrowingRate);
@@ -86,8 +86,8 @@ export const Borrow: React.FC = () => {
   const totalDebt = netDebt.add(NECT_LIQUIDATION_RESERVE).add(fee);
   const maxBorrowingRate = borrowingRate.add(0.005);
   const updatedTrove = isDirty ? new Trove(collateral, totalDebt) : trove;
-  const availableEth = accountBalance.gt(GAS_ROOM_ETH)
-    ? accountBalance.sub(GAS_ROOM_ETH)
+  const availableiBGT = accountBalance.gt(GAS_ROOM_iBGT)
+    ? accountBalance.sub(GAS_ROOM_iBGT)
     : Decimal.ZERO;
 
   const [troveChange, ] = validateTroveChange(
@@ -147,7 +147,7 @@ export const Borrow: React.FC = () => {
                 <div>Pay back</div>
                 <div className="flex flex-row">
                     <div>Balance</div>
-                    <div className="ml-2 font-normal">{`${availableEth.prettify(4)}`} iBGT</div>
+                    <div className="ml-2 font-normal">{`${availableiBGT.prettify(4)}`} iBGT</div>
                 </div>
             </div>
             <div
