@@ -38,18 +38,18 @@ export function getCurrentRedemption(event: ethereum.Event): Redemption {
 
 export function finishCurrentRedemption(
   event: ethereum.Event,
-  _attemptedLUSDAmount: BigInt,
-  _actualLUSDAmount: BigInt,
-  _ETHSent: BigInt,
-  _ETHFee: BigInt
+  _attemptedNECTAmount: BigInt,
+  _actualNECTAmount: BigInt,
+  _iBGTSent: BigInt,
+  _iBGTFee: BigInt
 ): void {
-  let fee = decimalize(_ETHFee);
+  let fee = decimalize(_iBGTFee);
 
   let currentRedemption = getCurrentRedemption(event);
-  currentRedemption.tokensAttemptedToRedeem = decimalize(_attemptedLUSDAmount);
-  currentRedemption.tokensActuallyRedeemed = decimalize(_actualLUSDAmount);
-  currentRedemption.collateralRedeemed = decimalize(_ETHSent);
-  currentRedemption.partial = _actualLUSDAmount < _attemptedLUSDAmount;
+  currentRedemption.tokensAttemptedToRedeem = decimalize(_attemptedNECTAmount);
+  currentRedemption.tokensActuallyRedeemed = decimalize(_actualNECTAmount);
+  currentRedemption.collateralRedeemed = decimalize(_iBGTSent);
+  currentRedemption.partial = _actualNECTAmount < _attemptedNECTAmount;
   currentRedemption.fee = fee;
   currentRedemption.save();
 

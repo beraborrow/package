@@ -19,7 +19,7 @@ pragma solidity 0.6.11;
  * multiplying it by some factor in range ]0,1[
  *
  * Please see the implementation spec in the proof document, which closely follows on from the compounded deposit / iBGT gain derivations:
- * https://github.com/beraborrow/beraborrow/blob/master/papers/Scalable_Reward_Distribution_with_Compounding_Stakes.pdf
+ * https://github.com/BeraborrowOfficial/beraborrow-frontend/blob/master/papers/Scalable_Reward_Distribution_with_Compounding_Stakes.pdf
  *
  * --- POLLEN ISSUANCE TO STABILITY POOL DEPOSITORS ---
  *
@@ -31,7 +31,7 @@ pragma solidity 0.6.11;
  * by a given deposit, is split between the depositor and the front end through which the deposit was made, based on the front end's kickbackRate.
  *
  * Please see the system Readme for an overview:
- * https://github.com/beraborrow/dev/blob/main/README.md#pollen-issuance-to-stability-providers
+ * https://github.com/BeraborrowOfficial/beraborrow-frontend/blob/main/README.md#pollen-issuance-to-stability-providers
  */
 interface IStabilityPool {
 

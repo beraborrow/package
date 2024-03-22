@@ -14,12 +14,12 @@ type Global @entity {
   numberOfTrovesClosedByOwner: Int!
   totalNumberOfTroves: Int!
 
-  totalNumberOfLQTYStakes: Int!
-  numberOfActiveLQTYStakes: Int!
+  totalNumberOfPOLLENStakes: Int!
+  numberOfActivePOLLENStakes: Int!
 
-  "Total amount of LUSD paid as borrowing fees"
+  "Total amount of NECT paid as borrowing fees"
   totalBorrowingFeesPaid: BigDecimal!
-  "Total amount of ETH paid as redemption fees"
+  "Total amount of iBGT paid as redemption fees"
   totalRedemptionFeesPaid: BigDecimal!
 
   "Total redistributed per-stake collateral"
@@ -55,13 +55,13 @@ type SystemState @entity {
 
   tokensInStabilityPool: BigDecimal!
   collSurplusPoolBalance: BigDecimal!
-  totalLQTYTokensStaked: BigDecimal!
+  totalPOLLENTokensStaked: BigDecimal!
 
   cause: Change @derivedFrom(field: "systemStateAfter")
 }
 
 type User @entity {
-  "User's Ethereum address as a hex-string"
+  "User's Berachain address as a hex-string"
   id: ID!
 
   trove: Trove
@@ -275,7 +275,7 @@ type LqtyStake @entity {
   changes: [LqtyStakeChange!]! @derivedFrom(field: "stake")
 }
 
-enum LQTYStakeOperation {
+enum POLLENStakeOperation {
   stakeCreated
   stakeIncreased
   stakeDecreased
@@ -291,7 +291,7 @@ type LqtyStakeChange implements Change @entity {
   systemStateAfter: SystemState!
 
   stake: LqtyStake!
-  stakeOperation: LQTYStakeOperation!
+  stakeOperation: POLLENStakeOperation!
 
   stakedAmountBefore: BigDecimal!
   stakedAmountChange: BigDecimal!

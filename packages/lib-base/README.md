@@ -6,4 +6,4 @@ Needs to be installed in order to use other BeraBorrow SDK packages, for example
 
 ## API Reference
 
-For now, it can be found in the public BeraBorrow [repo](https://github.com/beraborrow/beraborrow/blob/master/docs/sdk/lib-base.md).
+For now, it can be found in the public BeraBorrow [repo](https://github.com/BeraBorrowOfficial/beraborrow-frontend/blob/master/docs/sdk/lib-base.md).

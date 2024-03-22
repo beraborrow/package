@@ -9,11 +9,11 @@
         {
           "indexed": false,
           "internalType": "address",
-          "name": "_lqtyTokenAddress",
+          "name": "_pollenTokenAddress",
           "type": "address"
         }
       ],
-      "name": "LQTYTokenAddressSet",
+      "name": "POLLENTokenAddressSet",
       "type": "event"
     },
     {
@@ -88,11 +88,11 @@
       "inputs": [
         {
           "internalType": "address",
-          "name": "_lqtyTokenAddress",
+          "name": "_pollenTokenAddress",
           "type": "address"
         }
       ],
-      "name": "setLQTYTokenAddress",
+      "name": "setPOLLENTokenAddress",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

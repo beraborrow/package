@@ -1,7 +1,7 @@
 {
   "_format": "hh-sol-artifact-1",
-  "contractName": "LUSDTokenCaller",
-  "sourceName": "contracts/TestContracts/LUSDTokenCaller.sol",
+  "contractName": "NECTTokenCaller",
+  "sourceName": "contracts/TestContracts/NECTTokenCaller.sol",
   "abi": [
     {
       "inputs": [
@@ -16,7 +16,7 @@
           "type": "uint256"
         }
       ],
-      "name": "lusdBurn",
+      "name": "nectBurn",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -34,7 +34,7 @@
           "type": "uint256"
         }
       ],
-      "name": "lusdMint",
+      "name": "nectMint",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -57,7 +57,7 @@
           "type": "uint256"
         }
       ],
-      "name": "lusdReturnFromPool",
+      "name": "nectReturnFromPool",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -80,7 +80,7 @@
           "type": "uint256"
         }
       ],
-      "name": "lusdSendToPool",
+      "name": "nectSendToPool",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -88,12 +88,12 @@
     {
       "inputs": [
         {
-          "internalType": "contract ILUSDToken",
-          "name": "_LUSD",
+          "internalType": "contract INECTToken",
+          "name": "_NECT",
           "type": "address"
         }
       ],
-      "name": "setLUSD",
+      "name": "setNECT",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

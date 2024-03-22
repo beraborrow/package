@@ -36,20 +36,20 @@ export function handleLiquidation(event: Liquidation): void {
     event.params._liquidatedColl,
     event.params._liquidatedDebt,
     event.params._collGasCompensation,
-    event.params._LUSDGasCompensation
+    event.params._NECTGasCompensation
   );
 }
 
 export function handleRedemption(event: Redemption): void {
   finishCurrentRedemption(
     event,
-    event.params._attemptedLUSDAmount,
-    event.params._actualLUSDAmount,
-    event.params._ETHSent,
-    event.params._ETHFee
+    event.params._attemptedNECTAmount,
+    event.params._actualNECTAmount,
+    event.params._iBGTSent,
+    event.params._iBGTFee
   );
 }
 
 export function handleLTermsUpdated(event: LTermsUpdated): void {
-  updateTotalRedistributed(event.params._L_ETH, event.params._L_LUSDDebt);
+  updateTotalRedistributed(event.params._L_iBGT, event.params._L_NECTDebt);
 }

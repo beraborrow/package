@@ -98,17 +98,17 @@
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "_ETH",
+          "name": "_iBGT",
           "type": "uint256"
         },
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "_LUSDLoss",
+          "name": "_NECTLoss",
           "type": "uint256"
         }
       ],
-      "name": "ETHGainWithdrawn",
+      "name": "iBGTGainWithdrawn",
       "type": "event"
     },
     {
@@ -140,7 +140,7 @@
           "type": "uint256"
         }
       ],
-      "name": "EtherSent",
+      "name": "iBGTSent",
       "type": "event"
     },
     {
@@ -268,11 +268,11 @@
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "_LQTY",
+          "name": "_POLLEN",
           "type": "uint256"
         }
       ],
-      "name": "LQTYPaidToDepositor",
+      "name": "POLLENPaidToDepositor",
       "type": "event"
     },
     {
@@ -287,11 +287,11 @@
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "_LQTY",
+          "name": "_POLLEN",
           "type": "uint256"
         }
       ],
-      "name": "LQTYPaidToFrontEnd",
+      "name": "POLLENPaidToFrontEnd",
       "type": "event"
     },
     {
@@ -300,11 +300,11 @@
         {
           "indexed": false,
           "internalType": "address",
-          "name": "_newLUSDTokenAddress",
+          "name": "_newNECTTokenAddress",
           "type": "address"
         }
       ],
-      "name": "LUSDTokenAddressChanged",
+      "name": "NECTTokenAddressChanged",
       "type": "event"
     },
     {
@@ -394,7 +394,7 @@
           "type": "uint256"
         }
       ],
-      "name": "StabilityPoolETHBalanceUpdated",
+      "name": "StabilityPooliBGTBalanceUpdated",
       "type": "event"
     },
     {
@@ -407,7 +407,7 @@
           "type": "uint256"
         }
       ],
-      "name": "StabilityPoolLUSDBalanceUpdated",
+      "name": "StabilityPoolNECTBalanceUpdated",
       "type": "event"
     },
     {
@@ -469,7 +469,7 @@
           "type": "address"
         }
       ],
-      "name": "getCompoundedLUSDDeposit",
+      "name": "getCompoundedNECTDeposit",
       "outputs": [
         {
           "internalType": "uint256",
@@ -488,7 +488,7 @@
           "type": "address"
         }
       ],
-      "name": "getDepositorETHGain",
+      "name": "getDepositoriBGTGain",
       "outputs": [
         {
           "internalType": "uint256",
@@ -507,7 +507,7 @@
           "type": "address"
         }
       ],
-      "name": "getDepositorLQTYGain",
+      "name": "getDepositorPOLLENGain",
       "outputs": [
         {
           "internalType": "uint256",
@@ -520,7 +520,7 @@
     },
     {
       "inputs": [],
-      "name": "getETH",
+      "name": "getiBGT",
       "outputs": [
         {
           "internalType": "uint256",
@@ -539,7 +539,7 @@
           "type": "address"
         }
       ],
-      "name": "getFrontEndLQTYGain",
+      "name": "getFrontEndPOLLENGain",
       "outputs": [
         {
           "internalType": "uint256",
@@ -552,7 +552,7 @@
     },
     {
       "inputs": [],
-      "name": "getTotalLUSDDeposits",
+      "name": "getTotalNECTDeposits",
       "outputs": [
         {
           "internalType": "uint256",
@@ -631,7 +631,7 @@
         },
         {
           "internalType": "address",
-          "name": "_lusdTokenAddress",
+          "name": "_nectTokenAddress",
           "type": "address"
         },
         {
@@ -668,7 +668,7 @@
           "type": "address"
         }
       ],
-      "name": "withdrawETHGainToTrove",
+      "name": "withdrawiBGTGainToTrove",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

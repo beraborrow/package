@@ -5,16 +5,16 @@ import { LqtyStakeChange, LqtyStake } from "../../generated/schema";
 import { decimalize, DECIMAL_ZERO, BIGINT_ZERO } from "../utils/bignumbers";
 
 import {
-  decreaseNumberOfActiveLQTYStakes,
-  increaseNumberOfActiveLQTYStakes,
-  increaseTotalNumberOfLQTYStakes
+  decreaseNumberOfActivePOLLENStakes,
+  increaseNumberOfActivePOLLENStakes,
+  increaseTotalNumberOfPOLLENStakes
 } from "./Global";
 
 import { getUser } from "./User";
 import { beginChange, initChange, finishChange } from "./Change";
 import { updateSystemStateByLqtyStakeChange } from "./SystemState";
 
-function startLQTYStakeChange(event: ethereum.Event): LqtyStakeChange {
+function startPOLLENStakeChange(event: ethereum.Event): LqtyStakeChange {
   let sequenceNumber = beginChange();
   let stakeChange = new LqtyStakeChange(sequenceNumber.toString());
   stakeChange.issuanceGain = DECIMAL_ZERO;
@@ -23,7 +23,7 @@ function startLQTYStakeChange(event: ethereum.Event): LqtyStakeChange {
   return stakeChange;
 }
 
-function finishLQTYStakeChange(stakeChange: LqtyStakeChange): void {
+function finishPOLLENStakeChange(stakeChange: LqtyStakeChange): void {
   finishChange(stakeChange);
   stakeChange.save();
 }
@@ -80,7 +80,7 @@ export function updateStake(event: ethereum.Event, address: Address, newStake: B
 
   let nextStakeAmount = decimalize(newStake);
 
-  let stakeChange = startLQTYStakeChange(event);
+  let stakeChange = startPOLLENStakeChange(event);
   stakeChange.stake = stake.id;
   stakeChange.stakeOperation = getOperationType(stake, nextStakeAmount);
   stakeChange.stakedAmountBefore = stake.amount;
@@ -91,16 +91,16 @@ export function updateStake(event: ethereum.Event, address: Address, newStake: B
 
   if (stakeChange.stakeOperation == "stakeCreated") {
     if (isUserFirstStake) {
-      increaseTotalNumberOfLQTYStakes();
+      increaseTotalNumberOfPOLLENStakes();
     } else {
-      increaseNumberOfActiveLQTYStakes();
+      increaseNumberOfActivePOLLENStakes();
     }
   } else if (stakeChange.stakeOperation == "stakeRemoved") {
-    decreaseNumberOfActiveLQTYStakes();
+    decreaseNumberOfActivePOLLENStakes();
   }
 
   updateSystemStateByLqtyStakeChange(stakeChange);
-  finishLQTYStakeChange(stakeChange);
+  finishPOLLENStakeChange(stakeChange);
 
   stake.save();
 }
@@ -108,25 +108,25 @@ export function updateStake(event: ethereum.Event, address: Address, newStake: B
 export function withdrawStakeGains(
   event: ethereum.Event,
   address: Address,
-  LUSDGain: BigInt,
+  NECTGain: BigInt,
   ETHGain: BigInt
 ): void {
-  if (LUSDGain == BIGINT_ZERO && ETHGain == BIGINT_ZERO) {
+  if (NECTGain == BIGINT_ZERO && ETHGain == BIGINT_ZERO) {
     return;
   }
 
   let stake = getUserStake(address) || createStake(address);
-  let stakeChange: LqtyStakeChange = startLQTYStakeChange(event);
+  let stakeChange: LqtyStakeChange = startPOLLENStakeChange(event);
   stakeChange.stake = stake.id;
   stakeChange.stakeOperation = "gainsWithdrawn";
-  stakeChange.issuanceGain = decimalize(LUSDGain);
+  stakeChange.issuanceGain = decimalize(NECTGain);
   stakeChange.redemptionGain = decimalize(ETHGain);
   stakeChange.stakedAmountBefore = stake.amount;
   stakeChange.stakedAmountChange = DECIMAL_ZERO;
   stakeChange.stakedAmountAfter = stake.amount;
 
   updateSystemStateByLqtyStakeChange(stakeChange);
-  finishLQTYStakeChange(stakeChange);
+  finishPOLLENStakeChange(stakeChange);
 
   stake.save();
 }

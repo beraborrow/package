@@ -93,7 +93,7 @@
         },
         {
           "internalType": "uint256",
-          "name": "_LUSDAmount",
+          "name": "_NECTAmount",
           "type": "uint256"
         },
         {
@@ -130,7 +130,7 @@
           "type": "address"
         }
       ],
-      "name": "repayLUSD",
+      "name": "repayNECT",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -181,7 +181,7 @@
           "type": "address"
         }
       ],
-      "name": "withdrawLUSD",
+      "name": "withdrawNECT",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

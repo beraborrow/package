@@ -26,8 +26,8 @@ export function getGlobal(): Global {
     newGlobal.totalNumberOfTroves = 0;
     newGlobal.rawTotalRedistributedCollateral = BIGINT_ZERO;
     newGlobal.rawTotalRedistributedDebt = BIGINT_ZERO;
-    newGlobal.totalNumberOfLQTYStakes = 0;
-    newGlobal.numberOfActiveLQTYStakes = 0;
+    newGlobal.totalNumberOfPOLLENStakes = 0;
+    newGlobal.numberOfActivePOLLENStakes = 0;
     newGlobal.totalBorrowingFeesPaid = DECIMAL_ZERO;
     newGlobal.totalRedemptionFeesPaid = DECIMAL_ZERO;
 
@@ -71,11 +71,11 @@ export function getRedemptionSequenceNumber(): i32 {
   return increaseCounter("redemptionCount");
 }
 
-export function updateTotalRedistributed(L_ETH: BigInt, L_LUSDDebt: BigInt): void {
+export function updateTotalRedistributed(L_iBGT: BigInt, L_NECTDebt: BigInt): void {
   let global = getGlobal();
 
-  global.rawTotalRedistributedCollateral = L_ETH;
-  global.rawTotalRedistributedDebt = L_LUSDDebt;
+  global.rawTotalRedistributedCollateral = L_iBGT;
+  global.rawTotalRedistributedDebt = L_NECTDebt;
   global.save();
 }
 
@@ -135,30 +135,30 @@ export function decreaseNumberOfTrovesClosedByOwner(): void {
   global.save();
 }
 
-export function increaseTotalNumberOfLQTYStakes(): void {
+export function increaseTotalNumberOfPOLLENStakes(): void {
   let global = getGlobal();
 
-  global.totalNumberOfLQTYStakes++;
-  global.numberOfActiveLQTYStakes++;
+  global.totalNumberOfPOLLENStakes++;
+  global.numberOfActivePOLLENStakes++;
   global.save();
 }
 
-export function increaseNumberOfActiveLQTYStakes(): void {
+export function increaseNumberOfActivePOLLENStakes(): void {
   let global = getGlobal();
 
-  global.numberOfActiveLQTYStakes++;
+  global.numberOfActivePOLLENStakes++;
   global.save();
 }
 
-export function decreaseNumberOfActiveLQTYStakes(): void {
+export function decreaseNumberOfActivePOLLENStakes(): void {
   let global = getGlobal();
 
-  global.numberOfActiveLQTYStakes--;
+  global.numberOfActivePOLLENStakes--;
   global.save();
 }
 
-export function increaseTotalBorrowingFeesPaid(_LUSDFee: BigInt): void {
+export function increaseTotalBorrowingFeesPaid(_NECTFee: BigInt): void {
   let global = getGlobal();
-  global.totalBorrowingFeesPaid = global.totalBorrowingFeesPaid.plus(decimalize(_LUSDFee));
+  global.totalBorrowingFeesPaid = global.totalBorrowingFeesPaid.plus(decimalize(_NECTFee));
   global.save();
 }

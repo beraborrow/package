@@ -2,7 +2,7 @@ import { BigInt } from "@graphprotocol/graph-ts";
 
 import {
   UserDepositChanged,
-  ETHGainWithdrawn,
+  iBGTGainWithdrawn,
   FrontEndRegistered,
   FrontEndTagSet
 } from "../../generated/StabilityPool/StabilityPool";
@@ -33,23 +33,23 @@ function swapTmpDepositUpdate(valueToSetIfNull: BigInt): BigInt | null {
 }
 
 export function handleUserDepositChanged(event: UserDepositChanged): void {
-  let ethGainWithdrawn = swapTmpDepositUpdate(event.params._newDeposit);
+  let ibgtGainWithdrawn = swapTmpDepositUpdate(event.params._newDeposit);
 
-  if (ethGainWithdrawn != null) {
+  if (ibgtGainWithdrawn != null) {
     updateStabilityDeposit(event, event.params._depositor, event.params._newDeposit);
   }
 }
 
-export function handleETHGainWithdrawn(event: ETHGainWithdrawn): void {
+export function handleiBGTGainWithdrawn(event: iBGTGainWithdrawn): void {
   // Leave a non-null dummy value to signal to handleUserDepositChanged()
-  // that ETH gains have been withdrawn
+  // that iBGT gains have been withdrawn
   let depositUpdate = swapTmpDepositUpdate(BIGINT_ZERO);
 
   withdrawCollateralGainFromStabilityDeposit(
     event,
     event.params._depositor,
-    event.params._ETH,
-    event.params._LUSDLoss
+    event.params._iBGT,
+    event.params._NECTLoss
   );
 
   if (depositUpdate != null) {

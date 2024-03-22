@@ -1,19 +1,19 @@
 {
   "name": "@beraborrow/lib-ethers",
   "version": "0.0.0-semantic-release",
-  "description": "Liquity SDK Ethers-based implementation",
+  "description": "BeraBorrow SDK Ethers-based implementation",
   "keywords": [
-    "Liquity",
+    "BeraBorrow",
     "protocol",
     "DeFi",
-    "Ethereum"
+    "Berachain"
   ],
-  "homepage": "https://github.com/beraborrow/beraborrow#readme",
+  "homepage": "https://github.com/BeraBorrowOfficial/beraborrow-frontend#readme",
   "license": "MIT",
   "author": "Daniel Simon <dani@beraborrow.com>",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "repository": "https://github.com/beraborrow/dev",
+  "repository": "https://github.com/BeraBorrowOfficial/beraborrow-frontend",
   "scripts": {
     "hardhat": "hardhat",
     "check-live-version": "ts-node scripts/check-live-version.ts",

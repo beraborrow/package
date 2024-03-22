@@ -33,11 +33,9 @@ const isHeaderNotFoundError = (error: any) =>
   typeof error === "object" &&
   typeof error.message === "string" &&
   (error.message.includes(
-    // geth
     "header not found"
   ) ||
     error.message.includes(
-      // openethereum
       "request is not supported because your node is running with state pruning"
     ));
 

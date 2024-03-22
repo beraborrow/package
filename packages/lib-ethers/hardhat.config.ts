@@ -100,7 +100,7 @@ const ibgtAddresses = {
   sepolia: "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9"
 };
 
-const hasWETH = (network: string): network is keyof typeof ibgtAddresses => network in ibgtAddresses;
+const hasiBGT = (network: string): network is keyof typeof ibgtAddresses => network in ibgtAddresses;
 
 const config: HardhatUserConfig = {
   networks: {
@@ -207,7 +207,7 @@ task("deploy", "Deploys the contracts to the network")
   )
   .addOptionalParam(
     "createUniswapPair",
-    "Create a real Uniswap v2 WETH-NECT pair instead of a mock ERC20 token",
+    "Create a real Uniswap v2 iBGT-NECT pair instead of a mock ERC20 token",
     undefined,
     types.boolean
   )
@@ -224,8 +224,8 @@ task("deploy", "Deploys the contracts to the network")
 
       let ibgtAddress: string | undefined = undefined;
       if (createUniswapPair) {
-        if (!hasWETH(env.network.name)) {
-          throw new Error(`WETH not deployed on ${env.network.name}`);
+        if (!hasiBGT(env.network.name)) {
+          throw new Error(`iBGT not deployed on ${env.network.name}`);
         }
         ibgtAddress = ibgtAddresses[env.network.name];
       }

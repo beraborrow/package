@@ -14,7 +14,7 @@ const yaml = (strings, ...keys) =>
 const manifest = yaml`
 specVersion: 0.0.2
 description: Liquity is a decentralized borrowing protocol offering interest-free liquidity against collateral in Ether.
-repository: https://github.com/liquity/dev/tree/main/packages/subgraph
+repository: https://github.com/BeraBorrowOfficial/beraborrow-frontend/tree/main/packages/subgraph
 schema:
   file: ./schema.graphql
 dataSources:
@@ -78,8 +78,8 @@ dataSources:
       eventHandlers:
         - event: TroveUpdated(indexed address,uint256,uint256,uint256,uint8)
           handler: handleTroveUpdated
-        - event: LUSDBorrowingFeePaid(indexed address,uint256)
-          handler: handleLUSDBorrowingFeePaid
+        - event: NECTBorrowingFeePaid(indexed address,uint256)
+          handler: handleNECTBorrowingFeePaid
   - name: PriceFeed
     kind: ethereum/contract
     network: mainnet
@@ -160,12 +160,12 @@ dataSources:
       eventHandlers:
         - event: CollBalanceUpdated(indexed address,uint256)
           handler: handleCollSurplusBalanceUpdated
-  - name: LQTYStaking
+  - name: POLLENStaking
     kind: ethereum/contract
     network: mainnet
     source:
-      abi: LQTYStaking
-      address: "${addresses.lqtyStaking}"
+      abi: POLLENStaking
+      address: "${addresses.pollenStaking}"
       startBlock: ${startBlock}
     mapping:
       file: ./src/mappings/LqtyStake.ts
@@ -179,16 +179,16 @@ dataSources:
         - LqtyStake
         - LqtyStakeChange
       abis:
-        - name: LQTYStaking
-          file: ../lib-ethers/abi/LQTYStaking.json
+        - name: POLLENStaking
+          file: ../lib-ethers/abi/POLLENStaking.json
       eventHandlers:
         - event: StakeChanged(indexed address,uint256)
           handler: handleStakeChanged
         - event: StakingGainsWithdrawn(indexed address,uint256,uint256)
           handler: handleStakeGainsWithdrawn
 ${[
-  ["LUSDToken", addresses.lusdToken],
-  ["LQTYToken", addresses.lqtyToken]
+  ["NECTToken", addresses.nectToken],
+  ["POLLENToken", addresses.pollenToken]
 ].map(
   ([name, address]) => yaml`
   - name: ${name}

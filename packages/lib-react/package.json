@@ -3,17 +3,17 @@
   "version": "0.0.0-semantic-release",
   "description": "Components and hooks for React-based Liquity frontends",
   "keywords": [
-    "Liquity",
+    "BeraBorrow",
     "protocol",
     "DeFi",
-    "Ethereum"
+    "Berachain"
   ],
-  "homepage": "https://github.com/beraborrow/beraborrow#readme",
+  "homepage": "https://github.com/BeraBorrowOfficial/beraborrow-frontend#readme",
   "license": "MIT",
   "author": "Daniel Simon <dani@beraborrow.com>",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "repository": "https://github.com/beraborrow/dev",
+  "repository": "https://github.com/BeraBorrowOfficial/beraborrow-frontend",
   "scripts": {
     "eslint": "eslint",
     "prepare": "run-s 'prepare:*'",

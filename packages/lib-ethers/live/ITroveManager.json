@@ -87,11 +87,11 @@
         {
           "indexed": false,
           "internalType": "address",
-          "name": "_lqtyStakingAddress",
+          "name": "_pollenStakingAddress",
           "type": "address"
         }
       ],
-      "name": "LQTYStakingAddressChanged",
+      "name": "POLLENStakingAddressChanged",
       "type": "event"
     },
     {
@@ -100,11 +100,11 @@
         {
           "indexed": false,
           "internalType": "address",
-          "name": "_lqtyTokenAddress",
+          "name": "_pollenTokenAddress",
           "type": "address"
         }
       ],
-      "name": "LQTYTokenAddressChanged",
+      "name": "POLLENTokenAddressChanged",
       "type": "event"
     },
     {
@@ -113,13 +113,13 @@
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "_L_ETH",
+          "name": "_L_iBGT",
           "type": "uint256"
         },
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "_L_LUSDDebt",
+          "name": "_L_NECTDebt",
           "type": "uint256"
         }
       ],
@@ -132,11 +132,11 @@
         {
           "indexed": false,
           "internalType": "address",
-          "name": "_newLUSDTokenAddress",
+          "name": "_newNECTTokenAddress",
           "type": "address"
         }
       ],
-      "name": "LUSDTokenAddressChanged",
+      "name": "NECTTokenAddressChanged",
       "type": "event"
     },
     {
@@ -176,7 +176,7 @@
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "_LUSDGasCompensation",
+          "name": "_NECTGasCompensation",
           "type": "uint256"
         }
       ],
@@ -202,25 +202,25 @@
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "_attemptedLUSDAmount",
+          "name": "_attemptedNECTAmount",
           "type": "uint256"
         },
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "_actualLUSDAmount",
+          "name": "_actualNECTAmount",
           "type": "uint256"
         },
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "_ETHSent",
+          "name": "_iBGTSent",
           "type": "uint256"
         },
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "_ETHFee",
+          "name": "_iBGTFee",
           "type": "uint256"
         }
       ],
@@ -341,13 +341,13 @@
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "_L_ETH",
+          "name": "_L_iBGT",
           "type": "uint256"
         },
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "_L_LUSDDebt",
+          "name": "_L_NECTDebt",
           "type": "uint256"
         }
       ],
@@ -527,7 +527,7 @@
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "LUSDDebt",
+          "name": "NECTDebt",
           "type": "uint256"
         }
       ],
@@ -546,7 +546,7 @@
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "_LUSDDebt",
+          "name": "_NECTDebt",
           "type": "uint256"
         }
       ],
@@ -633,12 +633,12 @@
         },
         {
           "internalType": "uint256",
-          "name": "pendingLUSDDebtReward",
+          "name": "pendingNECTDebtReward",
           "type": "uint256"
         },
         {
           "internalType": "uint256",
-          "name": "pendingETHReward",
+          "name": "pendingiBGTReward",
           "type": "uint256"
         }
       ],
@@ -672,7 +672,7 @@
           "type": "address"
         }
       ],
-      "name": "getPendingETHReward",
+      "name": "getPendingiBGTReward",
       "outputs": [
         {
           "internalType": "uint256",
@@ -691,7 +691,7 @@
           "type": "address"
         }
       ],
-      "name": "getPendingLUSDDebtReward",
+      "name": "getPendingNECTDebtReward",
       "outputs": [
         {
           "internalType": "uint256",
@@ -706,7 +706,7 @@
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "_ETHDrawn",
+          "name": "_iBGTDrawn",
           "type": "uint256"
         }
       ],
@@ -969,10 +969,10 @@
     },
     {
       "inputs": [],
-      "name": "lqtyStaking",
+      "name": "pollenStaking",
       "outputs": [
         {
-          "internalType": "contract ILQTYStaking",
+          "internalType": "contract IPOLLENStaking",
           "name": "",
           "type": "address"
         }
@@ -982,10 +982,10 @@
     },
     {
       "inputs": [],
-      "name": "lqtyToken",
+      "name": "pollenToken",
       "outputs": [
         {
-          "internalType": "contract ILQTYToken",
+          "internalType": "contract IPOLLENToken",
           "name": "",
           "type": "address"
         }
@@ -995,10 +995,10 @@
     },
     {
       "inputs": [],
-      "name": "lusdToken",
+      "name": "nectToken",
       "outputs": [
         {
-          "internalType": "contract ILUSDToken",
+          "internalType": "contract INECTToken",
           "name": "",
           "type": "address"
         }
@@ -1023,7 +1023,7 @@
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "_LUSDAmount",
+          "name": "_NECTAmount",
           "type": "uint256"
         },
         {
@@ -1114,7 +1114,7 @@
         },
         {
           "internalType": "address",
-          "name": "_lusdTokenAddress",
+          "name": "_nectTokenAddress",
           "type": "address"
         },
         {
@@ -1124,12 +1124,12 @@
         },
         {
           "internalType": "address",
-          "name": "_lqtyTokenAddress",
+          "name": "_pollenTokenAddress",
           "type": "address"
         },
         {
           "internalType": "address",
-          "name": "_lqtyStakingAddress",
+          "name": "_pollenStakingAddress",
           "type": "address"
         }
       ],

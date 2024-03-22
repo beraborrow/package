@@ -3,15 +3,15 @@ import { Signer } from "@ethersproject/abstract-signer";
 import {
   Decimal,
   Decimalish,
-  LQTYStake,
-  LUSD_MINIMUM_DEBT,
+  POLLENStake,
+  NECT_MINIMUM_DEBT,
   StabilityDeposit,
-  TransactableLiquity,
+  TransactableBeraBorrow,
   Trove,
   TroveAdjustmentParams
 } from "@beraborrow/lib-base";
 
-import { EthersLiquity as Liquity } from "@beraborrow/lib-ethers";
+import { EthersLiquity as BeraBorrow } from "@beraborrow/lib-ethers";
 
 import {
   createRandomTrove,
@@ -32,21 +32,21 @@ type _GasHistogramsFrom<T> = {
 };
 
 type GasHistograms = Pick<
-  _GasHistogramsFrom<TransactableLiquity>,
+  _GasHistogramsFrom<TransactableBeraBorrow>,
   | "openTrove"
   | "adjustTrove"
   | "closeTrove"
-  | "redeemLUSD"
-  | "depositLUSDInStabilityPool"
-  | "withdrawLUSDFromStabilityPool"
-  | "stakeLQTY"
-  | "unstakeLQTY"
+  | "redeemNECT"
+  | "depositNECTInStabilityPool"
+  | "withdrawNECTFromStabilityPool"
+  | "stakePOLLEN"
+  | "unstakePOLLEN"
 >;
 
 export class Fixture {
-  private readonly deployerLiquity: Liquity;
+  private readonly deployerBeraBorrow: BeraBorrow;
   private readonly funder: Signer;
-  private readonly funderLiquity: Liquity;
+  private readonly funderBeraBorrow: BeraBorrow;
   private readonly funderAddress: string;
   private readonly frontendAddress: string;
   private readonly gasHistograms: GasHistograms;
@@ -56,16 +56,16 @@ export class Fixture {
   totalNumberOfLiquidations = 0;
 
   private constructor(
-    deployerLiquity: Liquity,
+    deployerBeraBorrow: BeraBorrow,
     funder: Signer,
-    funderLiquity: Liquity,
+    funderBeraBorrow: BeraBorrow,
     funderAddress: string,
     frontendAddress: string,
     price: Decimal
   ) {
-    this.deployerLiquity = deployerLiquity;
+    this.deployerBeraBorrow = deployerBeraBorrow;
     this.funder = funder;
-    this.funderLiquity = funderLiquity;
+    this.funderBeraBorrow = funderBeraBorrow;
     this.funderAddress = funderAddress;
     this.frontendAddress = frontendAddress;
     this.price = price;
@@ -74,56 +74,56 @@ export class Fixture {
       openTrove: new GasHistogram(),
       adjustTrove: new GasHistogram(),
       closeTrove: new GasHistogram(),
-      redeemLUSD: new GasHistogram(),
-      depositLUSDInStabilityPool: new GasHistogram(),
-      withdrawLUSDFromStabilityPool: new GasHistogram(),
-      stakeLQTY: new GasHistogram(),
-      unstakeLQTY: new GasHistogram()
+      redeemNECT: new GasHistogram(),
+      depositNECTInStabilityPool: new GasHistogram(),
+      withdrawNECTFromStabilityPool: new GasHistogram(),
+      stakePOLLEN: new GasHistogram(),
+      unstakePOLLEN: new GasHistogram()
     };
   }
 
   static async setup(
-    deployerLiquity: Liquity,
+    deployerBeraBorrow: BeraBorrow,
     funder: Signer,
-    funderLiquity: Liquity,
+    funderBeraBorrow: BeraBorrow,
     frontendAddress: string,
-    frontendLiquity: Liquity
+    frontendBeraBorrow: BeraBorrow
   ) {
     const funderAddress = await funder.getAddress();
-    const price = await deployerLiquity.getPrice();
+    const price = await deployerBeraBorrow.getPrice();
 
-    await frontendLiquity.registerFrontend(Decimal.from(10).div(11));
+    await frontendBeraBorrow.registerFrontend(Decimal.from(10).div(11));
 
     return new Fixture(
-      deployerLiquity,
+      deployerBeraBorrow,
       funder,
-      funderLiquity,
+      funderBeraBorrow,
       funderAddress,
       frontendAddress,
       price
     );
   }
 
-  private async sendLUSDFromFunder(toAddress: string, amount: Decimalish) {
+  private async sendNECTFromFunder(toAddress: string, amount: Decimalish) {
     amount = Decimal.from(amount);
 
-    const lusdBalance = await this.funderLiquity.getLUSDBalance();
+    const nectBalance = await this.funderBeraBorrow.getNECTBalance();
 
-    if (lusdBalance.lt(amount)) {
-      const trove = await this.funderLiquity.getTrove();
-      const total = await this.funderLiquity.getTotal();
-      const fees = await this.funderLiquity.getFees();
+    if (nectBalance.lt(amount)) {
+      const trove = await this.funderBeraBorrow.getTrove();
+      const total = await this.funderBeraBorrow.getTotal();
+      const fees = await this.funderBeraBorrow.getFees();
 
       const targetCollateralRatio =
         trove.isEmpty || !total.collateralRatioIsBelowCritical(this.price)
           ? 1.51
           : Decimal.max(trove.collateralRatio(this.price).add(0.00001), 1.11);
 
-      let newTrove = trove.isEmpty ? Trove.create({ depositCollateral: 1, borrowLUSD: 0 }) : trove;
-      newTrove = newTrove.adjust({ borrowLUSD: amount.sub(lusdBalance).mul(2) });
+      let newTrove = trove.isEmpty ? Trove.create({ depositCollateral: 1, borrowNECT: 0 }) : trove;
+      newTrove = newTrove.adjust({ borrowNECT: amount.sub(nectBalance).mul(2) });
 
-      if (newTrove.debt.lt(LUSD_MINIMUM_DEBT)) {
-        newTrove = newTrove.setDebt(LUSD_MINIMUM_DEBT);
+      if (newTrove.debt.lt(NECT_MINIMUM_DEBT)) {
+        newTrove = newTrove.setDebt(NECT_MINIMUM_DEBT);
       }
 
       newTrove = newTrove.setCollateral(newTrove.debt.mulDiv(targetCollateralRatio, this.price));
@@ -131,7 +131,7 @@ export class Fixture {
       if (trove.isEmpty) {
         const params = Trove.recreate(newTrove, fees.borrowingRate());
         console.log(`[funder] openTrove(${objToString(params)})`);
-        await this.funderLiquity.openTrove(params);
+        await this.funderBeraBorrow.openTrove(params);
       } else {
         let newTotal = total.add(newTrove).subtract(trove);
 
@@ -145,26 +145,26 @@ export class Fixture {
 
         const params = trove.adjustTo(newTrove, fees.borrowingRate());
         console.log(`[funder] adjustTrove(${objToString(params)})`);
-        await this.funderLiquity.adjustTrove(params);
+        await this.funderBeraBorrow.adjustTrove(params);
       }
     }
 
-    await this.funderLiquity.sendLUSD(toAddress, amount);
+    await this.funderBeraBorrow.sendNECT(toAddress, amount);
   }
 
   async setRandomPrice() {
     this.price = this.price.add(200 * Math.random() + 100).div(2);
     console.log(`[deployer] setPrice(${this.price})`);
-    await this.deployerLiquity.setPrice(this.price);
+    await this.deployerBeraBorrow.setPrice(this.price);
 
     return this.price;
   }
 
   async liquidateRandomNumberOfTroves(price: Decimal) {
-    const lusdInStabilityPoolBefore = await this.deployerLiquity.getLUSDInStabilityPool();
-    console.log(`// Stability Pool balance: ${lusdInStabilityPoolBefore}`);
+    const nectInStabilityPoolBefore = await this.deployerBeraBorrow.getNECTInStabilityPool();
+    console.log(`// Stability Pool balance: ${nectInStabilityPoolBefore}`);
 
-    const trovesBefore = await getListOfTroves(this.deployerLiquity);
+    const trovesBefore = await getListOfTroves(this.deployerBeraBorrow);
 
     if (trovesBefore.length === 0) {
       console.log("// No Troves to liquidate");
@@ -181,9 +181,9 @@ export class Fixture {
 
     const maximumNumberOfTrovesToLiquidate = Math.floor(50 * Math.random()) + 1;
     console.log(`[deployer] liquidateUpTo(${maximumNumberOfTrovesToLiquidate})`);
-    await this.deployerLiquity.liquidateUpTo(maximumNumberOfTrovesToLiquidate);
+    await this.deployerBeraBorrow.liquidateUpTo(maximumNumberOfTrovesToLiquidate);
 
-    const troveOwnersAfter = await getListOfTroveOwners(this.deployerLiquity);
+    const troveOwnersAfter = await getListOfTroveOwners(this.deployerBeraBorrow);
     const liquidatedTroves = listDifference(troveOwnersBefore, troveOwnersAfter);
 
     if (liquidatedTroves.length > 0) {
@@ -194,18 +194,18 @@ export class Fixture {
 
     this.totalNumberOfLiquidations += liquidatedTroves.length;
 
-    const lusdInStabilityPoolAfter = await this.deployerLiquity.getLUSDInStabilityPool();
-    console.log(`// Stability Pool balance: ${lusdInStabilityPoolAfter}`);
+    const nectInStabilityPoolAfter = await this.deployerBeraBorrow.getNECTInStabilityPool();
+    console.log(`// Stability Pool balance: ${nectInStabilityPoolAfter}`);
   }
 
-  async openRandomTrove(userAddress: string, liquity: Liquity) {
+  async openRandomTrove(userAddress: string, liquity: BeraBorrow) {
     const total = await liquity.getTotal();
     const fees = await liquity.getFees();
 
     let newTrove: Trove;
 
     const cannotOpen = (newTrove: Trove) =>
-      newTrove.debt.lt(LUSD_MINIMUM_DEBT) ||
+      newTrove.debt.lt(NECT_MINIMUM_DEBT) ||
       (total.collateralRatioIsBelowCritical(this.price)
         ? !newTrove.isOpenableInRecoveryMode(this.price)
         : newTrove.collateralRatioIsBelowMinimum(this.price) ||
@@ -239,7 +239,7 @@ export class Fixture {
     }
   }
 
-  async randomlyAdjustTrove(userAddress: string, liquity: Liquity, trove: Trove) {
+  async randomlyAdjustTrove(userAddress: string, liquity: BeraBorrow, trove: Trove) {
     const total = await liquity.getTotal();
     const fees = await liquity.getFees();
     const x = Math.random();
@@ -254,7 +254,7 @@ export class Fixture {
     const cannotAdjust = (trove: Trove, params: TroveAdjustmentParams<Decimal>) => {
       if (
         params.withdrawCollateral?.gte(trove.collateral) ||
-        params.repayLUSD?.gt(trove.debt.sub(LUSD_MINIMUM_DEBT))
+        params.repayNECT?.gt(trove.debt.sub(NECT_MINIMUM_DEBT))
       ) {
         return true;
       }
@@ -262,7 +262,7 @@ export class Fixture {
       const adjusted = trove.adjust(params, fees.borrowingRate());
 
       return (
-        (params.withdrawCollateral?.nonZero || params.borrowLUSD?.nonZero) &&
+        (params.withdrawCollateral?.nonZero || params.borrowNECT?.nonZero) &&
         (adjusted.collateralRatioIsBelowMinimum(this.price) ||
           (total.collateralRatioIsBelowCritical(this.price)
             ? adjusted._nominalCollateralRatio.lt(trove._nominalCollateralRatio)
@@ -277,8 +277,8 @@ export class Fixture {
       });
     }
 
-    if (params.repayLUSD) {
-      await this.sendLUSDFromFunder(userAddress, params.repayLUSD);
+    if (params.repayNECT) {
+      await this.sendNECTFromFunder(userAddress, params.repayNECT);
     }
 
     if (cannotAdjust(trove, params)) {
@@ -298,7 +298,7 @@ export class Fixture {
     }
   }
 
-  async closeTrove(userAddress: string, liquity: Liquity, trove: Trove) {
+  async closeTrove(userAddress: string, liquity: BeraBorrow, trove: Trove) {
     const total = await liquity.getTotal();
 
     if (total.collateralRatioIsBelowCritical(this.price)) {
@@ -307,7 +307,7 @@ export class Fixture {
       return;
     }
 
-    await this.sendLUSDFromFunder(userAddress, trove.netDebt);
+    await this.sendNECTFromFunder(userAddress, trove.netDebt);
 
     console.log(`[${shortenAddress(userAddress)}] closeTrove()`);
 
@@ -316,22 +316,22 @@ export class Fixture {
     );
   }
 
-  async redeemRandomAmount(userAddress: string, liquity: Liquity) {
+  async redeemRandomAmount(userAddress: string, liquity: BeraBorrow) {
     const total = await liquity.getTotal();
 
     if (total.collateralRatioIsBelowMinimum(this.price)) {
-      console.log("// Skipping redeemLUSD() when TCR < MCR");
+      console.log("// Skipping redeemNECT() when TCR < MCR");
       return;
     }
 
     const amount = benford(10000);
-    await this.sendLUSDFromFunder(userAddress, amount);
+    await this.sendNECTFromFunder(userAddress, amount);
 
-    console.log(`[${shortenAddress(userAddress)}] redeemLUSD(${amount})`);
+    console.log(`[${shortenAddress(userAddress)}] redeemNECT(${amount})`);
 
     try {
-      await this.gasHistograms.redeemLUSD.expectSuccess(() =>
-        liquity.send.redeemLUSD(amount, undefined, { gasPrice: 0 })
+      await this.gasHistograms.redeemNECT.expectSuccess(() =>
+        liquity.send.redeemNECT(amount, undefined, { gasPrice: 0 })
       );
     } catch (error) {
       if (error instanceof Error && error.message.includes("amount too low to redeem")) {
@@ -342,15 +342,15 @@ export class Fixture {
     }
   }
 
-  async depositRandomAmountInStabilityPool(userAddress: string, liquity: Liquity) {
+  async depositRandomAmountInStabilityPool(userAddress: string, liquity: BeraBorrow) {
     const amount = benford(20000);
 
-    await this.sendLUSDFromFunder(userAddress, amount);
+    await this.sendNECTFromFunder(userAddress, amount);
 
-    console.log(`[${shortenAddress(userAddress)}] depositLUSDInStabilityPool(${amount})`);
+    console.log(`[${shortenAddress(userAddress)}] depositNECTInStabilityPool(${amount})`);
 
-    await this.gasHistograms.depositLUSDInStabilityPool.expectSuccess(() =>
-      liquity.send.depositLUSDInStabilityPool(amount, this.frontendAddress, {
+    await this.gasHistograms.depositNECTInStabilityPool.expectSuccess(() =>
+      liquity.send.depositNECTInStabilityPool(amount, this.frontendAddress, {
         gasPrice: 0
       })
     );
@@ -358,7 +358,7 @@ export class Fixture {
 
   async withdrawRandomAmountFromStabilityPool(
     userAddress: string,
-    liquity: Liquity,
+    liquity: BeraBorrow,
     deposit: StabilityDeposit
   ) {
     const [lastTrove] = await liquity.getTroves({
@@ -366,7 +366,7 @@ export class Fixture {
       sortedBy: "ascendingCollateralRatio"
     });
 
-    const amount = deposit.currentLUSD.mul(1.1 * Math.random()).add(10 * Math.random());
+    const amount = deposit.currentNECT.mul(1.1 * Math.random()).add(10 * Math.random());
 
     const cannotWithdraw = (amount: Decimal) =>
       amount.nonZero && lastTrove.collateralRatioIsBelowMinimum(this.price);
@@ -374,65 +374,65 @@ export class Fixture {
     if (cannotWithdraw(amount)) {
       console.log(
         `// [${shortenAddress(userAddress)}] ` +
-          `withdrawLUSDFromStabilityPool(${amount}) expected to fail`
+          `withdrawNECTFromStabilityPool(${amount}) expected to fail`
       );
 
-      await this.gasHistograms.withdrawLUSDFromStabilityPool.expectFailure(() =>
-        liquity.withdrawLUSDFromStabilityPool(amount, { gasPrice: 0 })
+      await this.gasHistograms.withdrawNECTFromStabilityPool.expectFailure(() =>
+        liquity.withdrawNECTFromStabilityPool(amount, { gasPrice: 0 })
       );
     } else {
-      console.log(`[${shortenAddress(userAddress)}] withdrawLUSDFromStabilityPool(${amount})`);
+      console.log(`[${shortenAddress(userAddress)}] withdrawNECTFromStabilityPool(${amount})`);
 
-      await this.gasHistograms.withdrawLUSDFromStabilityPool.expectSuccess(() =>
-        liquity.send.withdrawLUSDFromStabilityPool(amount, { gasPrice: 0 })
+      await this.gasHistograms.withdrawNECTFromStabilityPool.expectSuccess(() =>
+        liquity.send.withdrawNECTFromStabilityPool(amount, { gasPrice: 0 })
       );
     }
   }
 
-  async stakeRandomAmount(userAddress: string, liquity: Liquity) {
-    const lqtyBalance = await this.funderLiquity.getLQTYBalance();
-    const amount = lqtyBalance.mul(Math.random() / 2);
+  async stakeRandomAmount(userAddress: string, liquity: BeraBorrow) {
+    const pollenBalance = await this.funderBeraBorrow.getPOLLENBalance();
+    const amount = pollenBalance.mul(Math.random() / 2);
 
-    await this.funderLiquity.sendLQTY(userAddress, amount);
+    await this.funderBeraBorrow.sendPOLLEN(userAddress, amount);
 
     if (amount.eq(0)) {
-      console.log(`// [${shortenAddress(userAddress)}] stakeLQTY(${amount}) expected to fail`);
+      console.log(`// [${shortenAddress(userAddress)}] stakePOLLEN(${amount}) expected to fail`);
 
-      await this.gasHistograms.stakeLQTY.expectFailure(() =>
-        liquity.stakeLQTY(amount, { gasPrice: 0 })
+      await this.gasHistograms.stakePOLLEN.expectFailure(() =>
+        liquity.stakePOLLEN(amount, { gasPrice: 0 })
       );
     } else {
-      console.log(`[${shortenAddress(userAddress)}] stakeLQTY(${amount})`);
+      console.log(`[${shortenAddress(userAddress)}] stakePOLLEN(${amount})`);
 
-      await this.gasHistograms.stakeLQTY.expectSuccess(() =>
-        liquity.send.stakeLQTY(amount, { gasPrice: 0 })
+      await this.gasHistograms.stakePOLLEN.expectSuccess(() =>
+        liquity.send.stakePOLLEN(amount, { gasPrice: 0 })
       );
     }
   }
 
-  async unstakeRandomAmount(userAddress: string, liquity: Liquity, stake: LQTYStake) {
-    const amount = stake.stakedLQTY.mul(1.1 * Math.random()).add(10 * Math.random());
+  async unstakeRandomAmount(userAddress: string, liquity: BeraBorrow, stake: POLLENStake) {
+    const amount = stake.stakedPOLLEN.mul(1.1 * Math.random()).add(10 * Math.random());
 
-    console.log(`[${shortenAddress(userAddress)}] unstakeLQTY(${amount})`);
+    console.log(`[${shortenAddress(userAddress)}] unstakePOLLEN(${amount})`);
 
-    await this.gasHistograms.unstakeLQTY.expectSuccess(() =>
-      liquity.send.unstakeLQTY(amount, { gasPrice: 0 })
+    await this.gasHistograms.unstakePOLLEN.expectSuccess(() =>
+      liquity.send.unstakePOLLEN(amount, { gasPrice: 0 })
     );
   }
 
-  async sweepLUSD(liquity: Liquity) {
-    const lusdBalance = await liquity.getLUSDBalance();
+  async sweepNECT(liquity: BeraBorrow) {
+    const nectBalance = await liquity.getNECTBalance();
 
-    if (lusdBalance.nonZero) {
-      await liquity.sendLUSD(this.funderAddress, lusdBalance, { gasPrice: 0 });
+    if (nectBalance.nonZero) {
+      await liquity.sendNECT(this.funderAddress, nectBalance, { gasPrice: 0 });
     }
   }
 
-  async sweepLQTY(liquity: Liquity) {
-    const lqtyBalance = await liquity.getLQTYBalance();
+  async sweepPOLLEN(liquity: BeraBorrow) {
+    const pollenBalance = await liquity.getPOLLENBalance();
 
-    if (lqtyBalance.nonZero) {
-      await liquity.sendLQTY(this.funderAddress, lqtyBalance, { gasPrice: 0 });
+    if (pollenBalance.nonZero) {
+      await liquity.sendPOLLEN(this.funderAddress, pollenBalance, { gasPrice: 0 });
     }
   }
 

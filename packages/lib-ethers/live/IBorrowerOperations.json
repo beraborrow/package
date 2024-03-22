@@ -61,11 +61,11 @@
         {
           "indexed": false,
           "internalType": "address",
-          "name": "_lqtyStakingAddress",
+          "name": "_pollenStakingAddress",
           "type": "address"
         }
       ],
-      "name": "LQTYStakingAddressChanged",
+      "name": "POLLENStakingAddressChanged",
       "type": "event"
     },
     {
@@ -80,11 +80,11 @@
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "_LUSDFee",
+          "name": "_NECTFee",
           "type": "uint256"
         }
       ],
-      "name": "LUSDBorrowingFeePaid",
+      "name": "NECTBorrowingFeePaid",
       "type": "event"
     },
     {
@@ -93,11 +93,11 @@
         {
           "indexed": false,
           "internalType": "address",
-          "name": "_lusdTokenAddress",
+          "name": "_nectTokenAddress",
           "type": "address"
         }
       ],
-      "name": "LUSDTokenAddressChanged",
+      "name": "NECTTokenAddressChanged",
       "type": "event"
     },
     {
@@ -315,7 +315,7 @@
           "type": "address"
         }
       ],
-      "name": "moveETHGainToTrove",
+      "name": "moveiBGTGainToTrove",
       "outputs": [],
       "stateMutability": "payable",
       "type": "function"
@@ -329,7 +329,7 @@
         },
         {
           "internalType": "uint256",
-          "name": "_LUSDAmount",
+          "name": "_NECTAmount",
           "type": "uint256"
         },
         {
@@ -366,7 +366,7 @@
           "type": "address"
         }
       ],
-      "name": "repayLUSD",
+      "name": "repayNECT",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -415,12 +415,12 @@
         },
         {
           "internalType": "address",
-          "name": "_lusdTokenAddress",
+          "name": "_nectTokenAddress",
           "type": "address"
         },
         {
           "internalType": "address",
-          "name": "_lqtyStakingAddress",
+          "name": "_pollenStakingAddress",
           "type": "address"
         }
       ],
@@ -475,7 +475,7 @@
           "type": "address"
         }
       ],
-      "name": "withdrawLUSD",
+      "name": "withdrawNECT",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

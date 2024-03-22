@@ -26,4 +26,4 @@ Having done all of the above, if you make subgraph code changes you'll need to r
 If you stop and start your local dev chain you need to redeploy your subgraph because the contract addresses will have changed.
 
 ## Unregistered frontends
-Local instance runs with a frontend ID of Ethereum zero address (`0x0000000000000000000000000000000000000000`) to register the local frontend run `liquity.registerFrontend(0.9).then(console.log)` in your browser console and update `packages/dev-frontend/src/config`'s `ADDRESS_ZERO` to the address returned in your console and refresh the page.
+Local instance runs with a frontend ID of Berachain zero address (`0x0000000000000000000000000000000000000000`) to register the local frontend run `liquity.registerFrontend(0.9).then(console.log)` in your browser console and update `packages/dev-frontend/src/config`'s `ADDRESS_ZERO` to the address returned in your console and refresh the page.

@@ -10,7 +10,7 @@ const { ecsign, ecrecover, isValidSignature } = require('ethereumjs-util');
 
 
 // the second account our hardhatenv creates (for EOA A)
-// from https://github.com/beraborrow/dev/blob/main/packages/contracts/hardhatAccountsList2k.js#L3
+// from https://github.com/BeraborrowOfficial/beraborrow-frontend/blob/main/packages/contracts/hardhatAccountsList2k.js#L3
 
 
 const th = testHelpers.TestHelper
