@@ -4,7 +4,7 @@
 
 ## Trove.collateral property
 
-Amount of native currency (e.g. Ether) collateralized.
+Amount of native currency (e.g. iBGT) collateralized.
 
 <b>Signature:</b>
 

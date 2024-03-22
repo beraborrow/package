@@ -4,7 +4,7 @@
 
 ## PopulatedEthersRedemption.isTruncated property
 
-Whether `redeemableLUSDAmount` is less than `attemptedLUSDAmount`<!-- -->.
+Whether `redeemableNECTAmount` is less than `attemptedNECTAmount`<!-- -->.
 
 <b>Signature:</b>
 

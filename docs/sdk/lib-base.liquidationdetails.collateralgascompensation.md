@@ -4,7 +4,7 @@
 
 ## LiquidationDetails.collateralGasCompensation property
 
-Amount of native currency (e.g. Ether) paid to the liquidator as gas compensation.
+Amount of native currency (e.g. iBGT) paid to the liquidator as gas compensation.
 
 <b>Signature:</b>
 

@@ -15,17 +15,17 @@ export interface PopulatedRedemption<P = unknown, S = unknown, R = unknown> exte
 
 ## Remarks
 
-The BeraBorrow protocol fulfills redemptions by repaying the debt of Troves in ascending order of their collateralization ratio, and taking a portion of their collateral in exchange. Due to the [minimum debt](./lib-base.lusd_minimum_debt.md) requirement that Troves must fulfill, some LUSD amounts are not possible to redeem exactly.
+The BeraBorrow protocol fulfills redemptions by repaying the debt of Troves in ascending order of their collateralization ratio, and taking a portion of their collateral in exchange. Due to the [minimum debt](./lib-base.nect_minimum_debt.md) requirement that Troves must fulfill, some NECT amounts are not possible to redeem exactly.
 
-When [redeemLUSD()](./lib-base.populatableberaborrow.redeemlusd.md) is called with an amount that can't be fully redeemed, the amount will be truncated (see the `redeemableLUSDAmount` property). When this happens, the redeemer can either redeem the truncated amount by sending the transaction unchanged, or prepare a new transaction by [increasing the amount](./lib-base.populatedredemption.increaseamountbyminimumnetdebt.md) to the next lowest possible value, which is the sum of the truncated amount and [LUSD\_MINIMUM\_NET\_DEBT](./lib-base.lusd_minimum_net_debt.md)<!-- -->.
+When [redeemNECT()](./lib-base.populatableberaborrow.redeemnect.md) is called with an amount that can't be fully redeemed, the amount will be truncated (see the `redeemableNECTAmount` property). When this happens, the redeemer can either redeem the truncated amount by sending the transaction unchanged, or prepare a new transaction by [increasing the amount](./lib-base.populatedredemption.increaseamountbyminimumnetdebt.md) to the next lowest possible value, which is the sum of the truncated amount and [NECT\_MINIMUM\_NET\_DEBT](./lib-base.nect_minimum_net_debt.md)<!-- -->.
 
 ## Properties
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [attemptedLUSDAmount](./lib-base.populatedredemption.attemptedlusdamount.md) | [Decimal](./lib-base.decimal.md) | Amount of LUSD the redeemer is trying to redeem. |
-|  [isTruncated](./lib-base.populatedredemption.istruncated.md) | boolean | Whether <code>redeemableLUSDAmount</code> is less than <code>attemptedLUSDAmount</code>. |
-|  [redeemableLUSDAmount](./lib-base.populatedredemption.redeemablelusdamount.md) | [Decimal](./lib-base.decimal.md) | Maximum amount of LUSD that is currently redeemable from <code>attemptedLUSDAmount</code>. |
+|  [attemptedNECTAmount](./lib-base.populatedredemption.attemptednectamount.md) | [Decimal](./lib-base.decimal.md) | Amount of NECT the redeemer is trying to redeem. |
+|  [isTruncated](./lib-base.populatedredemption.istruncated.md) | boolean | Whether <code>redeemableNECTAmount</code> is less than <code>attemptedNECTAmount</code>. |
+|  [redeemableNECTAmount](./lib-base.populatedredemption.redeemablenectamount.md) | [Decimal](./lib-base.decimal.md) | Maximum amount of NECT that is currently redeemable from <code>attemptedNECTAmount</code>. |
 
 ## Methods
 

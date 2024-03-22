@@ -14,7 +14,7 @@ export declare class Decimal
 
 ## Remarks
 
-Used by BeraBorrow libraries to precisely represent native currency (e.g. Ether), LUSD and LQTY amounts, as well as derived metrics like collateral ratios.
+Used by BeraBorrow libraries to precisely represent native currency (e.g. iBGT), NECT and POLLEN amounts, as well as derived metrics like collateral ratios.
 
 ## Properties
 
