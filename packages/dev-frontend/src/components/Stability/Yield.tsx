@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Card, Paragraph, Text } from "theme-ui";
 import { Decimal, BeraBorrowStoreState } from "@beraborrow/lib-base";
-import { useLiquitySelector } from "@beraborrow/lib-react";
+import { useBeraBorrowSelector } from "@beraborrow/lib-react";
 import { InfoIcon } from "../InfoIcon";
 import { Badge } from "../Badge";
 import { fetchPollenPrice } from "./context/fetchPollenPrice";
@@ -16,7 +16,7 @@ const dailyIssuanceFraction = Decimal.from(1 - yearlyIssuanceFraction ** (1 / 36
 const dailyIssuancePercentage = dailyIssuanceFraction.mul(100);
 
 export const Yield: React.FC = () => {
-  const { nectInStabilityPool, remainingStabilityPoolPOLLENReward } = useLiquitySelector(selector);
+  const { nectInStabilityPool, remainingStabilityPoolPOLLENReward } = useBeraBorrowSelector(selector);
 
   const [pollenPrice, setPollenPrice] = useState<Decimal | undefined>(undefined);
   const hasZeroValue = remainingStabilityPoolPOLLENReward.isZero || nectInStabilityPool.isZero;

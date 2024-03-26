@@ -13,7 +13,7 @@ const yaml = (strings, ...keys) =>
 
 const manifest = yaml`
 specVersion: 0.0.2
-description: Liquity is a decentralized borrowing protocol offering interest-free liquidity against collateral in Ether.
+description: BeraBorrow is a decentralized borrowing protocol offering interest-free liquidity against collateral in Ether.
 repository: https://github.com/BeraBorrowOfficial/beraborrow-frontend/tree/main/packages/subgraph
 schema:
   file: ./schema.graphql
@@ -129,8 +129,8 @@ dataSources:
       eventHandlers:
         - event: UserDepositChanged(indexed address,uint256)
           handler: handleUserDepositChanged
-        - event: ETHGainWithdrawn(indexed address,uint256,uint256)
-          handler: handleETHGainWithdrawn
+        - event: iBGTGainWithdrawn(indexed address,uint256,uint256)
+          handler: handleiBGTGainWithdrawn
         - event: FrontEndRegistered(indexed address,uint256)
           handler: handleFrontendRegistered
         - event: FrontEndTagSet(indexed address,indexed address)
@@ -168,7 +168,7 @@ dataSources:
       address: "${addresses.pollenStaking}"
       startBlock: ${startBlock}
     mapping:
-      file: ./src/mappings/LqtyStake.ts
+      file: ./src/mappings/PollenStake.ts
       language: wasm/assemblyscript
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -176,8 +176,8 @@ dataSources:
         - Global
         - User
         - Transaction
-        - LqtyStake
-        - LqtyStakeChange
+        - PollenStake
+        - PollenStakeChange
       abis:
         - name: POLLENStaking
           file: ../lib-ethers/abi/POLLENStaking.json

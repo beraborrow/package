@@ -5,10 +5,10 @@ import { LogDescription, Interface } from "@ethersproject/abi";
 
 import { Decimal } from "@beraborrow/lib-base";
 
-import { _LiquityContracts, _TypedLiquityContract } from "./contracts";
+import { _BeraBorrowContracts, _TypedBeraBorrowContract } from "./contracts";
 
 type ContractLookup = {
-  [name: string]: _TypedLiquityContract;
+  [name: string]: _TypedBeraBorrowContract;
 };
 
 type InterfaceLookup = {
@@ -99,7 +99,7 @@ const logDescriptionToString = (logDescription: LogDescription, nameLookup: Name
   return `${logDescription.name}({ ${prettyEntries.join(", ")} })`;
 };
 
-export const logsToString = (receipt: TransactionReceipt, contracts: _LiquityContracts): string => {
+export const logsToString = (receipt: TransactionReceipt, contracts: _BeraBorrowContracts): string => {
   const contractLookup = (contracts as unknown) as ContractLookup;
   const interfaceLookup = interfaceLookupFrom(contractLookup);
   const contractNameLookup = nameLookupFrom(contractLookup);

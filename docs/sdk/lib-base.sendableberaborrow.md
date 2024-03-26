@@ -37,8 +37,8 @@ Implemented by [SendableEthersBeraBorrow](./lib-ethers.sendableethersberaborrow.
 |  [redeemNECT(amount, maxRedemptionRate)](./lib-base.sendableberaborrow.redeemnect.md) | Redeem NECT to native currency (e.g. iBGT) at face value. |
 |  [registerFrontend(kickbackRate)](./lib-base.sendableberaborrow.registerfrontend.md) | Register current wallet address as a BeraBorrow frontend. |
 |  [repayNECT(amount)](./lib-base.sendableberaborrow.repaynect.md) | Adjust existing Trove by repaying some of its debt. |
-|  [sendPOLLEN(toAddress, amount)](./lib-base.sendableberaborrow.sendpollen.md) | Send POLLEN tokens to an address. |
 |  [sendNECT(toAddress, amount)](./lib-base.sendableberaborrow.sendnect.md) | Send NECT tokens to an address. |
+|  [sendPOLLEN(toAddress, amount)](./lib-base.sendableberaborrow.sendpollen.md) | Send POLLEN tokens to an address. |
 |  [stakePOLLEN(amount)](./lib-base.sendableberaborrow.stakepollen.md) | Stake POLLEN to start earning fee revenue or increase existing stake. |
 |  [stakeUniTokens(amount)](./lib-base.sendableberaborrow.stakeunitokens.md) | Stake Uniswap iBGT/NECT LP tokens to participate in liquidity mining and earn POLLEN. |
 |  [transferCollateralGainToTrove()](./lib-base.sendableberaborrow.transfercollateralgaintotrove.md) | Transfer [collateral gain](./lib-base.stabilitydeposit.collateralgain.md) from Stability Deposit to Trove. |
@@ -47,6 +47,6 @@ Implemented by [SendableEthersBeraBorrow](./lib-ethers.sendableethersberaborrow.
 |  [withdrawCollateral(amount)](./lib-base.sendableberaborrow.withdrawcollateral.md) | Adjust existing Trove by withdrawing some of its collateral. |
 |  [withdrawGainsFromStabilityPool()](./lib-base.sendableberaborrow.withdrawgainsfromstabilitypool.md) | Withdraw [collateral gain](./lib-base.stabilitydeposit.collateralgain.md) and [POLLEN reward](./lib-base.stabilitydeposit.pollenreward.md) from Stability Deposit. |
 |  [withdrawGainsFromStaking()](./lib-base.sendableberaborrow.withdrawgainsfromstaking.md) | Withdraw [collateral gain](./lib-base.pollenstake.collateralgain.md) and [NECT gain](./lib-base.pollenstake.nectgain.md) from POLLEN stake. |
-|  [withdrawPOLLENRewardFromLiquidityMining()](./lib-base.sendableberaborrow.withdrawpollenrewardfromliquiditymining.md) | Withdraw POLLEN that has been earned by mining liquidity. |
 |  [withdrawNECTFromStabilityPool(amount)](./lib-base.sendableberaborrow.withdrawnectfromstabilitypool.md) | Withdraw NECT from Stability Deposit. |
+|  [withdrawPOLLENRewardFromLiquidityMining()](./lib-base.sendableberaborrow.withdrawpollenrewardfromliquiditymining.md) | Withdraw POLLEN that has been earned by mining liquidity. |
 

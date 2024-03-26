@@ -7,7 +7,7 @@ import {
   NECT_LIQUIDATION_RESERVE,
   // Difference
 } from "@beraborrow/lib-base";
-import { useLiquitySelector } from "@beraborrow/lib-react";
+import { useBeraBorrowSelector } from "@beraborrow/lib-react";
 
 import { useStableTroveChange } from "../../hooks/useStableTroveChange";
 import { useMyTransactionState } from "../Transaction";
@@ -46,7 +46,7 @@ const feeFrom = (original: Trove, edited: Trove, borrowingRate: Decimal): Decima
 
 export const Borrow: React.FC = () => {
   const { dispatchEvent } = useTroveView();
-  const { trove, fees, price, accountBalance, validationContext } = useLiquitySelector(selector);
+  const { trove, fees, price, accountBalance, validationContext } = useBeraBorrowSelector(selector);
   const [editing, setEditing] = useState<string>();
   const previousTrove = useRef<Trove>(trove);
   const [collateral, setCollateral] = useState<Decimal>(trove.collateral);

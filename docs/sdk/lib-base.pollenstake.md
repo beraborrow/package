@@ -24,7 +24,7 @@ The constructor for this class is marked as internal. Third-party code should no
 |  --- | --- | --- | --- |
 |  [collateralGain](./lib-base.pollenstake.collateralgain.md) |  | [Decimal](./lib-base.decimal.md) | Collateral gain available to withdraw. |
 |  [isEmpty](./lib-base.pollenstake.isempty.md) |  | boolean |  |
-|  [NECTGain](./lib-base.pollenstake.nectgain.md) |  | [Decimal](./lib-base.decimal.md) | NECT gain available to withdraw. |
+|  [nectGain](./lib-base.pollenstake.nectgain.md) |  | [Decimal](./lib-base.decimal.md) | NECT gain available to withdraw. |
 |  [stakedPOLLEN](./lib-base.pollenstake.stakedpollen.md) |  | [Decimal](./lib-base.decimal.md) | The amount of POLLEN that's staked. |
 
 ## Methods

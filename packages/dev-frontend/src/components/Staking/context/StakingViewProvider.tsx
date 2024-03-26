@@ -1,14 +1,14 @@
 import { useEffect } from "react";
 
 import { BeraBorrowStoreState, POLLENStake } from "@beraborrow/lib-base";
-import { LiquityStoreUpdate, useLiquityReducer } from "@beraborrow/lib-react";
+import { BeraBorrowStoreUpdate, useBeraBorrowReducer } from "@beraborrow/lib-react";
 
 import { useMyTransactionState } from "../../Transaction";
 
 import { StakingViewAction, StakingViewContext } from "./StakingViewContext";
 
 type StakingViewProviderAction =
-  | LiquityStoreUpdate
+  | BeraBorrowStoreUpdate
   | StakingViewAction
   | { type: "startChange" | "abortChange" };
 
@@ -71,7 +71,7 @@ const reduce = (
 
 export const StakingViewProvider: React.FC = ({ children }) => {
   const stakingTransactionState = useMyTransactionState("stake");
-  const [{ adjusting, changePending, pollenStake }, dispatch] = useLiquityReducer(reduce, init);
+  const [{ adjusting, changePending, pollenStake }, dispatch] = useBeraBorrowReducer(reduce, init);
 
   useEffect(() => {
     if (

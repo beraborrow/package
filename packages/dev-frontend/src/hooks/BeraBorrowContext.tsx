@@ -4,9 +4,9 @@ import { FallbackProvider } from "@ethersproject/providers";
 import { useProvider, useSigner, useAccount, useChainId } from "wagmi";
 
 import {
-  BlockPolledLiquityStore,
-  EthersLiquity,
-  EthersLiquityWithStore,
+  BlockPolledBeraBorrowStore,
+  EthersBeraBorrow,
+  EthersBeraBorrowWithStore,
   _connectByChainId
 } from "@beraborrow/lib-ethers";
 
@@ -17,7 +17,7 @@ type BeraBorrowContextValue = {
   config: BeraBorrowFrontendConfig;
   account: string;
   provider: Provider;
-  beraborrow: EthersLiquityWithStore<BlockPolledLiquityStore>;
+  beraborrow: EthersBeraBorrowWithStore<BlockPolledBeraBorrowStore>;
 };
 
 const BeraBorrowContext = createContext<BeraBorrowContextValue | undefined>(undefined);
@@ -73,7 +73,7 @@ export const BeraBorrowProvider: React.FC<BeraBorrowProviderProps> = ({
     return <>{unsupportedNetworkFallback}</>;
   }
 
-  const beraborrow = EthersLiquity._from(connection);
+  const beraborrow = EthersBeraBorrow._from(connection);
   beraborrow.store.logging = true;
 
   return (

@@ -1,14 +1,14 @@
 import { BeraBorrowStore } from "@beraborrow/lib-base";
 import React, { createContext, useEffect, useState } from "react";
 
-export const LiquityStoreContext = createContext<BeraBorrowStore | undefined>(undefined);
+export const BeraBorrowStoreContext = createContext<BeraBorrowStore | undefined>(undefined);
 
-type LiquityStoreProviderProps = {
+type BeraBorrowStoreProviderProps = {
   store: BeraBorrowStore;
   loader?: React.ReactNode;
 };
 
-export const LiquityStoreProvider: React.FC<LiquityStoreProviderProps> = ({
+export const BeraBorrowStoreProvider: React.FC<BeraBorrowStoreProviderProps> = ({
   store,
   loader,
   children
@@ -30,5 +30,5 @@ export const LiquityStoreProvider: React.FC<LiquityStoreProviderProps> = ({
     return <>{loader}</>;
   }
 
-  return <LiquityStoreContext.Provider value={loadedStore}>{children}</LiquityStoreContext.Provider>;
+  return <BeraBorrowStoreContext.Provider value={loadedStore}>{children}</BeraBorrowStoreContext.Provider>;
 };

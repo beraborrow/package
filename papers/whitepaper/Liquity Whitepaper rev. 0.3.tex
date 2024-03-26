@@ -21,14 +21,14 @@
 
 \begin{document}
 
-\title{\textbf{Liquity: Decentralized Borrowing Protocol}}
-\author{Robert Lauko, Richard Pardoe \\ rev.0.3\footnote{Note that whenever the term Liquity is used it refers to the protocol, not the company Liquity AG.}}
+\title{\textbf{BeraBorrow: Decentralized Borrowing Protocol}}
+\author{Robert Lauko, Richard Pardoe \\ rev.0.3\footnote{Note that whenever the term BeraBorrow is used it refers to the protocol, not the company BeraBorrow AG.}}
 \date{April 5, 2021}
 
 \maketitle
 
 \section*{Abstract}
-Liquity is a decentralized protocol that allows iBGT holders to obtain maximum liquidity against their collateral without paying interest. After locking up iBGT as collateral in a smart contract and creating an individual position called a “Trove”, the user can get instant liquidity by minting NECT, a USD-pegged stablecoin. Each Trove is required to be collateralized at a minimum of 110\%. Any owner of NECT can redeem their stablecoins for the underlying collateral at any time. The redemption mechanism along with algorithmically adjusted fees guarantee a minimum stablecoin value of \$1. 
+BeraBorrow is a decentralized protocol that allows iBGT holders to obtain maximum liquidity against their collateral without paying interest. After locking up iBGT as collateral in a smart contract and creating an individual position called a “Trove”, the user can get instant liquidity by minting NECT, a USD-pegged stablecoin. Each Trove is required to be collateralized at a minimum of 110\%. Any owner of NECT can redeem their stablecoins for the underlying collateral at any time. The redemption mechanism along with algorithmically adjusted fees guarantee a minimum stablecoin value of \$1. 
 
 An unprecedented liquidation mechanism based on incentivized stability deposits and a redistribution cycle from riskier to safer Troves provides stability at a much lower collateral ratio than current systems. Stability is maintained via economically-driven user interactions and arbitrage, rather than by active governance or monetary interventions. 
 The protocol has built-in incentives that encourage both early adoption and the operation of multiple front ends, enhancing decentralization.
@@ -60,8 +60,8 @@ To summarize, existing collateralized debt platforms have the following downside
     \item No direct redemption mechanism to ensure price stability
 \end{itemize}
  
-\section{Key benefits of the Liquity protocol}
-A better system is possible. Liquity improves upon the mentioned issues by offering the following key benefits:
+\section{Key benefits of the BeraBorrow protocol}
+A better system is possible. BeraBorrow improves upon the mentioned issues by offering the following key benefits:
 \begin{itemize}
     \item Interest-free liquidity
     \item Low collateral ratio (110\%)
@@ -72,29 +72,29 @@ A better system is possible. Liquity improves upon the mentioned issues by offer
 \end{itemize}
 
 \subsection{Interest-free liquidity}
-Liquity provides liquidity without charging borrowers interest or recurring fees. iBGT holders can obtain liquidity against their collateral for free. However, as an algorithmically controlled monetary instrument, the protocol charges an Borrowing Fee (as a one-time fee) for newly drawn liquidity to support the peg with the USD.
+BeraBorrow provides liquidity without charging borrowers interest or recurring fees. iBGT holders can obtain liquidity against their collateral for free. However, as an algorithmically controlled monetary instrument, the protocol charges an Borrowing Fee (as a one-time fee) for newly drawn liquidity to support the peg with the USD.
 
 Users are free to utilize their stablecoin, NECT, to participate in the broader DeFi market consisting of many different products which are designed to generate yield.
 
 \subsection{Low collateral ratio (110\%)}
 When an individual position’s collateral ratio falls below a certain threshold, a lending system must take special action to ensure the stablecoin supply remains fully backed. In existing systems, this is done by liquidating the position in an interactive process. Selling the collateral from undercollateralized positions at a fixed price is inefficient by design as it requires a significant discount to the current collateral price to ensure that it can be sold quickly in difficult situations. Collateral auctions replace discounts by an economically fair, but potentially lengthy and error-prone\footnote{On March 12 (“Black Thursday”) and 13, 2020, 35 000 iBGT worth \$8.32 million were withdrawn through zero bids in MakerDAO’s collateral auctions due to the dramatic increase of the Berachain gas price. See https://medium.com/@whiterabbit/black-thursday-for-makerdao-8-32-million-was-liquidated-for-0-dai-36b83cac56b6} bidding mechanism. The longer it takes to sell the collateral\footnote{The duration of the auction usually depends on the number of bidders, which creates an unfortunate tradeoff since a large number of bidders is good for the auction, but potentially leads to longer auctions and higher exogenous price risks.}, the higher the risk that its value might drop further. Auction-based systems thus have to set their liquidation ratio\footnote{The ratio between the current collateral value (in USD) and the debt below which a liquidation may occur. The liquidation ratio may or may not equal the Minimum Collateral Ratio needed to open a position.} high enough to provide an extra margin for subsequent price drops during liquidation.
 
-Liquity applies a novel two-step liquidation mechanism aimed at instantly liquidating undercollateralized positions. Since the acquirers are known in advance, there is no need to find a buyer for a collateral buyout on the spot when a position becomes undercollateralized. This advantage allows for a considerable reduction in the collateral ratio, while keeping stability high. The system also relies on sufficient collateralization of all positions in aggregate, rather than on the collateral of individual positions.
+BeraBorrow applies a novel two-step liquidation mechanism aimed at instantly liquidating undercollateralized positions. Since the acquirers are known in advance, there is no need to find a buyer for a collateral buyout on the spot when a position becomes undercollateralized. This advantage allows for a considerable reduction in the collateral ratio, while keeping stability high. The system also relies on sufficient collateralization of all positions in aggregate, rather than on the collateral of individual positions.
 
 \subsection{Hard price floor}
-Liquity follows a maximally expansive monetary policy through providing free liquidity at zero issuance costs by default. On the other hand, the issued NECT tokens are fully redeemable against the collateral. This enables the protocol to grow rapidly, but not so fast as to lose control over the peg.
+BeraBorrow follows a maximally expansive monetary policy through providing free liquidity at zero issuance costs by default. On the other hand, the issued NECT tokens are fully redeemable against the collateral. This enables the protocol to grow rapidly, but not so fast as to lose control over the peg.
 
 NECT tokens can be returned to the protocol (redeemed) in exchange for an iBGT amount worth the face value of the returned NECT minus a Redemption Fee. This direct price stability mechanism results in a price floor of \$1. At lower rates, arbitrageurs can make profits by redeeming NECT for iBGT and immediately selling the latter at a higher dollar price than the current value of the returned NECT. Arbitrageurs will thus help to restore the peg by driving demand for NECT, as the Redemption Fees are designed to enable arbitrage gains whenever the peg is broken.
 
 \subsection{Governance-free algorithmic monetary policy}
-Unlike competing platforms, Liquity does not rely on a governance mechanism to vote on monetary interventions like changing an interest rate. All protocol parameters are either preset and immutable or algorithmically controlled by the protocol itself, making governance redundant.
+Unlike competing platforms, BeraBorrow does not rely on a governance mechanism to vote on monetary interventions like changing an interest rate. All protocol parameters are either preset and immutable or algorithmically controlled by the protocol itself, making governance redundant.
 
-Liquity uses the current fraction of redeemed NECT as an indicator of a peg deviation in order to autonomously set a base rate, which determines both the Redemption Fee and the Borrowing Fee. The base rate increases with the number of redeemed tokens and tends to decay to 0\% again when no redemptions take place. As opposed to an unpredictably fluctuating interest-rate, the Borrowing Fee immediately and predictably reduces the attractiveness of new loans and throttles the generation of fresh NECT. In addition, redemption of NECT for iBGT directly decreases the current stablecoin supply and may motivate low-collateral borrowers to repay their loans, which has the same effect. 
+BeraBorrow uses the current fraction of redeemed NECT as an indicator of a peg deviation in order to autonomously set a base rate, which determines both the Redemption Fee and the Borrowing Fee. The base rate increases with the number of redeemed tokens and tends to decay to 0\% again when no redemptions take place. As opposed to an unpredictably fluctuating interest-rate, the Borrowing Fee immediately and predictably reduces the attractiveness of new loans and throttles the generation of fresh NECT. In addition, redemption of NECT for iBGT directly decreases the current stablecoin supply and may motivate low-collateral borrowers to repay their loans, which has the same effect. 
 
 These measures exert upward pressure on the value of NECT whenever it is less than \$1, and help to stabilize its price.
 
 \subsection{Censorship resistance}
-Liquity is a protocol rather than a platform. There is no administrator with special privileges that could interfere with, alter, or halt the operation of the protocol in any way.
+BeraBorrow is a protocol rather than a platform. There is no administrator with special privileges that could interfere with, alter, or halt the operation of the protocol in any way.
 
 Frontend operation is provided by third parties which make the system decentralized and resistant to censorship, while benefiting from growth incentives. Frontend Operators can either download the web interface provided as a launch kit or opt for creating their own custom user interface and integrate it with other services.
 
@@ -133,7 +133,7 @@ When a Trove is liquidated, some amount of NECT in the Stability Pool which corr
 While Stability Providers are free to withdraw all or part of their remaining NECT deposit, the system always pays out the entire collateral gain made by the depositor. Stability Providers that are also borrowers can choose to transfer the collateral gain to their Troves instead of paying it out to their Berachain addresses. In other words, the system uses the accumulated iBGT to top up their own collateral. 
 
 \subsection{Redemption mechanism}
-Liquity’s token, NECT, is a fully redeemable stablecoin. At any time\footnote{To protect the system from bank run-like situations, redemptions are suspended if the Total Collateral Ratio (TCR) is below 110\%.}, the system allows holders to redeem their NECT tokens for the underlying iBGT collateral based on the face value of the redeemed tokens, the current iBGT:USD rate and the current base rate. This enables direct arbitrage whenever NECT trades for less than \$1, by creating a \textbf{price floor for NECT}.\\
+BeraBorrow’s token, NECT, is a fully redeemable stablecoin. At any time\footnote{To protect the system from bank run-like situations, redemptions are suspended if the Total Collateral Ratio (TCR) is below 110\%.}, the system allows holders to redeem their NECT tokens for the underlying iBGT collateral based on the face value of the redeemed tokens, the current iBGT:USD rate and the current base rate. This enables direct arbitrage whenever NECT trades for less than \$1, by creating a \textbf{price floor for NECT}.\\
 
 \begin{figure}[h]
 \centering
@@ -147,7 +147,7 @@ When redeemed, the system uses the NECT to repay the riskiest Trove(s) with the 
 
 Troves that are fully redeemed from, i.e. whose debt is 0, are automatically closed, and the borrower can reclaim the iBGT surplus. The protocol enforces by truncating the redeemed amount that no Trove can be left with a non-zero debt below 2,000 NECT. \\
 
-\textit{Redemption Fee and base rate}. Liquity aims to determine the Redemption Fee in function of the current base rate and the redeemed NECT amount as a proportion of the entire stablecoin supply. The base rate is initialized to 0\% at system launch.
+\textit{Redemption Fee and base rate}. BeraBorrow aims to determine the Redemption Fee in function of the current base rate and the redeemed NECT amount as a proportion of the entire stablecoin supply. The base rate is initialized to 0\% at system launch.
 
 Upon every redemption, the base rate is increased by the proportion of redeemed NECT and then applied to the current redemption as follows:
 $$b(t):=b(t-1)+\alpha\times\frac{m}{n}$$
@@ -176,10 +176,10 @@ To ensure that the entire stablecoin supply remains fully backed by collateral, 
 
 Liquidation can be triggered by anybody and allows liquidating multiple Troves in one batch, either by specifying a set of Troves or in ascending order starting from the Trove with the lowest collateral ratio. While the former approach allows to quickly liquidate large Troves, the latter is more resilient against the race conditions that may occur in case of multiple simultaneous liquidations.
 
-In most cases, Stability Providers and/or high-collateral Troves will have a financial incentive to trigger liquidations as fast as possible. To compensate for the gas costs of a liquidation even in times of high gas prices, Liquity pays the reserved 200 NECT (see 3.1 Borrower operations) plus 0.5\% of the Trove’s collateral (iBGT) to the liquidator.
+In most cases, Stability Providers and/or high-collateral Troves will have a financial incentive to trigger liquidations as fast as possible. To compensate for the gas costs of a liquidation even in times of high gas prices, BeraBorrow pays the reserved 200 NECT (see 3.1 Borrower operations) plus 0.5\% of the Trove’s collateral (iBGT) to the liquidator.
 \\
 
-Liquity utilizes a two-step liquidation mechanism in the following order of priority:
+BeraBorrow utilizes a two-step liquidation mechanism in the following order of priority:
 \begin{enumerate}
     \item Offset undercollateralized Troves against the Stability Pool
     \item Redistribute undercollateralized Troves to other borrowers
@@ -200,7 +200,7 @@ When a Trove becomes undercollateralized ($<$110\%) due to a drop in the iBGT pr
 \includegraphics[width=6.75cm]{a10.png}
 \end{figure}
 
-The NECT tokens in the Stability Pool will thus be replaced by iBGT over time. Generally, each liquidation contributes a \textbf{collateral surplus gain} to the pool: the collateral is almost always worth more (in USD) than the burned NECT tokens. This holds because the liquidation is triggered below a collateral ratio of 110\%, but with a very high probability significantly above 100\%\footnote{The actual liquidation ratio depends on the price volatility and the update frequency of the price oracle and will be slightly lower than 110\%. Liquity uses the Chainlink oracle which updates the iBGT:USD price every 3 hours and whenever the price changes by more than 0.5\%.} (unless iBGT drops by $>$9.09\% between two price feed updates).
+The NECT tokens in the Stability Pool will thus be replaced by iBGT over time. Generally, each liquidation contributes a \textbf{collateral surplus gain} to the pool: the collateral is almost always worth more (in USD) than the burned NECT tokens. This holds because the liquidation is triggered below a collateral ratio of 110\%, but with a very high probability significantly above 100\%\footnote{The actual liquidation ratio depends on the price volatility and the update frequency of the price oracle and will be slightly lower than 110\%. BeraBorrow uses the Chainlink oracle which updates the iBGT:USD price every 3 hours and whenever the price changes by more than 0.5\%.} (unless iBGT drops by $>$9.09\% between two price feed updates).
 
 A Stability Provider receives shares of the liquidations that occur during the lifetime of their NECT deposit. Upon obtaining the collateral, the combined value of the remaining NECT deposit and the iBGT gain will very likely exceed the prior value of deposit. Stability Providers are thus incentivized by this expectation of positive returns.
 
@@ -298,6 +298,6 @@ The following diagram summarizes the token flows between the protocol and its us
 \includegraphics[width=16cm]{a14.png}
 \end{figure}
 
-We have thus introduced Liquity, a collateralized debt protocol with novel liquidation and redemption mechanisms that pushes the boundaries of capital efficiency and costs of liquidity. It is the first system of its kind that issues a stablecoin with a hard price floor against the underlying fiat currency. Furthermore, Liquity follows new paths to incentivize decentralization and growth from the start by tokenizing and redistributing a significant part of its protocol revenue to users and front end operators. 
+We have thus introduced BeraBorrow, a collateralized debt protocol with novel liquidation and redemption mechanisms that pushes the boundaries of capital efficiency and costs of liquidity. It is the first system of its kind that issues a stablecoin with a hard price floor against the underlying fiat currency. Furthermore, BeraBorrow follows new paths to incentivize decentralization and growth from the start by tokenizing and redistributing a significant part of its protocol revenue to users and front end operators. 
 
 \end{document}

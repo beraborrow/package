@@ -21,21 +21,21 @@ import { decimalify, numberify, panic } from "./_utils";
 import { EthersCallOverrides, EthersProvider, EthersSigner } from "./types";
 
 import {
-  EthersLiquityConnection,
-  EthersLiquityConnectionOptionalParams,
-  EthersLiquityStoreOption,
+  EthersBeraBorrowConnection,
+  EthersBeraBorrowConnectionOptionalParams,
+  EthersBeraBorrowStoreOption,
   _connect,
   _getBlockTimestamp,
   _getContracts,
   _requireAddress,
   _requireFrontendAddress
-} from "./EthersLiquityConnection";
+} from "./EthersBeraBorrowConnection";
 
-import { BlockPolledLiquityStore } from "./BlockPolledLiquityStore";
+import { BlockPolledBeraBorrowStore } from "./BlockPolledBeraBorrowStore";
 
 // TODO: these are constant in the contracts, so it doesn't make sense to make a call for them,
 // but to avoid having to update them here when we change them in the contracts, we could read
-// them once after deployment and save them to LiquityDeployment.
+// them once after deployment and save them to BeraBorrowDeployment.
 const MINUTE_DECAY_FACTOR = Decimal.from("0.999037758833783000");
 const BETA = Decimal.from(2);
 
@@ -81,44 +81,44 @@ const expectPositiveInt = <K extends string>(obj: { [P in K]?: number }, key: K)
  *
  * @public
  */
-export class ReadableEthersLiquity implements ReadableBeraBorrow {
-  readonly connection: EthersLiquityConnection;
+export class ReadableEthersBeraBorrow implements ReadableBeraBorrow {
+  readonly connection: EthersBeraBorrowConnection;
 
   /** @internal */
-  constructor(connection: EthersLiquityConnection) {
+  constructor(connection: EthersBeraBorrowConnection) {
     this.connection = connection;
   }
 
   /** @internal */
   static _from(
-    connection: EthersLiquityConnection & { useStore: "blockPolled" }
-  ): ReadableEthersLiquityWithStore<BlockPolledLiquityStore>;
+    connection: EthersBeraBorrowConnection & { useStore: "blockPolled" }
+  ): ReadableEthersBeraBorrowWithStore<BlockPolledBeraBorrowStore>;
 
   /** @internal */
-  static _from(connection: EthersLiquityConnection): ReadableEthersLiquity;
+  static _from(connection: EthersBeraBorrowConnection): ReadableEthersBeraBorrow;
 
   /** @internal */
-  static _from(connection: EthersLiquityConnection): ReadableEthersLiquity {
-    const readable = new ReadableEthersLiquity(connection);
+  static _from(connection: EthersBeraBorrowConnection): ReadableEthersBeraBorrow {
+    const readable = new ReadableEthersBeraBorrow(connection);
 
     return connection.useStore === "blockPolled"
-      ? new _BlockPolledReadableEthersLiquity(readable)
+      ? new _BlockPolledReadableEthersBeraBorrow(readable)
       : readable;
   }
 
   /** @internal */
   static connect(
     signerOrProvider: EthersSigner | EthersProvider,
-    optionalParams: EthersLiquityConnectionOptionalParams & { useStore: "blockPolled" }
-  ): Promise<ReadableEthersLiquityWithStore<BlockPolledLiquityStore>>;
+    optionalParams: EthersBeraBorrowConnectionOptionalParams & { useStore: "blockPolled" }
+  ): Promise<ReadableEthersBeraBorrowWithStore<BlockPolledBeraBorrowStore>>;
 
   static connect(
     signerOrProvider: EthersSigner | EthersProvider,
-    optionalParams?: EthersLiquityConnectionOptionalParams
-  ): Promise<ReadableEthersLiquity>;
+    optionalParams?: EthersBeraBorrowConnectionOptionalParams
+  ): Promise<ReadableEthersBeraBorrow>;
 
   /**
-   * Connect to the Liquity protocol and create a `ReadableEthersLiquity` object.
+   * Connect to the BeraBorrow protocol and create a `ReadableEthersBeraBorrow` object.
    *
    * @param signerOrProvider - Ethers `Signer` or `Provider` to use for connecting to the Ethereum
    *                           network.
@@ -126,21 +126,21 @@ export class ReadableEthersLiquity implements ReadableBeraBorrow {
    */
   static async connect(
     signerOrProvider: EthersSigner | EthersProvider,
-    optionalParams?: EthersLiquityConnectionOptionalParams
-  ): Promise<ReadableEthersLiquity> {
-    return ReadableEthersLiquity._from(await _connect(signerOrProvider, optionalParams));
+    optionalParams?: EthersBeraBorrowConnectionOptionalParams
+  ): Promise<ReadableEthersBeraBorrow> {
+    return ReadableEthersBeraBorrow._from(await _connect(signerOrProvider, optionalParams));
   }
 
   /**
-   * Check whether this `ReadableEthersLiquity` is a {@link ReadableEthersLiquityWithStore}.
+   * Check whether this `ReadableEthersBeraBorrow` is a {@link ReadableEthersBeraBorrowWithStore}.
    */
-  hasStore(): this is ReadableEthersLiquityWithStore;
+  hasStore(): this is ReadableEthersBeraBorrowWithStore;
 
   /**
-   * Check whether this `ReadableEthersLiquity` is a
-   * {@link ReadableEthersLiquityWithStore}\<{@link BlockPolledLiquityStore}\>.
+   * Check whether this `ReadableEthersBeraBorrow` is a
+   * {@link ReadableEthersBeraBorrowWithStore}\<{@link BlockPolledBeraBorrowStore}\>.
    */
-  hasStore(store: "blockPolled"): this is ReadableEthersLiquityWithStore<BlockPolledLiquityStore>;
+  hasStore(store: "blockPolled"): this is ReadableEthersBeraBorrowWithStore<BlockPolledBeraBorrowStore>;
 
   hasStore(): boolean {
     return false;
@@ -533,25 +533,25 @@ const mapBackendTroves = (troves: BackendTroves): TroveWithPendingRedistribution
   );
 
 /**
- * Variant of {@link ReadableEthersLiquity} that exposes a {@link @beraborrow/lib-base#BeraBorrowStore}.
+ * Variant of {@link ReadableEthersBeraBorrow} that exposes a {@link @beraborrow/lib-base#BeraBorrowStore}.
  *
  * @public
  */
-export interface ReadableEthersLiquityWithStore<T extends BeraBorrowStore = BeraBorrowStore>
-  extends ReadableEthersLiquity {
+export interface ReadableEthersBeraBorrowWithStore<T extends BeraBorrowStore = BeraBorrowStore>
+  extends ReadableEthersBeraBorrow {
   /** An object that implements BeraBorrowStore. */
   readonly store: T;
 }
 
-class _BlockPolledReadableEthersLiquity
-  implements ReadableEthersLiquityWithStore<BlockPolledLiquityStore> {
-  readonly connection: EthersLiquityConnection;
-  readonly store: BlockPolledLiquityStore;
+class _BlockPolledReadableEthersBeraBorrow
+  implements ReadableEthersBeraBorrowWithStore<BlockPolledBeraBorrowStore> {
+  readonly connection: EthersBeraBorrowConnection;
+  readonly store: BlockPolledBeraBorrowStore;
 
-  private readonly _readable: ReadableEthersLiquity;
+  private readonly _readable: ReadableEthersBeraBorrow;
 
-  constructor(readable: ReadableEthersLiquity) {
-    const store = new BlockPolledLiquityStore(readable);
+  constructor(readable: ReadableEthersBeraBorrow) {
+    const store = new BlockPolledBeraBorrowStore(readable);
 
     this.store = store;
     this.connection = readable.connection;
@@ -580,7 +580,7 @@ class _BlockPolledReadableEthersLiquity
     );
   }
 
-  hasStore(store?: EthersLiquityStoreOption): boolean {
+  hasStore(store?: EthersBeraBorrowStoreOption): boolean {
     return store === undefined || store === "blockPolled";
   }
 

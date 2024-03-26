@@ -37,8 +37,8 @@ export declare class PopulatableEthersBeraBorrow implements PopulatableBeraBorro
 |  [redeemNECT(amount, maxRedemptionRate, overrides)](./lib-ethers.populatableethersberaborrow.redeemnect.md) |  | Redeem NECT to native currency (e.g. iBGT) at face value. |
 |  [registerFrontend(kickbackRate, overrides)](./lib-ethers.populatableethersberaborrow.registerfrontend.md) |  | Register current wallet address as a BeraBorrow frontend. |
 |  [repayNECT(amount, overrides)](./lib-ethers.populatableethersberaborrow.repaynect.md) |  | Adjust existing Trove by repaying some of its debt. |
-|  [sendPOLLEN(toAddress, amount, overrides)](./lib-ethers.populatableethersberaborrow.sendpollen.md) |  | Send POLLEN tokens to an address. |
 |  [sendNECT(toAddress, amount, overrides)](./lib-ethers.populatableethersberaborrow.sendnect.md) |  | Send NECT tokens to an address. |
+|  [sendPOLLEN(toAddress, amount, overrides)](./lib-ethers.populatableethersberaborrow.sendpollen.md) |  | Send POLLEN tokens to an address. |
 |  [stakePOLLEN(amount, overrides)](./lib-ethers.populatableethersberaborrow.stakepollen.md) |  | Stake POLLEN to start earning fee revenue or increase existing stake. |
 |  [stakeUniTokens(amount, overrides)](./lib-ethers.populatableethersberaborrow.stakeunitokens.md) |  | Stake Uniswap iBGT/NECT LP tokens to participate in liquidity mining and earn POLLEN. |
 |  [transferCollateralGainToTrove(overrides)](./lib-ethers.populatableethersberaborrow.transfercollateralgaintotrove.md) |  | Transfer [collateral gain](./lib-base.stabilitydeposit.collateralgain.md) from Stability Deposit to Trove. |
@@ -47,6 +47,6 @@ export declare class PopulatableEthersBeraBorrow implements PopulatableBeraBorro
 |  [withdrawCollateral(amount, overrides)](./lib-ethers.populatableethersberaborrow.withdrawcollateral.md) |  | Adjust existing Trove by withdrawing some of its collateral. |
 |  [withdrawGainsFromStabilityPool(overrides)](./lib-ethers.populatableethersberaborrow.withdrawgainsfromstabilitypool.md) |  | Withdraw [collateral gain](./lib-base.stabilitydeposit.collateralgain.md) and [POLLEN reward](./lib-base.stabilitydeposit.pollenreward.md) from Stability Deposit. |
 |  [withdrawGainsFromStaking(overrides)](./lib-ethers.populatableethersberaborrow.withdrawgainsfromstaking.md) |  | Withdraw [collateral gain](./lib-base.pollenstake.collateralgain.md) and [NECT gain](./lib-base.pollenstake.nectgain.md) from POLLEN stake. |
-|  [withdrawPOLLENRewardFromLiquidityMining(overrides)](./lib-ethers.populatableethersberaborrow.withdrawpollenrewardfromliquiditymining.md) |  | Withdraw POLLEN that has been earned by mining liquidity. |
 |  [withdrawNECTFromStabilityPool(amount, overrides)](./lib-ethers.populatableethersberaborrow.withdrawnectfromstabilitypool.md) |  | Withdraw NECT from Stability Deposit. |
+|  [withdrawPOLLENRewardFromLiquidityMining(overrides)](./lib-ethers.populatableethersberaborrow.withdrawpollenrewardfromliquiditymining.md) |  | Withdraw POLLEN that has been earned by mining liquidity. |
 

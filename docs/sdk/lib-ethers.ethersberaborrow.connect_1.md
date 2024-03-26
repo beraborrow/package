@@ -16,7 +16,7 @@ static connect(signerOrProvider: EthersSigner | EthersProvider, optionalParams?:
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  signerOrProvider | [EthersSigner](./lib-ethers.etherssigner.md) \| [EthersProvider](./lib-ethers.ethersprovider.md) | Ethers <code>Signer</code> or <code>Provider</code> to use for connecting to the Berachain network. |
+|  signerOrProvider | [EthersSigner](./lib-ethers.etherssigner.md) \| [EthersProvider](./lib-ethers.ethersprovider.md) | Ethers <code>Signer</code> or <code>Provider</code> to use for connecting to the Ethereum network. |
 |  optionalParams | [EthersBeraBorrowConnectionOptionalParams](./lib-ethers.ethersberaborrowconnectionoptionalparams.md) | Optional parameters that can be used to customize the connection. |
 
 <b>Returns:</b>

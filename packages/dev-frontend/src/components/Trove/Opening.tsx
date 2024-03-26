@@ -7,7 +7,7 @@ import {
   NECT_LIQUIDATION_RESERVE,
   NECT_MINIMUM_NET_DEBT,
 } from "@beraborrow/lib-base";
-import { useLiquitySelector } from "@beraborrow/lib-react";
+import { useBeraBorrowSelector } from "@beraborrow/lib-react";
 
 import { useStableTroveChange } from "../../hooks/useStableTroveChange";
 import { useMyTransactionState } from "../Transaction";
@@ -35,7 +35,7 @@ const TRANSACTION_ID = "trove-creation";
 
 export const Opening: React.FC = () => {
   // const { dispatchEvent } = useTroveView();
-  const { fees, price, accountBalance, validationContext } = useLiquitySelector(selector);
+  const { fees, price, accountBalance, validationContext } = useBeraBorrowSelector(selector);
 
   const borrowingRate = fees.borrowingRate();
   const [editing, setEditing] = useState<string>();

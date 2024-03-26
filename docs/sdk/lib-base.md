@@ -8,9 +8,9 @@
 
 |  Class | Description |
 |  --- | --- |
+|  [BeraBorrowStore](./lib-base.beraborrowstore.md) | Abstract base class of BeraBorrow data store implementations. |
 |  [Decimal](./lib-base.decimal.md) | Fixed-point decimal bignumber with 18 digits of precision. |
 |  [Fees](./lib-base.fees.md) | Calculator for fees. |
-|  [BeraBorrowStore](./lib-base.beraborrowstore.md) | Abstract base class of BeraBorrow data store implementations. |
 |  [POLLENStake](./lib-base.pollenstake.md) | Represents a user's POLLEN stake and accrued gains. |
 |  [StabilityDeposit](./lib-base.stabilitydeposit.md) | A Stability Deposit and its accrued gains. |
 |  [TransactionFailedError](./lib-base.transactionfailederror.md) | Thrown by [TransactableBeraBorrow](./lib-base.transactableberaborrow.md) functions in case of transaction failure. |
@@ -22,11 +22,11 @@
 
 |  Interface | Description |
 |  --- | --- |
-|  [CollateralGainTransferDetails](./lib-base.collateralgaintransferdetails.md) | Details of a [transferCollateralGainToTrove()](./lib-base.transactableberaborrow.transfercollateralgaintotrove.md) transaction. |
-|  [LiquidationDetails](./lib-base.liquidationdetails.md) | Details of a [liquidate()](./lib-base.transactableberaborrow.liquidate.md) or [liquidateUpTo()](./lib-base.transactableberaborrow.liquidateupto.md) transaction. |
 |  [BeraBorrowStoreBaseState](./lib-base.beraborrowstorebasestate.md) | State variables read from the blockchain. |
 |  [BeraBorrowStoreDerivedState](./lib-base.beraborrowstorederivedstate.md) | State variables derived from [BeraBorrowStoreBaseState](./lib-base.beraborrowstorebasestate.md)<!-- -->. |
 |  [BeraBorrowStoreListenerParams](./lib-base.beraborrowstorelistenerparams.md) | Parameters passed to [BeraBorrowStore](./lib-base.beraborrowstore.md) listeners. |
+|  [CollateralGainTransferDetails](./lib-base.collateralgaintransferdetails.md) | Details of a [transferCollateralGainToTrove()](./lib-base.transactableberaborrow.transfercollateralgaintotrove.md) transaction. |
+|  [LiquidationDetails](./lib-base.liquidationdetails.md) | Details of a [liquidate()](./lib-base.transactableberaborrow.liquidate.md) or [liquidateUpTo()](./lib-base.transactableberaborrow.liquidateupto.md) transaction. |
 |  [PopulatableBeraBorrow](./lib-base.populatableberaborrow.md) | Prepare BeraBorrow transactions for sending. |
 |  [PopulatedBeraBorrowTransaction](./lib-base.populatedberaborrowtransaction.md) | A transaction that has been prepared for sending. |
 |  [PopulatedRedemption](./lib-base.populatedredemption.md) | A redemption transaction that has been prepared for sending. |
@@ -47,26 +47,26 @@
 |  Variable | Description |
 |  --- | --- |
 |  [CRITICAL\_COLLATERAL\_RATIO](./lib-base.critical_collateral_ratio.md) | Total collateral ratio below which recovery mode is triggered. |
-|  [NECT\_LIQUIDATION\_RESERVE](./lib-base.nect_liquidation_reserve.md) | Amount of NECT that's reserved for compensating the liquidator of a Trove. |
-|  [NECT\_MINIMUM\_DEBT](./lib-base.nect_minimum_debt.md) | A Trove must always have at least this much debt. |
-|  [NECT\_MINIMUM\_NET\_DEBT](./lib-base.nect_minimum_net_debt.md) | A Trove must always have at least this much debt on top of the [liquidation reserve](./lib-base.nect_liquidation_reserve.md)<!-- -->. |
 |  [MAXIMUM\_BORROWING\_RATE](./lib-base.maximum_borrowing_rate.md) | Value that the [borrowing rate](./lib-base.fees.borrowingrate.md) will never exceed. |
 |  [MINIMUM\_BORROWING\_RATE](./lib-base.minimum_borrowing_rate.md) | Value that the [borrowing rate](./lib-base.fees.borrowingrate.md) will never decay below. |
 |  [MINIMUM\_COLLATERAL\_RATIO](./lib-base.minimum_collateral_ratio.md) | Collateral ratio below which a Trove can be liquidated in normal mode. |
 |  [MINIMUM\_REDEMPTION\_RATE](./lib-base.minimum_redemption_rate.md) | Value that the [redemption rate](./lib-base.fees.redemptionrate.md) will never decay below. |
+|  [NECT\_LIQUIDATION\_RESERVE](./lib-base.nect_liquidation_reserve.md) | Amount of NECT that's reserved for compensating the liquidator of a Trove. |
+|  [NECT\_MINIMUM\_DEBT](./lib-base.nect_minimum_debt.md) | A Trove must always have at least this much debt. |
+|  [NECT\_MINIMUM\_NET\_DEBT](./lib-base.nect_minimum_net_debt.md) | A Trove must always have at least this much debt on top of the [liquidation reserve](./lib-base.nect_liquidation_reserve.md)<!-- -->. |
 
 ## Type Aliases
 
 |  Type Alias | Description |
 |  --- | --- |
+|  [BeraBorrowReceipt](./lib-base.beraborrowreceipt.md) | One of either a [PendingReceipt](./lib-base.pendingreceipt.md)<!-- -->, a [FailedReceipt](./lib-base.failedreceipt.md) or a [SuccessfulReceipt](./lib-base.successfulreceipt.md)<!-- -->. |
+|  [BeraBorrowStoreState](./lib-base.beraborrowstorestate.md) | Type of [BeraBorrowStore](./lib-base.beraborrowstore.md)<!-- -->'s [state](./lib-base.beraborrowstore.state.md)<!-- -->. |
 |  [Decimalish](./lib-base.decimalish.md) | Types that can be converted into a Decimal. |
 |  [FailedReceipt](./lib-base.failedreceipt.md) | Indicates that the transaction has been mined, but it failed. |
 |  [FrontendStatus](./lib-base.frontendstatus.md) | Represents whether an address has been registered as a BeraBorrow frontend. |
-|  [BeraBorrowReceipt](./lib-base.beraborrowreceipt.md) | One of either a [PendingReceipt](./lib-base.pendingreceipt.md)<!-- -->, a [FailedReceipt](./lib-base.failedreceipt.md) or a [SuccessfulReceipt](./lib-base.successfulreceipt.md)<!-- -->. |
-|  [BeraBorrowStoreState](./lib-base.beraborrowstorestate.md) | Type of [BeraBorrowStore](./lib-base.beraborrowstore.md)<!-- -->'s [state](./lib-base.beraborrowstore.state.md)<!-- -->. |
-|  [POLLENStakeChange](./lib-base.pollenstakechange.md) | Represents the change between two states of an POLLEN Stake. |
 |  [MinedReceipt](./lib-base.minedreceipt.md) | Either a [FailedReceipt](./lib-base.failedreceipt.md) or a [SuccessfulReceipt](./lib-base.successfulreceipt.md)<!-- -->. |
 |  [PendingReceipt](./lib-base.pendingreceipt.md) | Indicates that the transaction hasn't been mined yet. |
+|  [POLLENStakeChange](./lib-base.pollenstakechange.md) | Represents the change between two states of an POLLEN Stake. |
 |  [StabilityDepositChange](./lib-base.stabilitydepositchange.md) | Represents the change between two Stability Deposit states. |
 |  [SuccessfulReceipt](./lib-base.successfulreceipt.md) | Indicates that the transaction has succeeded. |
 |  [TroveAdjustmentParams](./lib-base.troveadjustmentparams.md) | Parameters of an [adjustTrove()](./lib-base.transactableberaborrow.adjusttrove.md) transaction. |

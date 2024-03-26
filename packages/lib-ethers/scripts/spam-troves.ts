@@ -4,7 +4,7 @@ import { JsonRpcProvider } from "@ethersproject/providers";
 import { Wallet } from "@ethersproject/wallet";
 
 import { Decimal, NECT_MINIMUM_DEBT, Trove } from "@beraborrow/lib-base";
-import { EthersLiquity, EthersLiquityWithStore, BlockPolledLiquityStore } from "@beraborrow/lib-ethers";
+import { EthersBeraBorrow, EthersBeraBorrowWithStore, BlockPolledBeraBorrowStore } from "@beraborrow/lib-ethers";
 
 import {
   Batched,
@@ -24,7 +24,7 @@ const funderKey = "0x4d5db4107d237df6a3d58ee5f70ae63d73d7658d4026f2eefd2f204c816
 
 let provider: BatchedProvider & WebSocketAugmentedProvider & JsonRpcProvider;
 let funder: Wallet;
-let liquity: EthersLiquityWithStore<BlockPolledLiquityStore>;
+let beraborrow: EthersBeraBorrowWithStore<BlockPolledBeraBorrowStore>;
 
 const waitForSuccess = (tx: TransactionResponse) =>
   tx.wait().then(receipt => {
@@ -47,9 +47,9 @@ const createTrove = async (nominalCollateralRatio: Decimal) => {
     })
     .then(waitForSuccess);
 
-  await liquity.populate
+  await beraborrow.populate
     .openTrove(
-      Trove.recreate(new Trove(collateral, debt), liquity.store.state.borrowingRate),
+      Trove.recreate(new Trove(collateral, debt), beraborrow.store.state.borrowingRate),
       {},
       { from: randomWallet.address }
     )
@@ -61,7 +61,7 @@ const createTrove = async (nominalCollateralRatio: Decimal) => {
 const runLoop = async () => {
   for (let i = 0; i < numberOfTrovesToCreate; ++i) {
     const collateralRatio = collateralRatioStep.mul(i).add(collateralRatioStart);
-    const nominalCollateralRatio = collateralRatio.div(liquity.store.state.price);
+    const nominalCollateralRatio = collateralRatio.div(beraborrow.store.state.price);
 
     await createTrove(nominalCollateralRatio);
 
@@ -83,13 +83,13 @@ const main = async () => {
     network
   );
 
-  liquity = await EthersLiquity.connect(provider, { useStore: "blockPolled" });
+  beraborrow = await EthersBeraBorrow.connect(provider, { useStore: "blockPolled" });
 
   let stopStore: () => void;
 
   return new Promise<void>(resolve => {
-    liquity.store.onLoaded = resolve;
-    stopStore = liquity.store.start();
+    beraborrow.store.onLoaded = resolve;
+    stopStore = beraborrow.store.start();
   })
     .then(runLoop)
     .then(() => {

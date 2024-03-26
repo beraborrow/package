@@ -1,7 +1,7 @@
 import { Button } from "theme-ui";
 
 import { BeraBorrowStoreState } from "@beraborrow/lib-base";
-import { useLiquitySelector } from "@beraborrow/lib-react";
+import { useBeraBorrowSelector } from "@beraborrow/lib-react";
 
 import { useBeraBorrow } from "../../hooks/BeraBorrowContext";
 import { useTransactionFunction } from "../Transaction";
@@ -10,7 +10,7 @@ const selectPOLLENStake = ({ pollenStake }: BeraBorrowStoreState) => pollenStake
 
 export const StakingGainsAction: React.FC = () => {
   const { beraborrow } = useBeraBorrow();
-  const { collateralGain, nectGain } = useLiquitySelector(selectPOLLENStake);
+  const { collateralGain, nectGain } = useBeraBorrowSelector(selectPOLLENStake);
 
   const [sendTransaction] = useTransactionFunction(
     "stake",

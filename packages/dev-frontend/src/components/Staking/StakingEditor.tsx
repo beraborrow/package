@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Heading, Box, Card, Button } from "theme-ui";
 
 import { Decimal, Decimalish, Difference, BeraBorrowStoreState, POLLENStake } from "@beraborrow/lib-base";
-import { useLiquitySelector } from "@beraborrow/lib-react";
+import { useBeraBorrowSelector } from "@beraborrow/lib-react";
 
 import { COIN, GT } from "../../strings";
 
@@ -31,7 +31,7 @@ export const StakingEditor: React.FC<StakingEditorProps> = ({
   editedPOLLEN,
   dispatch
 }) => {
-  const { pollenBalance, totalStakedPOLLEN } = useLiquitySelector(select);
+  const { pollenBalance, totalStakedPOLLEN } = useBeraBorrowSelector(select);
   const { changePending } = useStakingView();
   const editingState = useState<string>();
 

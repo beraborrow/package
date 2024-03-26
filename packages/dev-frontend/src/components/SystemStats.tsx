@@ -2,7 +2,7 @@ import React from "react";
 import { Card, Heading, Link, Box, Text } from "theme-ui";
 import { AddressZero } from "@ethersproject/constants";
 import { Decimal, Percent, BeraBorrowStoreState } from "@beraborrow/lib-base";
-import { useLiquitySelector } from "@beraborrow/lib-react";
+import { useBeraBorrowSelector } from "@beraborrow/lib-react";
 
 import { useBeraBorrow } from "../hooks/BeraBorrowContext";
 import { Statistic } from "./Statistic";
@@ -15,7 +15,7 @@ const selectBalances = ({ accountBalance, nectBalance, pollenBalance }: BeraBorr
 });
 
 const Balances: React.FC = () => {
-  const { accountBalance, nectBalance, pollenBalance } = useLiquitySelector(selectBalances);
+  const { accountBalance, nectBalance, pollenBalance } = useBeraBorrowSelector(selectBalances);
 
   return (
     <Box sx={{ mb: 3 }}>
@@ -74,7 +74,7 @@ export const SystemStats: React.FC<SystemStatsProps> = ({ variant = "info", show
     borrowingRate,
     totalStakedPOLLEN,
     kickbackRate
-  } = useLiquitySelector(select);
+  } = useBeraBorrowSelector(select);
 
   const nectInStabilityPoolPct =
     total.debt.nonZero && new Percent(nectInStabilityPool.div(total.debt));

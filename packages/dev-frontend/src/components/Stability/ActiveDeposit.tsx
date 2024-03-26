@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from "react";
 import { Card, Heading, Box, Flex, Button } from "theme-ui";
 
 import { BeraBorrowStoreState } from "@beraborrow/lib-base";
-import { useLiquitySelector } from "@beraborrow/lib-react";
+import { useBeraBorrowSelector } from "@beraborrow/lib-react";
 
 import { COIN, GT } from "../../strings";
 import { Icon } from "../Icon";
@@ -24,7 +24,7 @@ const selector = ({ stabilityDeposit, trove, nectInStabilityPool }: BeraBorrowSt
 
 export const ActiveDeposit: React.FC = () => {
   const { dispatchEvent } = useStabilityView();
-  const { stabilityDeposit, trove, nectInStabilityPool } = useLiquitySelector(selector);
+  const { stabilityDeposit, trove, nectInStabilityPool } = useBeraBorrowSelector(selector);
 
   const poolShare = stabilityDeposit.currentNECT.mulDiv(100, nectInStabilityPool);
 

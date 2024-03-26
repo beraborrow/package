@@ -3,7 +3,7 @@ import { Flex, Button } from "theme-ui";
 
 import { BeraBorrowStoreState, Decimal, Trove, Decimalish, NECT_MINIMUM_DEBT } from "@beraborrow/lib-base";
 
-import { LiquityStoreUpdate, useLiquityReducer, useLiquitySelector } from "@beraborrow/lib-react";
+import { BeraBorrowStoreUpdate, useBeraBorrowReducer, useBeraBorrowSelector } from "@beraborrow/lib-react";
 
 import { useMyTransactionState } from "../Transaction";
 
@@ -26,7 +26,7 @@ const init = ({ trove }: BeraBorrowStoreState) => ({
 
 type TroveManagerState = ReturnType<typeof init>;
 type TroveManagerAction =
-  | LiquityStoreUpdate
+  | BeraBorrowStoreUpdate
   | { type: "startChange" | "finishChange" | "revert" | "addMinimumDebt" | "removeMinimumDebt" }
   | { type: "setCollateral" | "setDebt"; newValue: Decimalish };
 
@@ -155,8 +155,8 @@ type TroveManagerProps = {
 };
 
 export const TroveManager: React.FC<TroveManagerProps> = ({ collateral, debt }) => {
-  const [{ original, edited, changePending }, dispatch] = useLiquityReducer(reduce, init);
-  const { fees, validationContext } = useLiquitySelector(select);
+  const [{ original, edited, changePending }, dispatch] = useBeraBorrowReducer(reduce, init);
+  const { fees, validationContext } = useBeraBorrowSelector(select);
 
   useEffect(() => {
     if (collateral !== undefined) {

@@ -31,13 +31,14 @@ The constructor for this class is marked as internal. Third-party code should no
 |  [getCollateralSurplusBalance(address, overrides)](./lib-ethers.readableethersberaborrow.getcollateralsurplusbalance.md) |  | Get the amount of leftover collateral available for withdrawal by an address. |
 |  [getFees(overrides)](./lib-ethers.readableethersberaborrow.getfees.md) |  | Get a calculator for current fees. |
 |  [getFrontendStatus(address, overrides)](./lib-ethers.readableethersberaborrow.getfrontendstatus.md) |  | Check whether an address is registered as a BeraBorrow frontend, and what its kickback rate is. |
+|  [getiBGTBalance(address, overrides)](./lib-ethers.readableethersberaborrow.getibgtbalance.md) |  |  |
 |  [getLiquidityMiningPOLLENReward(address, overrides)](./lib-ethers.readableethersberaborrow.getliquidityminingpollenreward.md) |  | Get the amount of POLLEN earned by an address through mining liquidity. |
 |  [getLiquidityMiningStake(address, overrides)](./lib-ethers.readableethersberaborrow.getliquidityminingstake.md) |  | Get the amount of Uniswap iBGT/NECT LP tokens currently staked by an address in liquidity mining. |
-|  [getPOLLENBalance(address, overrides)](./lib-ethers.readableethersberaborrow.getpollenbalance.md) |  | Get the amount of POLLEN held by an address. |
-|  [getPOLLENStake(address, overrides)](./lib-ethers.readableethersberaborrow.getpollenstake.md) |  | Get the current state of an POLLEN Stake. |
 |  [getNECTBalance(address, overrides)](./lib-ethers.readableethersberaborrow.getnectbalance.md) |  | Get the amount of NECT held by an address. |
 |  [getNECTInStabilityPool(overrides)](./lib-ethers.readableethersberaborrow.getnectinstabilitypool.md) |  | Get the total amount of NECT currently deposited in the Stability Pool. |
 |  [getNumberOfTroves(overrides)](./lib-ethers.readableethersberaborrow.getnumberoftroves.md) |  | Get number of Troves that are currently open. |
+|  [getPOLLENBalance(address, overrides)](./lib-ethers.readableethersberaborrow.getpollenbalance.md) |  | Get the amount of POLLEN held by an address. |
+|  [getPOLLENStake(address, overrides)](./lib-ethers.readableethersberaborrow.getpollenstake.md) |  | Get the current state of an POLLEN Stake. |
 |  [getPrice(overrides)](./lib-ethers.readableethersberaborrow.getprice.md) |  | Get the current price of the native currency (e.g. iBGT) in USD. |
 |  [getRemainingLiquidityMiningPOLLENReward(overrides)](./lib-ethers.readableethersberaborrow.getremainingliquidityminingpollenreward.md) |  | Get the remaining POLLEN that will be collectively rewarded to liquidity miners. |
 |  [getRemainingStabilityPoolPOLLENReward(overrides)](./lib-ethers.readableethersberaborrow.getremainingstabilitypoolpollenreward.md) |  | Get the remaining POLLEN that will be collectively rewarded to stability depositors. |

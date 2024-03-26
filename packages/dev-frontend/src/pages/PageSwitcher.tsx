@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { AddressZero } from "@ethersproject/constants";
 
 import { BeraBorrowStoreState } from "@beraborrow/lib-base";
-import { useLiquitySelector } from "@beraborrow/lib-react";
+import { useBeraBorrowSelector } from "@beraborrow/lib-react";
 
 import { useBeraBorrow } from "../hooks/BeraBorrowContext";
 
@@ -19,7 +19,7 @@ export const PageSwitcher: React.FC = () => {
     config: { frontendTag }
   } = useBeraBorrow();
 
-  const frontend = useLiquitySelector(selectFrontend);
+  const frontend = useBeraBorrowSelector(selectFrontend);
   const unregistered = frontendTag !== AddressZero && frontend.status === "unregistered";
 
   const [registering, setRegistering] = useState(false);

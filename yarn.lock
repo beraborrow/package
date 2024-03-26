@@ -428,20 +428,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@beraborrow/fuzzer@workspace:packages/fuzzer":
-  version: 0.0.0-use.local
-  resolution: "@beraborrow/fuzzer@workspace:packages/fuzzer"
-  dependencies:
-    "@types/yargs": ^16.0.0
-    colors: ^1.4.0
-    dotenv: ^8.2.0
-    ethers: ^5.4.3
-    ts-node: ^9.0.0
-    typescript: ~4.1.0
-    yargs: ^16.0.3
-  languageName: unknown
-  linkType: soft
-
 "@beraborrow/lib-base@workspace:packages/lib-base":
   version: 0.0.0-use.local
   resolution: "@beraborrow/lib-base@workspace:packages/lib-base"
@@ -4884,15 +4870,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/yargs@npm:^16.0.0":
-  version: 16.0.0
-  resolution: "@types/yargs@npm:16.0.0"
-  dependencies:
-    "@types/yargs-parser": "*"
-  checksum: 84f6c50364d28a565a470cbea6f014eddd8e3add452c95b45b5c67436151d32b6cc8286a1876ec0ce503f4d2633fd508996e572349a5c358301cb4a71bead285
-  languageName: node
-  linkType: hard
-
 "@types/zen-observable@npm:^0.8.0":
   version: 0.8.2
   resolution: "@types/zen-observable@npm:0.8.2"
@@ -8513,7 +8490,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"colors@npm:1.4.0, colors@npm:^1.1.2, colors@npm:^1.4.0":
+"colors@npm:1.4.0, colors@npm:^1.1.2":
   version: 1.4.0
   resolution: "colors@npm:1.4.0"
   checksum: 98aa2c2418ad87dedf25d781be69dc5fc5908e279d9d30c34d8b702e586a0474605b3a189511482b9d5ed0d20c867515d22749537f7bc546256c6014f3ebdcec
@@ -9955,7 +9932,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv@npm:8.2.0, dotenv@npm:^8.0.0, dotenv@npm:^8.2.0":
+"dotenv@npm:8.2.0, dotenv@npm:^8.0.0":
   version: 8.2.0
   resolution: "dotenv@npm:8.2.0"
   checksum: ad4c8e0df3e24b4811c8e93377d048a10a9b213dcd9f062483b4a2d3168f08f10ec9c618c23f5639060d230ccdb174c08761479e9baa29610aa978e1ee66df76
@@ -22781,7 +22758,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-node@npm:9.1.1, ts-node@npm:^9.0.0, ts-node@npm:^9.1.1":
+"ts-node@npm:9.1.1, ts-node@npm:^9.1.1":
   version: 9.1.1
   resolution: "ts-node@npm:9.1.1"
   dependencies:
@@ -25117,7 +25094,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yargs@npm:16.2.0, yargs@npm:^16.0.3, yargs@npm:^16.1.1, yargs@npm:^16.2.0":
+"yargs@npm:16.2.0, yargs@npm:^16.1.1, yargs@npm:^16.2.0":
   version: 16.2.0
   resolution: "yargs@npm:16.2.0"
   dependencies:

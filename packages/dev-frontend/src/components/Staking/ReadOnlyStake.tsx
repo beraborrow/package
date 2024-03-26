@@ -1,7 +1,7 @@
 import { Heading, Box, Card, Flex, Button } from "theme-ui";
 
 import { BeraBorrowStoreState } from "@beraborrow/lib-base";
-import { useLiquitySelector } from "@beraborrow/lib-react";
+import { useBeraBorrowSelector } from "@beraborrow/lib-react";
 
 import { COIN, GT } from "../../strings";
 
@@ -19,7 +19,7 @@ const select = ({ pollenStake, totalStakedPOLLEN }: BeraBorrowStoreState) => ({
 
 export const ReadOnlyStake: React.FC = () => {
   const { changePending, dispatch } = useStakingView();
-  const { pollenStake, totalStakedPOLLEN } = useLiquitySelector(select);
+  const { pollenStake, totalStakedPOLLEN } = useBeraBorrowSelector(select);
 
   const poolShare = pollenStake.stakedPOLLEN.mulDiv(100, totalStakedPOLLEN);
 

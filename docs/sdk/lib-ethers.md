@@ -26,10 +26,10 @@
 |  --- | --- |
 |  [BlockPolledBeraBorrowStoreExtraState](./lib-ethers.blockpolledberaborrowstoreextrastate.md) | Extra state added to [BeraBorrowStoreState](./lib-base.beraborrowstorestate.md) by [BlockPolledBeraBorrowStore](./lib-ethers.blockpolledberaborrowstore.md)<!-- -->. |
 |  [BorrowingOperationOptionalParams](./lib-ethers.borrowingoperationoptionalparams.md) | Optional parameters of a transaction that borrows NECT. |
-|  [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) | Optional parameters taken by [ReadableEthersBeraBorrow](./lib-ethers.readableethersberaborrow.md) functions. |
 |  [EthersBeraBorrowConnection](./lib-ethers.ethersberaborrowconnection.md) | Information about a connection to the BeraBorrow protocol. |
 |  [EthersBeraBorrowConnectionOptionalParams](./lib-ethers.ethersberaborrowconnectionoptionalparams.md) | Optional parameters of [ReadableEthersBeraBorrow.connect()](./lib-ethers.readableethersberaborrow.connect_1.md) and [EthersBeraBorrow.connect()](./lib-ethers.ethersberaborrow.connect_1.md)<!-- -->. |
 |  [EthersBeraBorrowWithStore](./lib-ethers.ethersberaborrowwithstore.md) | Variant of [EthersBeraBorrow](./lib-ethers.ethersberaborrow.md) that exposes a [BeraBorrowStore](./lib-base.beraborrowstore.md)<!-- -->. |
+|  [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) | Optional parameters taken by [ReadableEthersBeraBorrow](./lib-ethers.readableethersberaborrow.md) functions. |
 |  [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) | Optional parameters taken by [EthersBeraBorrow](./lib-ethers.ethersberaborrow.md) transaction functions. |
 |  [ReadableEthersBeraBorrowWithStore](./lib-ethers.readableethersberaborrowwithstore.md) | Variant of [ReadableEthersBeraBorrow](./lib-ethers.readableethersberaborrow.md) that exposes a [BeraBorrowStore](./lib-base.beraborrowstore.md)<!-- -->. |
 

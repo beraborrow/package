@@ -16,7 +16,7 @@ import "@nomiclabs/hardhat-ethers";
 import { Decimal } from "@beraborrow/lib-base";
 
 import { deployAndSetupContracts, deployTellorCaller, setSilent } from "./utils/deploy";
-import { _connectToContracts, _LiquityDeploymentJSON, _priceFeedIsTestnet } from "./src/contracts";
+import { _connectToContracts, _BeraBorrowDeploymentJSON, _priceFeedIsTestnet } from "./src/contracts";
 
 import accounts from "./accounts.json";
 
@@ -146,12 +146,12 @@ const config: HardhatUserConfig = {
 
 declare module "hardhat/types/runtime" {
   interface HardhatRuntimeEnvironment {
-    deployLiquity: (
+    deployBeraBorrow: (
       deployer: Signer,
       useRealPriceFeed?: boolean,
       ibgtAddress?: string,
       overrides?: Overrides
-    ) => Promise<_LiquityDeploymentJSON>;
+    ) => Promise<_BeraBorrowDeploymentJSON>;
   }
 }
 
@@ -168,7 +168,7 @@ const getContractFactory: (
   : env => env.ethers.getContractFactory;
 
 extendEnvironment(env => {
-  env.deployLiquity = async (
+  env.deployBeraBorrow = async (
     deployer,
     useRealPriceFeed = false,
     ibgtAddress = undefined,
@@ -232,7 +232,7 @@ task("deploy", "Deploys the contracts to the network")
 
       setSilent(false);
 
-      const deployment = await env.deployLiquity(deployer, useRealPriceFeed, ibgtAddress, overrides);
+      const deployment = await env.deployBeraBorrow(deployer, useRealPriceFeed, ibgtAddress, overrides);
 
       if (useRealPriceFeed) {
         const contracts = _connectToContracts(deployer, deployment);

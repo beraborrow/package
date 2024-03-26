@@ -8,7 +8,7 @@ import {
   BeraBorrowStoreState,
 } from "@beraborrow/lib-base";
 
-import { useLiquitySelector } from "@beraborrow/lib-react";
+import { useBeraBorrowSelector } from "@beraborrow/lib-react";
 
 import { StaticRow } from "../Trove/Editor";
 
@@ -30,7 +30,7 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
   dispatch,
   children
 }) => {
-  const { nectBalance, nectInStabilityPool } = useLiquitySelector(select);
+  const { nectBalance, nectInStabilityPool } = useBeraBorrowSelector(select);
   const [isWithdraw, setIsWithdraw] = useState<boolean>(false)
   
   const [editing, setEditing] = useState<string>();

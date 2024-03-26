@@ -1,14 +1,14 @@
 import React, { useEffect } from "react";
 
 import { Decimal, TroveChange } from "@beraborrow/lib-base";
-import { PopulatedEthersLiquityTransaction } from "@beraborrow/lib-ethers";
+import { PopulatedEthersBeraBorrowTransaction } from "@beraborrow/lib-ethers";
 
 import { useBeraBorrow } from "../../hooks/BeraBorrowContext";
 import { Warning } from "../Warning";
 
 export type GasEstimationState =
   | { type: "idle" | "inProgress" | "insufficient-allowance" }
-  | { type: "complete"; populatedTx: PopulatedEthersLiquityTransaction };
+  | { type: "complete"; populatedTx: PopulatedEthersBeraBorrowTransaction };
 
 type ExpensiveTroveChangeWarningParams = {
   troveChange?: Exclude<TroveChange<Decimal>, { type: "invalidCreation" }>;
@@ -34,7 +34,7 @@ export const ExpensiveTroveChangeWarning: React.FC<ExpensiveTroveChangeWarningPa
       let cancelled = false;
 
       const timeoutId = setTimeout(async () => {
-        let populatedTx: PopulatedEthersLiquityTransaction;
+        let populatedTx: PopulatedEthersBeraBorrowTransaction;
         try {
         populatedTx = await (troveChange.type === "creation"
           ? beraborrow.populate.openTrove(troveChange.params, {

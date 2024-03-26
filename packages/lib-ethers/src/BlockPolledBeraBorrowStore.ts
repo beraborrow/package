@@ -12,18 +12,18 @@ import {
   Fees
 } from "@beraborrow/lib-base";
 
-import { decimalify, promiseAllValues } from "./_utils";
-import { ReadableEthersLiquity } from "./ReadableEthersLiquity";
-import { EthersLiquityConnection, _getProvider } from "./EthersLiquityConnection";
+import { promiseAllValues } from "./_utils";
+import { ReadableEthersBeraBorrow } from "./ReadableEthersBeraBorrow";
+import { EthersBeraBorrowConnection, _getProvider } from "./EthersBeraBorrowConnection";
 import { EthersCallOverrides, EthersProvider } from "./types";
 
 /**
  * Extra state added to {@link @beraborrow/lib-base#BeraBorrowStoreState} by
- * {@link BlockPolledLiquityStore}.
+ * {@link BlockPolledBeraBorrowStore}.
  *
  * @public
  */
-export interface BlockPolledLiquityStoreExtraState {
+export interface BlockPolledBeraBorrowStoreExtraState {
   /**
    * Number of block that the store state was fetched from.
    *
@@ -42,12 +42,12 @@ export interface BlockPolledLiquityStoreExtraState {
 }
 
 /**
- * The type of {@link BlockPolledLiquityStore}'s
+ * The type of {@link BlockPolledBeraBorrowStore}'s
  * {@link @beraborrow/lib-base#BeraBorrowStore.state | state}.
  *
  * @public
  */
-export type BlockPolledLiquityStoreState = BeraBorrowStoreState<BlockPolledLiquityStoreExtraState>;
+export type BlockPolledBeraBorrowStoreState = BeraBorrowStoreState<BlockPolledBeraBorrowStoreExtraState>;
 
 /**
  * Ethers-based {@link @beraborrow/lib-base#BeraBorrowStore} that updates state whenever there's a new
@@ -55,13 +55,13 @@ export type BlockPolledLiquityStoreState = BeraBorrowStoreState<BlockPolledLiqui
  *
  * @public
  */
-export class BlockPolledLiquityStore extends BeraBorrowStore<BlockPolledLiquityStoreExtraState> {
-  readonly connection: EthersLiquityConnection;
+export class BlockPolledBeraBorrowStore extends BeraBorrowStore<BlockPolledBeraBorrowStoreExtraState> {
+  readonly connection: EthersBeraBorrowConnection;
 
-  private readonly _readable: ReadableEthersLiquity;
+  private readonly _readable: ReadableEthersBeraBorrow;
   private readonly _provider: EthersProvider;
 
-  constructor(readable: ReadableEthersLiquity) {
+  constructor(readable: ReadableEthersBeraBorrow) {
     super();
 
     this.connection = readable.connection;
@@ -86,7 +86,7 @@ export class BlockPolledLiquityStore extends BeraBorrowStore<BlockPolledLiquityS
 
   private async _get(
     blockTag?: number
-  ): Promise<[baseState: BeraBorrowStoreBaseState, extraState: BlockPolledLiquityStoreExtraState]> {
+  ): Promise<[baseState: BeraBorrowStoreBaseState, extraState: BlockPolledBeraBorrowStoreExtraState]> {
     const { userAddress, frontendTag } = this.connection;
 
     const {
@@ -225,9 +225,9 @@ export class BlockPolledLiquityStore extends BeraBorrowStore<BlockPolledLiquityS
 
   /** @internal @override */
   protected _reduceExtra(
-    oldState: BlockPolledLiquityStoreExtraState,
-    stateUpdate: Partial<BlockPolledLiquityStoreExtraState>
-  ): BlockPolledLiquityStoreExtraState {
+    oldState: BlockPolledBeraBorrowStoreExtraState,
+    stateUpdate: Partial<BlockPolledBeraBorrowStoreExtraState>
+  ): BlockPolledBeraBorrowStoreExtraState {
     return {
       blockTag: stateUpdate.blockTag ?? oldState.blockTag,
       blockTimestamp: stateUpdate.blockTimestamp ?? oldState.blockTimestamp,

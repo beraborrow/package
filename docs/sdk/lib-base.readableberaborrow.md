@@ -25,11 +25,11 @@ Implemented by [EthersBeraBorrow](./lib-ethers.ethersberaborrow.md)<!-- -->.
 |  [getFrontendStatus(address)](./lib-base.readableberaborrow.getfrontendstatus.md) | Check whether an address is registered as a BeraBorrow frontend, and what its kickback rate is. |
 |  [getLiquidityMiningPOLLENReward(address)](./lib-base.readableberaborrow.getliquidityminingpollenreward.md) | Get the amount of POLLEN earned by an address through mining liquidity. |
 |  [getLiquidityMiningStake(address)](./lib-base.readableberaborrow.getliquidityminingstake.md) | Get the amount of Uniswap iBGT/NECT LP tokens currently staked by an address in liquidity mining. |
-|  [getPOLLENBalance(address)](./lib-base.readableberaborrow.getpollenbalance.md) | Get the amount of POLLEN held by an address. |
-|  [getPOLLENStake(address)](./lib-base.readableberaborrow.getpollenstake.md) | Get the current state of an POLLEN Stake. |
 |  [getNECTBalance(address)](./lib-base.readableberaborrow.getnectbalance.md) | Get the amount of NECT held by an address. |
 |  [getNECTInStabilityPool()](./lib-base.readableberaborrow.getnectinstabilitypool.md) | Get the total amount of NECT currently deposited in the Stability Pool. |
 |  [getNumberOfTroves()](./lib-base.readableberaborrow.getnumberoftroves.md) | Get number of Troves that are currently open. |
+|  [getPOLLENBalance(address)](./lib-base.readableberaborrow.getpollenbalance.md) | Get the amount of POLLEN held by an address. |
+|  [getPOLLENStake(address)](./lib-base.readableberaborrow.getpollenstake.md) | Get the current state of an POLLEN Stake. |
 |  [getPrice()](./lib-base.readableberaborrow.getprice.md) | Get the current price of the native currency (e.g. iBGT) in USD. |
 |  [getRemainingLiquidityMiningPOLLENReward()](./lib-base.readableberaborrow.getremainingliquidityminingpollenreward.md) | Get the remaining POLLEN that will be collectively rewarded to liquidity miners. |
 |  [getRemainingStabilityPoolPOLLENReward()](./lib-base.readableberaborrow.getremainingstabilitypoolpollenreward.md) | Get the remaining POLLEN that will be collectively rewarded to stability depositors. |

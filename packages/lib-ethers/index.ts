@@ -1,15 +1,15 @@
 export {
   _connectByChainId,
-  EthersLiquityConnection,
-  EthersLiquityConnectionOptionalParams,
-  EthersLiquityStoreOption,
+  EthersBeraBorrowConnection,
+  EthersBeraBorrowConnectionOptionalParams,
+  EthersBeraBorrowStoreOption,
   UnsupportedNetworkError
-} from "./src/EthersLiquityConnection";
+} from "./src/EthersBeraBorrowConnection";
 
 export * from "./src/types";
-export * from "./src/ReadableEthersLiquity";
-export * from "./src/ObservableEthersLiquity";
-export * from "./src/BlockPolledLiquityStore";
-export * from "./src/PopulatableEthersLiquity";
-export * from "./src/SendableEthersLiquity";
-export * from "./src/EthersLiquity";
+export * from "./src/ReadableEthersBeraBorrow";
+export * from "./src/ObservableEthersBeraBorrow";
+export * from "./src/BlockPolledBeraBorrowStore";
+export * from "./src/PopulatableEthersBeraBorrow";
+export * from "./src/SendableEthersBeraBorrow";
+export * from "./src/EthersBeraBorrow";

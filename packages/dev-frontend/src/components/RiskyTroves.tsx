@@ -9,8 +9,8 @@ import {
   UserTrove,
   Decimal
 } from "@beraborrow/lib-base";
-import { BlockPolledLiquityStoreState } from "@beraborrow/lib-ethers";
-import { useLiquitySelector } from "@beraborrow/lib-react";
+import { BlockPolledBeraBorrowStoreState } from "@beraborrow/lib-ethers";
+import { useBeraBorrowSelector } from "@beraborrow/lib-react";
 
 import { shortenAddress } from "../utils/shortenAddress";
 import { useBeraBorrow } from "../hooks/BeraBorrowContext";
@@ -55,7 +55,7 @@ const select = ({
   total,
   nectInStabilityPool,
   blockTag
-}: BlockPolledLiquityStoreState) => ({
+}: BlockPolledBeraBorrowStoreState) => ({
   numberOfTroves,
   price,
   recoveryMode: total.collateralRatioIsBelowCritical(price),
@@ -72,7 +72,7 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize }) => {
     totalCollateralRatio,
     nectInStabilityPool,
     price
-  } = useLiquitySelector(select);
+  } = useBeraBorrowSelector(select);
   const { beraborrow } = useBeraBorrow();
 
   const [loading, setLoading] = useState(true);

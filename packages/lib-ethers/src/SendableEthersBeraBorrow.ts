@@ -21,23 +21,23 @@ import {
 
 import {
   BorrowingOperationOptionalParams,
-  PopulatableEthersLiquity,
-  PopulatedEthersLiquityTransaction,
-  SentEthersLiquityTransaction
-} from "./PopulatableEthersLiquity";
+  PopulatableEthersBeraBorrow,
+  PopulatedEthersBeraBorrowTransaction,
+  SentEthersBeraBorrowTransaction
+} from "./PopulatableEthersBeraBorrow";
 
-const sendTransaction = <T>(tx: PopulatedEthersLiquityTransaction<T>) => tx.send();
+const sendTransaction = <T>(tx: PopulatedEthersBeraBorrowTransaction<T>) => tx.send();
 
 /**
  * Ethers-based implementation of {@link @beraborrow/lib-base#SendableBeraBorrow}.
  *
  * @public
  */
-export class SendableEthersLiquity
+export class SendableEthersBeraBorrow
   implements SendableBeraBorrow<EthersTransactionReceipt, EthersTransactionResponse> {
-  private _populate: PopulatableEthersLiquity;
+  private _populate: PopulatableEthersBeraBorrow;
 
-  constructor(populatable: PopulatableEthersLiquity) {
+  constructor(populatable: PopulatableEthersBeraBorrow) {
     this._populate = populatable;
   }
 
@@ -46,7 +46,7 @@ export class SendableEthersLiquity
     params: TroveCreationParams<Decimalish>,
     maxBorrowingRateOrOptionalParams?: Decimalish | BorrowingOperationOptionalParams,
     overrides?: EthersTransactionOverrides
-  ): Promise<SentEthersLiquityTransaction<TroveCreationDetails>> {
+  ): Promise<SentEthersBeraBorrowTransaction<TroveCreationDetails>> {
     return this._populate
       .openTrove(params, maxBorrowingRateOrOptionalParams, overrides)
       .then(sendTransaction);
@@ -55,7 +55,7 @@ export class SendableEthersLiquity
   /** {@inheritDoc @beraborrow/lib-base#SendableBeraBorrow.closeTrove} */
   closeTrove(
     overrides?: EthersTransactionOverrides
-  ): Promise<SentEthersLiquityTransaction<TroveClosureDetails>> {
+  ): Promise<SentEthersBeraBorrowTransaction<TroveClosureDetails>> {
     return this._populate.closeTrove(overrides).then(sendTransaction);
   }
 
@@ -64,7 +64,7 @@ export class SendableEthersLiquity
     params: TroveAdjustmentParams<Decimalish>,
     maxBorrowingRateOrOptionalParams?: Decimalish | BorrowingOperationOptionalParams,
     overrides?: EthersTransactionOverrides
-  ): Promise<SentEthersLiquityTransaction<TroveAdjustmentDetails>> {
+  ): Promise<SentEthersBeraBorrowTransaction<TroveAdjustmentDetails>> {
     return this._populate
       .adjustTrove(params, maxBorrowingRateOrOptionalParams, overrides)
       .then(sendTransaction);
@@ -74,7 +74,7 @@ export class SendableEthersLiquity
   depositCollateral(
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
-  ): Promise<SentEthersLiquityTransaction<TroveAdjustmentDetails>> {
+  ): Promise<SentEthersBeraBorrowTransaction<TroveAdjustmentDetails>> {
     return this._populate.depositCollateral(amount, overrides).then(sendTransaction);
   }
 
@@ -82,7 +82,7 @@ export class SendableEthersLiquity
   withdrawCollateral(
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
-  ): Promise<SentEthersLiquityTransaction<TroveAdjustmentDetails>> {
+  ): Promise<SentEthersBeraBorrowTransaction<TroveAdjustmentDetails>> {
     return this._populate.withdrawCollateral(amount, overrides).then(sendTransaction);
   }
 
@@ -91,7 +91,7 @@ export class SendableEthersLiquity
     amount: Decimalish,
     maxBorrowingRate?: Decimalish,
     overrides?: EthersTransactionOverrides
-  ): Promise<SentEthersLiquityTransaction<TroveAdjustmentDetails>> {
+  ): Promise<SentEthersBeraBorrowTransaction<TroveAdjustmentDetails>> {
     return this._populate.borrowNECT(amount, maxBorrowingRate, overrides).then(sendTransaction);
   }
 
@@ -99,7 +99,7 @@ export class SendableEthersLiquity
   repayNECT(
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
-  ): Promise<SentEthersLiquityTransaction<TroveAdjustmentDetails>> {
+  ): Promise<SentEthersBeraBorrowTransaction<TroveAdjustmentDetails>> {
     return this._populate.repayNECT(amount, overrides).then(sendTransaction);
   }
 
@@ -107,7 +107,7 @@ export class SendableEthersLiquity
   setPrice(
     price: Decimalish,
     overrides?: EthersTransactionOverrides
-  ): Promise<SentEthersLiquityTransaction<void>> {
+  ): Promise<SentEthersBeraBorrowTransaction<void>> {
     return this._populate.setPrice(price, overrides).then(sendTransaction);
   }
 
@@ -115,7 +115,7 @@ export class SendableEthersLiquity
   liquidate(
     address: string | string[],
     overrides?: EthersTransactionOverrides
-  ): Promise<SentEthersLiquityTransaction<LiquidationDetails>> {
+  ): Promise<SentEthersBeraBorrowTransaction<LiquidationDetails>> {
     return this._populate.liquidate(address, overrides).then(sendTransaction);
   }
 
@@ -123,7 +123,7 @@ export class SendableEthersLiquity
   liquidateUpTo(
     maximumNumberOfTrovesToLiquidate: number,
     overrides?: EthersTransactionOverrides
-  ): Promise<SentEthersLiquityTransaction<LiquidationDetails>> {
+  ): Promise<SentEthersBeraBorrowTransaction<LiquidationDetails>> {
     return this._populate
       .liquidateUpTo(maximumNumberOfTrovesToLiquidate, overrides)
       .then(sendTransaction);
@@ -134,7 +134,7 @@ export class SendableEthersLiquity
     amount: Decimalish,
     frontendTag?: string,
     overrides?: EthersTransactionOverrides
-  ): Promise<SentEthersLiquityTransaction<StabilityDepositChangeDetails>> {
+  ): Promise<SentEthersBeraBorrowTransaction<StabilityDepositChangeDetails>> {
     return this._populate
       .depositNECTInStabilityPool(amount, frontendTag, overrides)
       .then(sendTransaction);
@@ -144,21 +144,21 @@ export class SendableEthersLiquity
   withdrawNECTFromStabilityPool(
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
-  ): Promise<SentEthersLiquityTransaction<StabilityDepositChangeDetails>> {
+  ): Promise<SentEthersBeraBorrowTransaction<StabilityDepositChangeDetails>> {
     return this._populate.withdrawNECTFromStabilityPool(amount, overrides).then(sendTransaction);
   }
 
   /** {@inheritDoc @beraborrow/lib-base#SendableBeraBorrow.withdrawGainsFromStabilityPool} */
   withdrawGainsFromStabilityPool(
     overrides?: EthersTransactionOverrides
-  ): Promise<SentEthersLiquityTransaction<StabilityPoolGainsWithdrawalDetails>> {
+  ): Promise<SentEthersBeraBorrowTransaction<StabilityPoolGainsWithdrawalDetails>> {
     return this._populate.withdrawGainsFromStabilityPool(overrides).then(sendTransaction);
   }
 
   /** {@inheritDoc @beraborrow/lib-base#SendableBeraBorrow.transferCollateralGainToTrove} */
   transferCollateralGainToTrove(
     overrides?: EthersTransactionOverrides
-  ): Promise<SentEthersLiquityTransaction<CollateralGainTransferDetails>> {
+  ): Promise<SentEthersBeraBorrowTransaction<CollateralGainTransferDetails>> {
     return this._populate.transferCollateralGainToTrove(overrides).then(sendTransaction);
   }
 
@@ -167,7 +167,7 @@ export class SendableEthersLiquity
     toAddress: string,
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
-  ): Promise<SentEthersLiquityTransaction<void>> {
+  ): Promise<SentEthersBeraBorrowTransaction<void>> {
     return this._populate.sendNECT(toAddress, amount, overrides).then(sendTransaction);
   }
 
@@ -176,7 +176,7 @@ export class SendableEthersLiquity
     toAddress: string,
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
-  ): Promise<SentEthersLiquityTransaction<void>> {
+  ): Promise<SentEthersBeraBorrowTransaction<void>> {
     return this._populate.sendPOLLEN(toAddress, amount, overrides).then(sendTransaction);
   }
 
@@ -185,14 +185,14 @@ export class SendableEthersLiquity
     amount: Decimalish,
     maxRedemptionRate?: Decimalish,
     overrides?: EthersTransactionOverrides
-  ): Promise<SentEthersLiquityTransaction<RedemptionDetails>> {
+  ): Promise<SentEthersBeraBorrowTransaction<RedemptionDetails>> {
     return this._populate.redeemNECT(amount, maxRedemptionRate, overrides).then(sendTransaction);
   }
 
   /** {@inheritDoc @beraborrow/lib-base#SendableBeraBorrow.claimCollateralSurplus} */
   claimCollateralSurplus(
     overrides?: EthersTransactionOverrides
-  ): Promise<SentEthersLiquityTransaction<void>> {
+  ): Promise<SentEthersBeraBorrowTransaction<void>> {
     return this._populate.claimCollateralSurplus(overrides).then(sendTransaction);
   }
 
@@ -200,7 +200,7 @@ export class SendableEthersLiquity
   stakePOLLEN(
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
-  ): Promise<SentEthersLiquityTransaction<void>> {
+  ): Promise<SentEthersBeraBorrowTransaction<void>> {
     return this._populate.stakePOLLEN(amount, overrides).then(sendTransaction);
   }
 
@@ -208,14 +208,14 @@ export class SendableEthersLiquity
   unstakePOLLEN(
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
-  ): Promise<SentEthersLiquityTransaction<void>> {
+  ): Promise<SentEthersBeraBorrowTransaction<void>> {
     return this._populate.unstakePOLLEN(amount, overrides).then(sendTransaction);
   }
 
   /** {@inheritDoc @beraborrow/lib-base#SendableBeraBorrow.withdrawGainsFromStaking} */
   withdrawGainsFromStaking(
     overrides?: EthersTransactionOverrides
-  ): Promise<SentEthersLiquityTransaction<void>> {
+  ): Promise<SentEthersBeraBorrowTransaction<void>> {
     return this._populate.withdrawGainsFromStaking(overrides).then(sendTransaction);
   }
 
@@ -223,7 +223,7 @@ export class SendableEthersLiquity
   registerFrontend(
     kickbackRate: Decimalish,
     overrides?: EthersTransactionOverrides
-  ): Promise<SentEthersLiquityTransaction<void>> {
+  ): Promise<SentEthersBeraBorrowTransaction<void>> {
     return this._populate.registerFrontend(kickbackRate, overrides).then(sendTransaction);
   }
 
@@ -232,7 +232,7 @@ export class SendableEthersLiquity
     amount: Decimalish,
     address?: string,
     overrides?: EthersTransactionOverrides
-  ): Promise<SentEthersLiquityTransaction<void>> {
+  ): Promise<SentEthersBeraBorrowTransaction<void>> {
     return this._populate._mintUniToken(amount, address, overrides).then(sendTransaction);
   }
 
@@ -240,7 +240,7 @@ export class SendableEthersLiquity
   approveUniTokens(
     allowance?: Decimalish,
     overrides?: EthersTransactionOverrides
-  ): Promise<SentEthersLiquityTransaction<void>> {
+  ): Promise<SentEthersBeraBorrowTransaction<void>> {
     return this._populate.approveUniTokens(allowance, overrides).then(sendTransaction);
   }
 
@@ -248,7 +248,7 @@ export class SendableEthersLiquity
   stakeUniTokens(
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
-  ): Promise<SentEthersLiquityTransaction<void>> {
+  ): Promise<SentEthersBeraBorrowTransaction<void>> {
     return this._populate.stakeUniTokens(amount, overrides).then(sendTransaction);
   }
 
@@ -256,21 +256,21 @@ export class SendableEthersLiquity
   unstakeUniTokens(
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
-  ): Promise<SentEthersLiquityTransaction<void>> {
+  ): Promise<SentEthersBeraBorrowTransaction<void>> {
     return this._populate.unstakeUniTokens(amount, overrides).then(sendTransaction);
   }
 
   /** {@inheritDoc @beraborrow/lib-base#SendableBeraBorrow.withdrawPOLLENRewardFromLiquidityMining} */
   withdrawPOLLENRewardFromLiquidityMining(
     overrides?: EthersTransactionOverrides
-  ): Promise<SentEthersLiquityTransaction<void>> {
+  ): Promise<SentEthersBeraBorrowTransaction<void>> {
     return this._populate.withdrawPOLLENRewardFromLiquidityMining(overrides).then(sendTransaction);
   }
 
   /** {@inheritDoc @beraborrow/lib-base#SendableBeraBorrow.exitLiquidityMining} */
   exitLiquidityMining(
     overrides?: EthersTransactionOverrides
-  ): Promise<SentEthersLiquityTransaction<void>> {
+  ): Promise<SentEthersBeraBorrowTransaction<void>> {
     return this._populate.exitLiquidityMining(overrides).then(sendTransaction);
   }
 }

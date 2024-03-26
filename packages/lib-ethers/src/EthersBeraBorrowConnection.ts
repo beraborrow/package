@@ -13,17 +13,18 @@ import { EthersProvider, EthersSigner } from "./types";
 
 import {
   _connectToContracts,
-  _LiquityContractAddresses,
-  _LiquityContracts,
-  _LiquityDeploymentJSON
+  _BeraBorrowContractAddresses,
+  _BeraBorrowContracts,
+  _BeraBorrowDeploymentJSON
 } from "./contracts";
 
 import { _connectToMulticall, _Multicall } from "./_Multicall";
 
-const dev = devOrNull as _LiquityDeploymentJSON | null;
+const dev = devOrNull as _BeraBorrowDeploymentJSON | null;
 
+// @ts-ignore
 const deployments: {
-  [chainId: number]: _LiquityDeploymentJSON | undefined;
+  [chainId: number]: _BeraBorrowDeploymentJSON | undefined;
 } = {
   [mainnet.chainId]: mainnet,
   [berachain.chainId]: berachain,
@@ -36,16 +37,16 @@ declare const brand: unique symbol;
 const branded = <T>(t: Omit<T, typeof brand>): T => t as T;
 
 /**
- * Information about a connection to the Liquity protocol.
+ * Information about a connection to the BeraBorrow protocol.
  *
  * @remarks
  * Provided for debugging / informational purposes.
  *
- * Exposed through {@link ReadableEthersLiquity.connection} and {@link EthersLiquity.connection}.
+ * Exposed through {@link ReadableEthersBeraBorrow.connection} and {@link EthersBeraBorrow.connection}.
  *
  * @public
  */
-export interface EthersLiquityConnection extends EthersLiquityConnectionOptionalParams {
+export interface EthersBeraBorrowConnection extends EthersBeraBorrowConnectionOptionalParams {
   /** Ethers `Provider` used for connecting to the network. */
   readonly provider: EthersProvider;
 
@@ -55,13 +56,13 @@ export interface EthersLiquityConnection extends EthersLiquityConnectionOptional
   /** Chain ID of the connected network. */
   readonly chainId: number;
 
-  /** Version of the Liquity contracts (Git commit hash). */
+  /** Version of the BeraBorrow contracts (Git commit hash). */
   readonly version: string;
 
-  /** Date when the Liquity contracts were deployed. */
+  /** Date when the BeraBorrow contracts were deployed. */
   readonly deploymentDate: Date;
 
-  /** Number of block in which the first Liquity contract was deployed. */
+  /** Number of block in which the first BeraBorrow contract was deployed. */
   readonly startBlock: number;
 
   /** Time period (in seconds) after `deploymentDate` during which redemptions are disabled. */
@@ -73,7 +74,7 @@ export interface EthersLiquityConnection extends EthersLiquityConnectionOptional
   /** Amount of POLLEN collectively rewarded to stakers of the liquidity mining pool per second. */
   readonly liquidityMiningPOLLENRewardRate: Decimal;
 
-  /** A mapping of Liquity contracts' names to their addresses. */
+  /** A mapping of BeraBorrow contracts' names to their addresses. */
   readonly addresses: Record<string, string>;
 
   /** @internal */
@@ -87,25 +88,25 @@ export interface EthersLiquityConnection extends EthersLiquityConnectionOptional
 }
 
 /** @internal */
-export interface _InternalEthersLiquityConnection extends EthersLiquityConnection {
-  readonly addresses: _LiquityContractAddresses;
-  readonly _contracts: _LiquityContracts;
+export interface _InternalEthersBeraBorrowConnection extends EthersBeraBorrowConnection {
+  readonly addresses: _BeraBorrowContractAddresses;
+  readonly _contracts: _BeraBorrowContracts;
   readonly _multicall?: _Multicall;
 }
 
 const connectionFrom = (
   provider: EthersProvider,
   signer: EthersSigner | undefined,
-  _contracts: _LiquityContracts,
+  _contracts: _BeraBorrowContracts,
   _multicall: _Multicall | undefined,
   {
     deploymentDate,
     totalStabilityPoolPOLLENReward,
     liquidityMiningPOLLENRewardRate,
     ...deployment
-  }: _LiquityDeploymentJSON,
-  optionalParams?: EthersLiquityConnectionOptionalParams
-): _InternalEthersLiquityConnection => {
+  }: _BeraBorrowDeploymentJSON,
+  optionalParams?: EthersBeraBorrowConnectionOptionalParams
+): _InternalEthersBeraBorrowConnection => {
   if (
     optionalParams &&
     optionalParams.useStore !== undefined &&
@@ -128,17 +129,17 @@ const connectionFrom = (
 };
 
 /** @internal */
-export const _getContracts = (connection: EthersLiquityConnection): _LiquityContracts =>
-  (connection as _InternalEthersLiquityConnection)._contracts;
+export const _getContracts = (connection: EthersBeraBorrowConnection): _BeraBorrowContracts =>
+  (connection as _InternalEthersBeraBorrowConnection)._contracts;
 
-const getMulticall = (connection: EthersLiquityConnection): _Multicall | undefined =>
-  (connection as _InternalEthersLiquityConnection)._multicall;
+const getMulticall = (connection: EthersBeraBorrowConnection): _Multicall | undefined =>
+  (connection as _InternalEthersBeraBorrowConnection)._multicall;
 
 const getTimestampFromBlock = ({ timestamp }: Block) => timestamp;
 
 /** @internal */
 export const _getBlockTimestamp = (
-  connection: EthersLiquityConnection,
+  connection: EthersBeraBorrowConnection,
   blockTag: BlockTag = "latest"
 ): Promise<number> =>
   // Get the timestamp via a contract call whenever possible, to make it batchable with other calls
@@ -146,36 +147,36 @@ export const _getBlockTimestamp = (
   _getProvider(connection).getBlock(blockTag).then(getTimestampFromBlock);
 
 /** @internal */
-export const _requireSigner = (connection: EthersLiquityConnection): EthersSigner =>
+export const _requireSigner = (connection: EthersBeraBorrowConnection): EthersSigner =>
   connection.signer ?? panic(new Error("Must be connected through a Signer"));
 
 /** @internal */
-export const _getProvider = (connection: EthersLiquityConnection): EthersProvider =>
+export const _getProvider = (connection: EthersBeraBorrowConnection): EthersProvider =>
   connection.provider;
 
 // TODO parameterize error message?
 /** @internal */
 export const _requireAddress = (
-  connection: EthersLiquityConnection,
+  connection: EthersBeraBorrowConnection,
   overrides?: { from?: string }
 ): string =>
   overrides?.from ?? connection.userAddress ?? panic(new Error("A user address is required"));
 
 /** @internal */
-export const _requireFrontendAddress = (connection: EthersLiquityConnection): string =>
+export const _requireFrontendAddress = (connection: EthersBeraBorrowConnection): string =>
   connection.frontendTag ?? panic(new Error("A frontend address is required"));
 
 /** @internal */
 export const _usingStore = (
-  connection: EthersLiquityConnection
-): connection is EthersLiquityConnection & { useStore: EthersLiquityStoreOption } =>
+  connection: EthersBeraBorrowConnection
+): connection is EthersBeraBorrowConnection & { useStore: EthersBeraBorrowStoreOption } =>
   connection.useStore !== undefined;
 
 /**
- * Thrown when trying to connect to a network where Liquity is not deployed.
+ * Thrown when trying to connect to a network where BeraBorrow is not deployed.
  *
  * @remarks
- * Thrown by {@link ReadableEthersLiquity.(connect:2)} and {@link EthersLiquity.(connect:2)}.
+ * Thrown by {@link ReadableEthersBeraBorrow.(connect:2)} and {@link EthersBeraBorrow.(connect:2)}.
  *
  * @public
  */
@@ -205,10 +206,10 @@ const getProviderAndSigner = (
 
 /** @internal */
 export const _connectToDeployment = (
-  deployment: _LiquityDeploymentJSON,
+  deployment: _BeraBorrowDeploymentJSON,
   signerOrProvider: EthersSigner | EthersProvider,
-  optionalParams?: EthersLiquityConnectionOptionalParams
-): EthersLiquityConnection =>
+  optionalParams?: EthersBeraBorrowConnectionOptionalParams
+): EthersBeraBorrowConnection =>
   connectionFrom(
     ...getProviderAndSigner(signerOrProvider),
     _connectToContracts(signerOrProvider, deployment),
@@ -219,31 +220,31 @@ export const _connectToDeployment = (
 
 /**
  * Possible values for the optional
- * {@link EthersLiquityConnectionOptionalParams.useStore | useStore}
+ * {@link EthersBeraBorrowConnectionOptionalParams.useStore | useStore}
  * connection parameter.
  *
  * @remarks
  * Currently, the only supported value is `"blockPolled"`, in which case a
- * {@link BlockPolledLiquityStore} will be created.
+ * {@link BlockPolledBeraBorrowStore} will be created.
  *
  * @public
  */
-export type EthersLiquityStoreOption = "blockPolled";
+export type EthersBeraBorrowStoreOption = "blockPolled";
 
 const validStoreOptions = ["blockPolled"];
 
 /**
- * Optional parameters of {@link ReadableEthersLiquity.(connect:2)} and
- * {@link EthersLiquity.(connect:2)}.
+ * Optional parameters of {@link ReadableEthersBeraBorrow.(connect:2)} and
+ * {@link EthersBeraBorrow.(connect:2)}.
  *
  * @public
  */
-export interface EthersLiquityConnectionOptionalParams {
+export interface EthersBeraBorrowConnectionOptionalParams {
   /**
    * Address whose Trove, Stability Deposit, POLLEN Stake and balances will be read by default.
    *
    * @remarks
-   * For example {@link EthersLiquity.getTrove | getTrove(address?)} will return the Trove owned by
+   * For example {@link EthersBeraBorrow.getTrove | getTrove(address?)} will return the Trove owned by
    * `userAddress` when the `address` parameter is omitted.
    *
    * Should be omitted when connecting through a {@link EthersSigner | Signer}. Instead `userAddress`
@@ -256,26 +257,26 @@ export interface EthersLiquityConnectionOptionalParams {
    *
    * @remarks
    * For example
-   * {@link EthersLiquity.depositNECTInStabilityPool | depositNECTInStabilityPool(amount, frontendTag?)}
+   * {@link EthersBeraBorrow.depositNECTInStabilityPool | depositNECTInStabilityPool(amount, frontendTag?)}
    * will tag newly made Stability Deposits with this address when its `frontendTag` parameter is
    * omitted.
    */
   readonly frontendTag?: string;
 
   /**
-   * Create a {@link @beraborrow/lib-base#LiquityStore} and expose it as the `store` property.
+   * Create a {@link @beraborrow/lib-base#BeraBorrowStore} and expose it as the `store` property.
    *
    * @remarks
-   * When set to one of the available {@link EthersLiquityStoreOption | options},
-   * {@link ReadableEthersLiquity.(connect:2) | ReadableEthersLiquity.connect()} will return a
-   * {@link ReadableEthersLiquityWithStore}, while
-   * {@link EthersLiquity.(connect:2) | EthersLiquity.connect()} will return an
-   * {@link EthersLiquityWithStore}.
+   * When set to one of the available {@link EthersBeraBorrowStoreOption | options},
+   * {@link ReadableEthersBeraBorrow.(connect:2) | ReadableEthersBeraBorrow.connect()} will return a
+   * {@link ReadableEthersBeraBorrowWithStore}, while
+   * {@link EthersBeraBorrow.(connect:2) | EthersBeraBorrow.connect()} will return an
+   * {@link EthersBeraBorrowWithStore}.
    *
    * Note that the store won't start monitoring the blockchain until its
-   * {@link @beraborrow/lib-base#LiquityStore.start | start()} function is called.
+   * {@link @beraborrow/lib-base#BeraBorrowStore.start | start()} function is called.
    */
-  readonly useStore?: EthersLiquityStoreOption;
+  readonly useStore?: EthersBeraBorrowStoreOption;
 }
 
 /** @internal */
@@ -283,25 +284,25 @@ export function _connectByChainId<T>(
   provider: EthersProvider,
   signer: EthersSigner | undefined,
   chainId: number,
-  optionalParams: EthersLiquityConnectionOptionalParams & { useStore: T }
-): EthersLiquityConnection & { useStore: T };
+  optionalParams: EthersBeraBorrowConnectionOptionalParams & { useStore: T }
+): EthersBeraBorrowConnection & { useStore: T };
 
 /** @internal */
 export function _connectByChainId(
   provider: EthersProvider,
   signer: EthersSigner | undefined,
   chainId: number,
-  optionalParams?: EthersLiquityConnectionOptionalParams
-): EthersLiquityConnection;
+  optionalParams?: EthersBeraBorrowConnectionOptionalParams
+): EthersBeraBorrowConnection;
 
 /** @internal */
 export function _connectByChainId(
   provider: EthersProvider,
   signer: EthersSigner | undefined,
   chainId: number,
-  optionalParams?: EthersLiquityConnectionOptionalParams
-): EthersLiquityConnection {
-  const deployment: _LiquityDeploymentJSON =
+  optionalParams?: EthersBeraBorrowConnectionOptionalParams
+): EthersBeraBorrowConnection {
+  const deployment: _BeraBorrowDeploymentJSON =
     deployments[chainId] ?? panic(new UnsupportedNetworkError(chainId));
   
   return connectionFrom(
@@ -317,8 +318,8 @@ export function _connectByChainId(
 /** @internal */
 export const _connect = async (
   signerOrProvider: EthersSigner | EthersProvider,
-  optionalParams?: EthersLiquityConnectionOptionalParams
-): Promise<EthersLiquityConnection> => {
+  optionalParams?: EthersBeraBorrowConnectionOptionalParams
+): Promise<EthersBeraBorrowConnection> => {
   const [provider, signer] = getProviderAndSigner(signerOrProvider);
 
   if (signer) {

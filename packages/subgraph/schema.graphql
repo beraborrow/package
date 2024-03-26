@@ -66,7 +66,7 @@ type User @entity {
 
   trove: Trove
   stabilityDeposit: StabilityDeposit
-  stake: LqtyStake
+  stake: PollenStake
   frontend: Frontend
 
   collSurplus: BigDecimal!
@@ -268,11 +268,11 @@ type CollSurplusChange implements Change @entity {
   collSurplusAfter: BigDecimal!
 }
 
-type LqtyStake @entity {
+type PollenStake @entity {
   id: ID!
   owner: User!
   amount: BigDecimal!
-  changes: [LqtyStakeChange!]! @derivedFrom(field: "stake")
+  changes: [PollenStakeChange!]! @derivedFrom(field: "stake")
 }
 
 enum POLLENStakeOperation {
@@ -283,14 +283,14 @@ enum POLLENStakeOperation {
   gainsWithdrawn
 }
 
-type LqtyStakeChange implements Change @entity {
+type PollenStakeChange implements Change @entity {
   id: ID!
   sequenceNumber: Int!
   transaction: Transaction!
   systemStateBefore: SystemState!
   systemStateAfter: SystemState!
 
-  stake: LqtyStake!
+  stake: PollenStake!
   stakeOperation: POLLENStakeOperation!
 
   stakedAmountBefore: BigDecimal!

@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import { Container, Flex, Button } from "theme-ui";
 
 import { BeraBorrowStoreState } from "@beraborrow/lib-base";
-import { useLiquitySelector } from "@beraborrow/lib-react";
+import { useBeraBorrowSelector } from "@beraborrow/lib-react";
 
 import { Icon } from "./Icon";
 import { SystemStats } from "./SystemStats";
@@ -10,7 +10,7 @@ import { SystemStats } from "./SystemStats";
 const select = ({ total, price }: BeraBorrowStoreState) => ({ total, price });
 
 export const SystemStatsPopup: React.FC = () => {
-  const { price, total } = useLiquitySelector(select);
+  const { price, total } = useBeraBorrowSelector(select);
 
   const [systemStatsOpen, setSystemStatsOpen] = useState(false);
   const systemStatsOverlayRef = useRef<HTMLDivElement>(null);

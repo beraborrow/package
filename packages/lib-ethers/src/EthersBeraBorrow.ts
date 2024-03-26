@@ -28,12 +28,12 @@ import {
 } from "@beraborrow/lib-base";
 
 import {
-  EthersLiquityConnection,
-  EthersLiquityConnectionOptionalParams,
-  EthersLiquityStoreOption,
+  EthersBeraBorrowConnection,
+  EthersBeraBorrowConnectionOptionalParams,
+  EthersBeraBorrowStoreOption,
   _connect,
   _usingStore
-} from "./EthersLiquityConnection";
+} from "./EthersBeraBorrowConnection";
 
 import {
   EthersCallOverrides,
@@ -45,15 +45,15 @@ import {
 
 import {
   BorrowingOperationOptionalParams,
-  PopulatableEthersLiquity,
-  SentEthersLiquityTransaction
-} from "./PopulatableEthersLiquity";
-import { ReadableEthersLiquity, ReadableEthersLiquityWithStore } from "./ReadableEthersLiquity";
-import { SendableEthersLiquity } from "./SendableEthersLiquity";
-import { BlockPolledLiquityStore } from "./BlockPolledLiquityStore";
+  PopulatableEthersBeraBorrow,
+  SentEthersBeraBorrowTransaction
+} from "./PopulatableEthersBeraBorrow";
+import { ReadableEthersBeraBorrow, ReadableEthersBeraBorrowWithStore } from "./ReadableEthersBeraBorrow";
+import { SendableEthersBeraBorrow } from "./SendableEthersBeraBorrow";
+import { BlockPolledBeraBorrowStore } from "./BlockPolledBeraBorrowStore";
 
 /**
- * Thrown by {@link EthersLiquity} in case of transaction failure.
+ * Thrown by {@link EthersBeraBorrow} in case of transaction failure.
  *
  * @public
  */
@@ -65,7 +65,7 @@ export class EthersTransactionFailedError extends TransactionFailedError<
   }
 }
 
-const waitForSuccess = async <T>(tx: SentEthersLiquityTransaction<T>) => {
+const waitForSuccess = async <T>(tx: SentEthersBeraBorrowTransaction<T>) => {
   const receipt = await tx.waitForReceipt();
 
   if (receipt.status !== "succeeded") {
@@ -80,51 +80,51 @@ const waitForSuccess = async <T>(tx: SentEthersLiquityTransaction<T>) => {
  *
  * @public
  */
-export class EthersLiquity implements ReadableEthersLiquity, TransactableBeraBorrow {
-  /** Information about the connection to the Liquity protocol. */
-  readonly connection: EthersLiquityConnection;
+export class EthersBeraBorrow implements ReadableEthersBeraBorrow, TransactableBeraBorrow {
+  /** Information about the connection to the BeraBorrow protocol. */
+  readonly connection: EthersBeraBorrowConnection;
 
   /** Can be used to create populated (unsigned) transactions. */
-  readonly populate: PopulatableEthersLiquity;
+  readonly populate: PopulatableEthersBeraBorrow;
 
   /** Can be used to send transactions without waiting for them to be mined. */
-  readonly send: SendableEthersLiquity;
+  readonly send: SendableEthersBeraBorrow;
 
-  private _readable: ReadableEthersLiquity;
+  private _readable: ReadableEthersBeraBorrow;
 
   /** @internal */
-  constructor(readable: ReadableEthersLiquity) {
+  constructor(readable: ReadableEthersBeraBorrow) {
     this._readable = readable;
     this.connection = readable.connection;
-    this.populate = new PopulatableEthersLiquity(readable);
-    this.send = new SendableEthersLiquity(this.populate);
+    this.populate = new PopulatableEthersBeraBorrow(readable);
+    this.send = new SendableEthersBeraBorrow(this.populate);
   }
 
   /** @internal */
   static _from(
-    connection: EthersLiquityConnection & { useStore: "blockPolled" }
-  ): EthersLiquityWithStore<BlockPolledLiquityStore>;
+    connection: EthersBeraBorrowConnection & { useStore: "blockPolled" }
+  ): EthersBeraBorrowWithStore<BlockPolledBeraBorrowStore>;
 
   /** @internal */
-  static _from(connection: EthersLiquityConnection): EthersLiquity;
+  static _from(connection: EthersBeraBorrowConnection): EthersBeraBorrow;
 
   /** @internal */
-  static _from(connection: EthersLiquityConnection): EthersLiquity {
+  static _from(connection: EthersBeraBorrowConnection): EthersBeraBorrow {
     if (_usingStore(connection)) {
-      return new _EthersLiquityWithStore(ReadableEthersLiquity._from(connection));
+      return new _EthersBeraBorrowWithStore(ReadableEthersBeraBorrow._from(connection));
     } else {
-      return new EthersLiquity(ReadableEthersLiquity._from(connection));
+      return new EthersBeraBorrow(ReadableEthersBeraBorrow._from(connection));
     }
   }
 
   /** @internal */
   static connect(
     signerOrProvider: EthersSigner | EthersProvider,
-    optionalParams: EthersLiquityConnectionOptionalParams & { useStore: "blockPolled" }
-  ): Promise<EthersLiquityWithStore<BlockPolledLiquityStore>>;
+    optionalParams: EthersBeraBorrowConnectionOptionalParams & { useStore: "blockPolled" }
+  ): Promise<EthersBeraBorrowWithStore<BlockPolledBeraBorrowStore>>;
 
   /**
-   * Connect to the Liquity protocol and create an `EthersLiquity` object.
+   * Connect to the BeraBorrow protocol and create an `EthersBeraBorrow` object.
    *
    * @param signerOrProvider - Ethers `Signer` or `Provider` to use for connecting to the Ethereum
    *                           network.
@@ -132,37 +132,40 @@ export class EthersLiquity implements ReadableEthersLiquity, TransactableBeraBor
    */
   static connect(
     signerOrProvider: EthersSigner | EthersProvider,
-    optionalParams?: EthersLiquityConnectionOptionalParams
-  ): Promise<EthersLiquity>;
+    optionalParams?: EthersBeraBorrowConnectionOptionalParams
+  ): Promise<EthersBeraBorrow>;
 
   static async connect(
     signerOrProvider: EthersSigner | EthersProvider,
-    optionalParams?: EthersLiquityConnectionOptionalParams
-  ): Promise<EthersLiquity> {
-    return EthersLiquity._from(await _connect(signerOrProvider, optionalParams));
+    optionalParams?: EthersBeraBorrowConnectionOptionalParams
+  ): Promise<EthersBeraBorrow> {
+    return EthersBeraBorrow._from(await _connect(signerOrProvider, optionalParams));
   }
 
   /**
-   * Check whether this `EthersLiquity` is an {@link EthersLiquityWithStore}.
+   * Check whether this `EthersBeraBorrow` is an {@link EthersBeraBorrowWithStore}.
    */
-  hasStore(): this is EthersLiquityWithStore;
+  // @ts-ignore
+  hasStore(): this is EthersBeraBorrowWithStore;
 
   /**
-   * Check whether this `EthersLiquity` is an
-   * {@link EthersLiquityWithStore}\<{@link BlockPolledLiquityStore}\>.
+   * Check whether this `EthersBeraBorrow` is an
+   * {@link EthersBeraBorrowWithStore}\<{@link BlockPolledBeraBorrowStore}\>.
    */
-  hasStore(store: "blockPolled"): this is EthersLiquityWithStore<BlockPolledLiquityStore>;
+  // @ts-ignore
+  hasStore(store: "blockPolled"): this is EthersBeraBorrowWithStore<BlockPolledBeraBorrowStore>;
 
+  // @ts-ignore
   hasStore(): boolean {
     return false;
   }
 
-  /** {@inheritDoc @beraborrow/lib-base#ReadableLiquity.getTotalRedistributed} */
+  /** {@inheritDoc @beraborrow/lib-base#ReadableBeraBorrow.getTotalRedistributed} */
   getTotalRedistributed(overrides?: EthersCallOverrides): Promise<Trove> {
     return this._readable.getTotalRedistributed(overrides);
   }
 
-  /** {@inheritDoc @beraborrow/lib-base#ReadableLiquity.getTroveBeforeRedistribution} */
+  /** {@inheritDoc @beraborrow/lib-base#ReadableBeraBorrow.getTroveBeforeRedistribution} */
   getTroveBeforeRedistribution(
     address?: string,
     overrides?: EthersCallOverrides
@@ -170,17 +173,17 @@ export class EthersLiquity implements ReadableEthersLiquity, TransactableBeraBor
     return this._readable.getTroveBeforeRedistribution(address, overrides);
   }
 
-  /** {@inheritDoc @beraborrow/lib-base#ReadableLiquity.getTrove} */
+  /** {@inheritDoc @beraborrow/lib-base#ReadableBeraBorrow.getTrove} */
   getTrove(address?: string, overrides?: EthersCallOverrides): Promise<UserTrove> {
     return this._readable.getTrove(address, overrides);
   }
 
-  /** {@inheritDoc @beraborrow/lib-base#ReadableLiquity.getNumberOfTroves} */
+  /** {@inheritDoc @beraborrow/lib-base#ReadableBeraBorrow.getNumberOfTroves} */
   getNumberOfTroves(overrides?: EthersCallOverrides): Promise<number> {
     return this._readable.getNumberOfTroves(overrides);
   }
 
-  /** {@inheritDoc @beraborrow/lib-base#ReadableLiquity.getPrice} */
+  /** {@inheritDoc @beraborrow/lib-base#ReadableBeraBorrow.getPrice} */
   getPrice(overrides?: EthersCallOverrides): Promise<Decimal> {
     return this._readable.getPrice(overrides);
   }
@@ -195,42 +198,42 @@ export class EthersLiquity implements ReadableEthersLiquity, TransactableBeraBor
     return this._readable._getDefaultPool(overrides);
   }
 
-  /** {@inheritDoc @beraborrow/lib-base#ReadableLiquity.getTotal} */
+  /** {@inheritDoc @beraborrow/lib-base#ReadableBeraBorrow.getTotal} */
   getTotal(overrides?: EthersCallOverrides): Promise<Trove> {
     return this._readable.getTotal(overrides);
   }
 
-  /** {@inheritDoc @beraborrow/lib-base#ReadableLiquity.getStabilityDeposit} */
+  /** {@inheritDoc @beraborrow/lib-base#ReadableBeraBorrow.getStabilityDeposit} */
   getStabilityDeposit(address?: string, overrides?: EthersCallOverrides): Promise<StabilityDeposit> {
     return this._readable.getStabilityDeposit(address, overrides);
   }
 
-  /** {@inheritDoc @beraborrow/lib-base#ReadableLiquity.getRemainingStabilityPoolPOLLENReward} */
+  /** {@inheritDoc @beraborrow/lib-base#ReadableBeraBorrow.getRemainingStabilityPoolPOLLENReward} */
   getRemainingStabilityPoolPOLLENReward(overrides?: EthersCallOverrides): Promise<Decimal> {
     return this._readable.getRemainingStabilityPoolPOLLENReward(overrides);
   }
 
-  /** {@inheritDoc @beraborrow/lib-base#ReadableLiquity.getNECTInStabilityPool} */
+  /** {@inheritDoc @beraborrow/lib-base#ReadableBeraBorrow.getNECTInStabilityPool} */
   getNECTInStabilityPool(overrides?: EthersCallOverrides): Promise<Decimal> {
     return this._readable.getNECTInStabilityPool(overrides);
   }
 
-  /** {@inheritDoc @beraborrow/lib-base#ReadableLiquity.getNECTBalance} */
+  /** {@inheritDoc @beraborrow/lib-base#ReadableBeraBorrow.getNECTBalance} */
   getNECTBalance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {
     return this._readable.getNECTBalance(address, overrides);
   }
 
-  /** {@inheritDoc @beraborrow/lib-base#ReadableLiquity.getPOLLENBalance} */
+  /** {@inheritDoc @beraborrow/lib-base#ReadableBeraBorrow.getPOLLENBalance} */
   getPOLLENBalance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {
     return this._readable.getPOLLENBalance(address, overrides);
   }
 
-  /** {@inheritDoc @beraborrow/lib-base#ReadableLiquity.getUniTokenBalance} */
+  /** {@inheritDoc @beraborrow/lib-base#ReadableBeraBorrow.getUniTokenBalance} */
   getUniTokenBalance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {
     return this._readable.getUniTokenBalance(address, overrides);
   }
 
-  /** {@inheritDoc @beraborrow/lib-base#ReadableLiquity.getUniTokenAllowance} */
+  /** {@inheritDoc @beraborrow/lib-base#ReadableBeraBorrow.getUniTokenAllowance} */
   getUniTokenAllowance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {
     return this._readable.getUniTokenAllowance(address, overrides);
   }
@@ -242,27 +245,27 @@ export class EthersLiquity implements ReadableEthersLiquity, TransactableBeraBor
     return this._readable._getRemainingLiquidityMiningPOLLENRewardCalculator(overrides);
   }
 
-  /** {@inheritDoc @beraborrow/lib-base#ReadableLiquity.getRemainingLiquidityMiningPOLLENReward} */
+  /** {@inheritDoc @beraborrow/lib-base#ReadableBeraBorrow.getRemainingLiquidityMiningPOLLENReward} */
   getRemainingLiquidityMiningPOLLENReward(overrides?: EthersCallOverrides): Promise<Decimal> {
     return this._readable.getRemainingLiquidityMiningPOLLENReward(overrides);
   }
 
-  /** {@inheritDoc @beraborrow/lib-base#ReadableLiquity.getLiquidityMiningStake} */
+  /** {@inheritDoc @beraborrow/lib-base#ReadableBeraBorrow.getLiquidityMiningStake} */
   getLiquidityMiningStake(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {
     return this._readable.getLiquidityMiningStake(address, overrides);
   }
 
-  /** {@inheritDoc @beraborrow/lib-base#ReadableLiquity.getTotalStakedUniTokens} */
+  /** {@inheritDoc @beraborrow/lib-base#ReadableBeraBorrow.getTotalStakedUniTokens} */
   getTotalStakedUniTokens(overrides?: EthersCallOverrides): Promise<Decimal> {
     return this._readable.getTotalStakedUniTokens(overrides);
   }
 
-  /** {@inheritDoc @beraborrow/lib-base#ReadableLiquity.getLiquidityMiningPOLLENReward} */
+  /** {@inheritDoc @beraborrow/lib-base#ReadableBeraBorrow.getLiquidityMiningPOLLENReward} */
   getLiquidityMiningPOLLENReward(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {
     return this._readable.getLiquidityMiningPOLLENReward(address, overrides);
   }
 
-  /** {@inheritDoc @beraborrow/lib-base#ReadableLiquity.getCollateralSurplusBalance} */
+  /** {@inheritDoc @beraborrow/lib-base#ReadableBeraBorrow.getCollateralSurplusBalance} */
   getCollateralSurplusBalance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {
     return this._readable.getCollateralSurplusBalance(address, overrides);
   }
@@ -273,7 +276,7 @@ export class EthersLiquity implements ReadableEthersLiquity, TransactableBeraBor
     overrides?: EthersCallOverrides
   ): Promise<TroveWithPendingRedistribution[]>;
 
-  /** {@inheritDoc @beraborrow/lib-base#ReadableLiquity.(getTroves:2)} */
+  /** {@inheritDoc @beraborrow/lib-base#ReadableBeraBorrow.(getTroves:2)} */
   getTroves(params: TroveListingParams, overrides?: EthersCallOverrides): Promise<UserTrove[]>;
 
   getTroves(params: TroveListingParams, overrides?: EthersCallOverrides): Promise<UserTrove[]> {
@@ -292,22 +295,22 @@ export class EthersLiquity implements ReadableEthersLiquity, TransactableBeraBor
     return this._readable._getFeesFactory(overrides);
   }
 
-  /** {@inheritDoc @beraborrow/lib-base#ReadableLiquity.getFees} */
+  /** {@inheritDoc @beraborrow/lib-base#ReadableBeraBorrow.getFees} */
   getFees(overrides?: EthersCallOverrides): Promise<Fees> {
     return this._readable.getFees(overrides);
   }
 
-  /** {@inheritDoc @beraborrow/lib-base#ReadableLiquity.getPOLLENStake} */
+  /** {@inheritDoc @beraborrow/lib-base#ReadableBeraBorrow.getPOLLENStake} */
   getPOLLENStake(address?: string, overrides?: EthersCallOverrides): Promise<POLLENStake> {
     return this._readable.getPOLLENStake(address, overrides);
   }
 
-  /** {@inheritDoc @beraborrow/lib-base#ReadableLiquity.getTotalStakedPOLLEN} */
+  /** {@inheritDoc @beraborrow/lib-base#ReadableBeraBorrow.getTotalStakedPOLLEN} */
   getTotalStakedPOLLEN(overrides?: EthersCallOverrides): Promise<Decimal> {
     return this._readable.getTotalStakedPOLLEN(overrides);
   }
 
-  /** {@inheritDoc @beraborrow/lib-base#ReadableLiquity.getFrontendStatus} */
+  /** {@inheritDoc @beraborrow/lib-base#ReadableBeraBorrow.getFrontendStatus} */
   getFrontendStatus(address?: string, overrides?: EthersCallOverrides): Promise<FrontendStatus> {
     return this._readable.getFrontendStatus(address, overrides);
   }
@@ -668,28 +671,28 @@ export class EthersLiquity implements ReadableEthersLiquity, TransactableBeraBor
 }
 
 /**
- * Variant of {@link EthersLiquity} that exposes a {@link @beraborrow/lib-base#BeraBorrowStore}.
+ * Variant of {@link EthersBeraBorrow} that exposes a {@link @beraborrow/lib-base#BeraBorrowStore}.
  *
  * @public
  */
-export interface EthersLiquityWithStore<T extends BeraBorrowStore = BeraBorrowStore>
-  extends EthersLiquity {
+export interface EthersBeraBorrowWithStore<T extends BeraBorrowStore = BeraBorrowStore>
+  extends EthersBeraBorrow {
   /** An object that implements BeraBorrowStore. */
   readonly store: T;
 }
 
-class _EthersLiquityWithStore<T extends BeraBorrowStore = BeraBorrowStore>
-  extends EthersLiquity
-  implements EthersLiquityWithStore<T> {
+class _EthersBeraBorrowWithStore<T extends BeraBorrowStore = BeraBorrowStore>
+  extends EthersBeraBorrow
+  implements EthersBeraBorrowWithStore<T> {
   readonly store: T;
 
-  constructor(readable: ReadableEthersLiquityWithStore<T>) {
+  constructor(readable: ReadableEthersBeraBorrowWithStore<T>) {
     super(readable);
 
     this.store = readable.store;
   }
 
-  hasStore(store?: EthersLiquityStoreOption): boolean {
+  hasStore(store?: EthersBeraBorrowStoreOption): boolean {
     return store === undefined || store === this.connection.useStore;
   }
 }

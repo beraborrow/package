@@ -385,7 +385,7 @@ contract Authorizable {
     }
 }
 
-contract iBGT is ERC20Permit, Authorizable {
+contract iBGTToken is ERC20Permit, Authorizable {
      constructor()
         Authorizable()
         ERC20Permit("iBGT", "iBGT")

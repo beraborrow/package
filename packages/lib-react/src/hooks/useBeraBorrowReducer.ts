@@ -3,26 +3,26 @@ import { useCallback, useEffect, useReducer, useRef } from "react";
 import { BeraBorrowStoreState } from "@beraborrow/lib-base";
 
 import { equals } from "../utils/equals";
-import { useLiquityStore } from "./useLiquityStore";
+import { useBeraBorrowStore } from "./useBeraBorrowStore";
 
-export type LiquityStoreUpdate<T = unknown> = {
+export type BeraBorrowStoreUpdate<T = unknown> = {
   type: "updateStore";
   newState: BeraBorrowStoreState<T>;
   oldState: BeraBorrowStoreState<T>;
   stateChange: Partial<BeraBorrowStoreState<T>>;
 };
 
-export const useLiquityReducer = <S, A, T>(
-  reduce: (state: S, action: A | LiquityStoreUpdate<T>) => S,
+export const useBeraBorrowReducer = <S, A, T>(
+  reduce: (state: S, action: A | BeraBorrowStoreUpdate<T>) => S,
   init: (storeState: BeraBorrowStoreState<T>) => S
-): [S, (action: A | LiquityStoreUpdate<T>) => void] => {
-  const store = useLiquityStore<T>();
+): [S, (action: A | BeraBorrowStoreUpdate<T>) => void] => {
+  const store = useBeraBorrowStore<T>();
   const oldStore = useRef(store);
   const state = useRef(init(store.state));
   const [, rerender] = useReducer(() => ({}), {});
 
   const dispatch = useCallback(
-    (action: A | LiquityStoreUpdate<T>) => {
+    (action: A | BeraBorrowStoreUpdate<T>) => {
       const newState = reduce(state.current, action);
 
       if (!equals(newState, state.current)) {

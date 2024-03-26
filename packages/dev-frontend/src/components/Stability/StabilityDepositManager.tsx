@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Button, Flex } from "theme-ui";
 
 import { Decimal, Decimalish, BeraBorrowStoreState } from "@beraborrow/lib-base";
-import { LiquityStoreUpdate, useLiquityReducer, useLiquitySelector } from "@beraborrow/lib-react";
+import { BeraBorrowStoreUpdate, useBeraBorrowReducer, useBeraBorrowSelector } from "@beraborrow/lib-react";
 
 import { COIN } from "../../strings";
 
@@ -25,7 +25,7 @@ const init = ({ stabilityDeposit }: BeraBorrowStoreState) => ({
 
 type StabilityDepositManagerState = ReturnType<typeof init>;
 type StabilityDepositManagerAction =
-  | LiquityStoreUpdate
+  | BeraBorrowStoreUpdate
   | { type: "startChange" | "finishChange" | "revert" }
   | { type: "setDeposit"; newValue: Decimalish };
 
@@ -92,8 +92,8 @@ const reduce = (
 const transactionId = "stability-deposit";
 
 export const StabilityDepositManager: React.FC = () => {
-  const [{ originalDeposit, editedNECT, changePending }, dispatch] = useLiquityReducer(reduce, init);
-  const validationContext = useLiquitySelector(selectForStabilityDepositChangeValidation);
+  const [{ originalDeposit, editedNECT, changePending }, dispatch] = useBeraBorrowReducer(reduce, init);
+  const validationContext = useBeraBorrowSelector(selectForStabilityDepositChangeValidation);
   const { dispatchEvent } = useStabilityView();
 
   const [validChange, description] = validateStabilityDepositChange(

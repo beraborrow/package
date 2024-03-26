@@ -5,12 +5,12 @@ import { Decimal, TroveChange } from "@beraborrow/lib-base";
 import { useBeraBorrow } from "../hooks/BeraBorrowContext";
 import { useBondContracts } from "./Bonds/context/useBondContracts";
 import { api } from "./Bonds/context/api"
-import { PopulatedEthersLiquityTransaction } from "@beraborrow/lib-ethers";
+import { PopulatedEthersBeraBorrowTransaction } from "@beraborrow/lib-ethers";
 import { toast } from 'react-toastify'
 
 export type GasEstimationState =
   | { type: "idle" | "inProgress" | "insufficient-allowance" }
-  | { type: "complete"; populatedTx: PopulatedEthersLiquityTransaction };
+  | { type: "complete"; populatedTx: PopulatedEthersBeraBorrowTransaction };
 
 type ApproveActionProps = {
   troveChange?: Exclude<TroveChange<Decimal>, { type: "invalidCreation" }>;
@@ -54,7 +54,7 @@ export const ApproveAction: React.FC<ApproveActionProps> = ({
         let cancelled = false;
   
         const timeoutId = setTimeout(async () => {
-          let populatedTx: PopulatedEthersLiquityTransaction;
+          let populatedTx: PopulatedEthersBeraBorrowTransaction;
           try {
           populatedTx = await (troveChange.type === "creation"
             ? beraborrow.populate.openTrove(troveChange.params, {

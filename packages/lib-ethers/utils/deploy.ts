@@ -5,9 +5,9 @@ import { Wallet } from "@ethersproject/wallet";
 import { Decimal } from "@beraborrow/lib-base";
 
 import {
-  _LiquityContractAddresses,
-  _LiquityContracts,
-  _LiquityDeploymentJSON,
+  _BeraBorrowContractAddresses,
+  _BeraBorrowContracts,
+  _BeraBorrowDeploymentJSON,
   _connectToContracts
 } from "../src/contracts";
 
@@ -57,7 +57,7 @@ const deployContracts = async (
   getContractFactory: (name: string, signer: Signer) => Promise<ContractFactory>,
   priceFeedIsTestnet = true,
   overrides?: Overrides
-): Promise<[addresses: Omit<_LiquityContractAddresses, "uniToken">, startBlock: number]> => {
+): Promise<[addresses: Omit<_BeraBorrowContractAddresses, "uniToken">, startBlock: number]> => {
   const [activePoolAddress, startBlock] = await deployContractAndGetBlockNumber(
     deployer,
     getContractFactory,
@@ -103,7 +103,8 @@ const deployContracts = async (
     gasPool: await deployContract(deployer, getContractFactory, "GasPool", {
       ...overrides
     }),
-    unipool: await deployContract(deployer, getContractFactory, "Unipool", { ...overrides })
+    unipool: await deployContract(deployer, getContractFactory, "Unipool", { ...overrides }),
+    iBGTToken: await deployContract(deployer, getContractFactory, "iBGTToken", { ...overrides })
   };
 
   return [
@@ -173,7 +174,7 @@ const connectContracts = async (
     gasPool,
     unipool,
     uniToken
-  }: _LiquityContracts,
+  }: _BeraBorrowContracts,
   deployer: Signer,
   overrides?: Overrides
 ) => {
@@ -320,7 +321,7 @@ export const deployAndSetupContracts = async (
   _isDev = true,
   wethAddress?: string,
   overrides?: Overrides
-): Promise<_LiquityDeploymentJSON> => {
+): Promise<_BeraBorrowDeploymentJSON> => {
   if (!deployer.provider) {
     throw new Error("Signer must have a provider.");
   }
@@ -328,7 +329,7 @@ export const deployAndSetupContracts = async (
   log("Deploying contracts...");
   log();
 
-  const deployment: _LiquityDeploymentJSON = {
+  const deployment: _BeraBorrowDeploymentJSON = {
     chainId: await deployer.getChainId(),
     version: "unknown",
     deploymentDate: new Date().getTime(),

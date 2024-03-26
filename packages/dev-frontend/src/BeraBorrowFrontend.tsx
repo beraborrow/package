@@ -3,7 +3,7 @@ import { useHistory, BrowserRouter as Router, Switch, Route } from "react-router
 import { Wallet } from "@ethersproject/wallet";
 
 import { Decimal, Difference, Trove } from "@beraborrow/lib-base";
-import { LiquityStoreProvider } from "@beraborrow/lib-react";
+import { BeraBorrowStoreProvider } from "@beraborrow/lib-react";
 
 import { useBeraBorrow } from "./hooks/BeraBorrowContext";
 import { TransactionMonitor } from "./components/Transaction";
@@ -61,7 +61,7 @@ export const BeraBorrowFrontend: React.FC<BeraBorrowFrontendProps> = ({ loader }
   });
 
   return (
-    <LiquityStoreProvider {...{ loader }} store={beraborrow.store}>
+    <BeraBorrowStoreProvider {...{ loader }} store={beraborrow.store}>
       <Router>
         <TroveViewProvider>
           <StabilityViewProvider>
@@ -85,6 +85,6 @@ export const BeraBorrowFrontend: React.FC<BeraBorrowFrontendProps> = ({ loader }
       </Router>
       <TransactionMonitor />
       <ToastContainer toastStyle={{ backgroundColor: "#343434" }} />
-    </LiquityStoreProvider>
+    </BeraBorrowStoreProvider>
   );
 };

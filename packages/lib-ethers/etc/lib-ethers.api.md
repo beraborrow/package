@@ -48,18 +48,18 @@ import { TroveWithPendingRedistribution } from '@beraborrow/lib-base';
 import { UserTrove } from '@beraborrow/lib-base';
 
 // @public
-export class BlockPolledLiquityStore extends BeraBorrowStore<BlockPolledLiquityStoreExtraState> {
-    constructor(readable: ReadableEthersLiquity);
+export class BlockPolledBeraBorrowStore extends BeraBorrowStore<BlockPolledBeraBorrowStoreExtraState> {
+    constructor(readable: ReadableEthersBeraBorrow);
     // (undocumented)
-    readonly connection: EthersLiquityConnection;
+    readonly connection: EthersBeraBorrowConnection;
     // @internal @override (undocumented)
     protected _doStart(): () => void;
     // @internal @override (undocumented)
-    protected _reduceExtra(oldState: BlockPolledLiquityStoreExtraState, stateUpdate: Partial<BlockPolledLiquityStoreExtraState>): BlockPolledLiquityStoreExtraState;
+    protected _reduceExtra(oldState: BlockPolledBeraBorrowStoreExtraState, stateUpdate: Partial<BlockPolledBeraBorrowStoreExtraState>): BlockPolledBeraBorrowStoreExtraState;
 }
 
 // @public
-export interface BlockPolledLiquityStoreExtraState {
+export interface BlockPolledBeraBorrowStoreExtraState {
     blockTag?: number;
     blockTimestamp: number;
     // @internal (undocumented)
@@ -67,7 +67,7 @@ export interface BlockPolledLiquityStoreExtraState {
 }
 
 // @public
-export type BlockPolledLiquityStoreState = BeraBorrowStoreState<BlockPolledLiquityStoreExtraState>;
+export type BlockPolledBeraBorrowStoreState = BeraBorrowStoreState<BlockPolledBeraBorrowStoreExtraState>;
 
 // @public
 export interface BorrowingOperationOptionalParams {
@@ -76,25 +76,19 @@ export interface BorrowingOperationOptionalParams {
 }
 
 // @internal (undocumented)
-export function _connectByChainId<T>(provider: EthersProvider, signer: EthersSigner | undefined, chainId: number, optionalParams: EthersLiquityConnectionOptionalParams & {
+export function _connectByChainId<T>(provider: EthersProvider, signer: EthersSigner | undefined, chainId: number, optionalParams: EthersBeraBorrowConnectionOptionalParams & {
     useStore: T;
-}): EthersLiquityConnection & {
+}): EthersBeraBorrowConnection & {
     useStore: T;
 };
 
 // @internal (undocumented)
-export function _connectByChainId(provider: EthersProvider, signer: EthersSigner | undefined, chainId: number, optionalParams?: EthersLiquityConnectionOptionalParams): EthersLiquityConnection;
+export function _connectByChainId(provider: EthersProvider, signer: EthersSigner | undefined, chainId: number, optionalParams?: EthersBeraBorrowConnectionOptionalParams): EthersBeraBorrowConnection;
 
 // @public
-export interface EthersCallOverrides {
-    // (undocumented)
-    blockTag?: BlockTag;
-}
-
-// @public
-export class EthersLiquity implements ReadableEthersLiquity, TransactableBeraBorrow {
+export class EthersBeraBorrow implements ReadableEthersBeraBorrow, TransactableBeraBorrow {
     // @internal
-    constructor(readable: ReadableEthersLiquity);
+    constructor(readable: ReadableEthersBeraBorrow);
     // (undocumented)
     adjustTrove(params: TroveAdjustmentParams<Decimalish>, maxBorrowingRateOrOptionalParams?: Decimalish | BorrowingOperationOptionalParams, overrides?: EthersTransactionOverrides): Promise<TroveAdjustmentDetails>;
     // (undocumented)
@@ -106,11 +100,11 @@ export class EthersLiquity implements ReadableEthersLiquity, TransactableBeraBor
     // (undocumented)
     closeTrove(overrides?: EthersTransactionOverrides): Promise<TroveClosureDetails>;
     // @internal (undocumented)
-    static connect(signerOrProvider: EthersSigner | EthersProvider, optionalParams: EthersLiquityConnectionOptionalParams & {
+    static connect(signerOrProvider: EthersSigner | EthersProvider, optionalParams: EthersBeraBorrowConnectionOptionalParams & {
         useStore: "blockPolled";
-    }): Promise<EthersLiquityWithStore<BlockPolledLiquityStore>>;
-    static connect(signerOrProvider: EthersSigner | EthersProvider, optionalParams?: EthersLiquityConnectionOptionalParams): Promise<EthersLiquity>;
-    readonly connection: EthersLiquityConnection;
+    }): Promise<EthersBeraBorrowWithStore<BlockPolledBeraBorrowStore>>;
+    static connect(signerOrProvider: EthersSigner | EthersProvider, optionalParams?: EthersBeraBorrowConnectionOptionalParams): Promise<EthersBeraBorrow>;
+    readonly connection: EthersBeraBorrowConnection;
     // (undocumented)
     depositCollateral(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<TroveAdjustmentDetails>;
     // (undocumented)
@@ -118,11 +112,11 @@ export class EthersLiquity implements ReadableEthersLiquity, TransactableBeraBor
     // (undocumented)
     exitLiquidityMining(overrides?: EthersTransactionOverrides): Promise<void>;
     // @internal (undocumented)
-    static _from(connection: EthersLiquityConnection & {
+    static _from(connection: EthersBeraBorrowConnection & {
         useStore: "blockPolled";
-    }): EthersLiquityWithStore<BlockPolledLiquityStore>;
+    }): EthersBeraBorrowWithStore<BlockPolledBeraBorrowStore>;
     // @internal (undocumented)
-    static _from(connection: EthersLiquityConnection): EthersLiquity;
+    static _from(connection: EthersBeraBorrowConnection): EthersBeraBorrow;
     // @internal (undocumented)
     _getActivePool(overrides?: EthersCallOverrides): Promise<Trove>;
     // @internal (undocumented)
@@ -183,8 +177,8 @@ export class EthersLiquity implements ReadableEthersLiquity, TransactableBeraBor
     getUniTokenAllowance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal>;
     // (undocumented)
     getUniTokenBalance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal>;
-    hasStore(): this is EthersLiquityWithStore;
-    hasStore(store: "blockPolled"): this is EthersLiquityWithStore<BlockPolledLiquityStore>;
+    hasStore(): this is EthersBeraBorrowWithStore;
+    hasStore(store: "blockPolled"): this is EthersBeraBorrowWithStore<BlockPolledBeraBorrowStore>;
     // (undocumented)
     liquidate(address: string | string[], overrides?: EthersTransactionOverrides): Promise<LiquidationDetails>;
     // (undocumented)
@@ -193,14 +187,14 @@ export class EthersLiquity implements ReadableEthersLiquity, TransactableBeraBor
     _mintUniToken(amount: Decimalish, address?: string, overrides?: EthersTransactionOverrides): Promise<void>;
     // (undocumented)
     openTrove(params: TroveCreationParams<Decimalish>, maxBorrowingRateOrOptionalParams?: Decimalish | BorrowingOperationOptionalParams, overrides?: EthersTransactionOverrides): Promise<TroveCreationDetails>;
-    readonly populate: PopulatableEthersLiquity;
+    readonly populate: PopulatableEthersBeraBorrow;
     // (undocumented)
     redeemNECT(amount: Decimalish, maxRedemptionRate?: Decimalish, overrides?: EthersTransactionOverrides): Promise<RedemptionDetails>;
     // (undocumented)
     registerFrontend(kickbackRate: Decimalish, overrides?: EthersTransactionOverrides): Promise<void>;
     // (undocumented)
     repayNECT(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<TroveAdjustmentDetails>;
-    readonly send: SendableEthersLiquity;
+    readonly send: SendableEthersBeraBorrow;
     // (undocumented)
     sendNECT(toAddress: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<void>;
     // (undocumented)
@@ -230,7 +224,7 @@ export class EthersLiquity implements ReadableEthersLiquity, TransactableBeraBor
 }
 
 // @public
-export interface EthersLiquityConnection extends EthersLiquityConnectionOptionalParams {
+export interface EthersBeraBorrowConnection extends EthersBeraBorrowConnectionOptionalParams {
     // @internal (undocumented)
     readonly [brand]: unique symbol;
     readonly addresses: Record<string, string>;
@@ -250,18 +244,24 @@ export interface EthersLiquityConnection extends EthersLiquityConnectionOptional
 }
 
 // @public
-export interface EthersLiquityConnectionOptionalParams {
+export interface EthersBeraBorrowConnectionOptionalParams {
     readonly frontendTag?: string;
     readonly userAddress?: string;
-    readonly useStore?: EthersLiquityStoreOption;
+    readonly useStore?: EthersBeraBorrowStoreOption;
 }
 
 // @public
-export type EthersLiquityStoreOption = "blockPolled";
+export type EthersBeraBorrowStoreOption = "blockPolled";
 
 // @public
-export interface EthersLiquityWithStore<T extends BeraBorrowStore = BeraBorrowStore> extends EthersLiquity {
+export interface EthersBeraBorrowWithStore<T extends BeraBorrowStore = BeraBorrowStore> extends EthersBeraBorrow {
     readonly store: T;
+}
+
+// @public
+export interface EthersCallOverrides {
+    // (undocumented)
+    blockTag?: BlockTag;
 }
 
 // @public
@@ -307,8 +307,8 @@ export type EthersTransactionReceipt = TransactionReceipt;
 export type EthersTransactionResponse = TransactionResponse;
 
 // @alpha (undocumented)
-export class ObservableEthersLiquity implements ObservableBeraBorrow {
-    constructor(readable: ReadableEthersLiquity);
+export class ObservableEthersBeraBorrow implements ObservableBeraBorrow {
+    constructor(readable: ReadableEthersBeraBorrow);
     // (undocumented)
     watchNECTBalance(onNECTBalanceChanged: (balance: Decimal) => void, address?: string): () => void;
     // (undocumented)
@@ -328,80 +328,80 @@ export class ObservableEthersLiquity implements ObservableBeraBorrow {
 }
 
 // @public
-export class PopulatableEthersLiquity implements PopulatableBeraBorrow<EthersTransactionReceipt, EthersTransactionResponse, EthersPopulatedTransaction> {
-    constructor(readable: ReadableEthersLiquity);
+export class PopulatableEthersBeraBorrow implements PopulatableBeraBorrow<EthersTransactionReceipt, EthersTransactionResponse, EthersPopulatedTransaction> {
+    constructor(readable: ReadableEthersBeraBorrow);
     // (undocumented)
-    adjustTrove(params: TroveAdjustmentParams<Decimalish>, maxBorrowingRateOrOptionalParams?: Decimalish | BorrowingOperationOptionalParams, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersLiquityTransaction<TroveAdjustmentDetails>>;
+    adjustTrove(params: TroveAdjustmentParams<Decimalish>, maxBorrowingRateOrOptionalParams?: Decimalish | BorrowingOperationOptionalParams, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersBeraBorrowTransaction<TroveAdjustmentDetails>>;
     // (undocumented)
-    approveUniTokens(allowance?: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersLiquityTransaction<void>>;
+    approveUniTokens(allowance?: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersBeraBorrowTransaction<void>>;
     // (undocumented)
-    borrowNECT(amount: Decimalish, maxBorrowingRate?: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersLiquityTransaction<TroveAdjustmentDetails>>;
+    borrowNECT(amount: Decimalish, maxBorrowingRate?: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersBeraBorrowTransaction<TroveAdjustmentDetails>>;
     // (undocumented)
-    claimCollateralSurplus(overrides?: EthersTransactionOverrides): Promise<PopulatedEthersLiquityTransaction<void>>;
+    claimCollateralSurplus(overrides?: EthersTransactionOverrides): Promise<PopulatedEthersBeraBorrowTransaction<void>>;
     // (undocumented)
-    closeTrove(overrides?: EthersTransactionOverrides): Promise<PopulatedEthersLiquityTransaction<TroveClosureDetails>>;
+    closeTrove(overrides?: EthersTransactionOverrides): Promise<PopulatedEthersBeraBorrowTransaction<TroveClosureDetails>>;
     // (undocumented)
-    depositCollateral(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersLiquityTransaction<TroveAdjustmentDetails>>;
+    depositCollateral(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersBeraBorrowTransaction<TroveAdjustmentDetails>>;
     // (undocumented)
-    depositNECTInStabilityPool(amount: Decimalish, frontendTag?: string, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersLiquityTransaction<StabilityDepositChangeDetails>>;
+    depositNECTInStabilityPool(amount: Decimalish, frontendTag?: string, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersBeraBorrowTransaction<StabilityDepositChangeDetails>>;
     // (undocumented)
-    exitLiquidityMining(overrides?: EthersTransactionOverrides): Promise<PopulatedEthersLiquityTransaction<void>>;
+    exitLiquidityMining(overrides?: EthersTransactionOverrides): Promise<PopulatedEthersBeraBorrowTransaction<void>>;
     // (undocumented)
-    liquidate(address: string | string[], overrides?: EthersTransactionOverrides): Promise<PopulatedEthersLiquityTransaction<LiquidationDetails>>;
+    liquidate(address: string | string[], overrides?: EthersTransactionOverrides): Promise<PopulatedEthersBeraBorrowTransaction<LiquidationDetails>>;
     // (undocumented)
-    liquidateUpTo(maximumNumberOfTrovesToLiquidate: number, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersLiquityTransaction<LiquidationDetails>>;
+    liquidateUpTo(maximumNumberOfTrovesToLiquidate: number, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersBeraBorrowTransaction<LiquidationDetails>>;
     // @internal (undocumented)
-    _mintUniToken(amount: Decimalish, address?: string, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersLiquityTransaction<void>>;
+    _mintUniToken(amount: Decimalish, address?: string, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersBeraBorrowTransaction<void>>;
     // (undocumented)
-    openTrove(params: TroveCreationParams<Decimalish>, maxBorrowingRateOrOptionalParams?: Decimalish | BorrowingOperationOptionalParams, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersLiquityTransaction<TroveCreationDetails>>;
+    openTrove(params: TroveCreationParams<Decimalish>, maxBorrowingRateOrOptionalParams?: Decimalish | BorrowingOperationOptionalParams, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersBeraBorrowTransaction<TroveCreationDetails>>;
     // (undocumented)
     redeemNECT(amount: Decimalish, maxRedemptionRate?: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersRedemption>;
     // (undocumented)
-    registerFrontend(kickbackRate: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersLiquityTransaction<void>>;
+    registerFrontend(kickbackRate: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersBeraBorrowTransaction<void>>;
     // (undocumented)
-    repayNECT(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersLiquityTransaction<TroveAdjustmentDetails>>;
+    repayNECT(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersBeraBorrowTransaction<TroveAdjustmentDetails>>;
     // (undocumented)
-    sendNECT(toAddress: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersLiquityTransaction<void>>;
+    sendNECT(toAddress: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersBeraBorrowTransaction<void>>;
     // (undocumented)
-    sendPOLLEN(toAddress: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersLiquityTransaction<void>>;
+    sendPOLLEN(toAddress: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersBeraBorrowTransaction<void>>;
     // @internal (undocumented)
-    setPrice(price: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersLiquityTransaction<void>>;
+    setPrice(price: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersBeraBorrowTransaction<void>>;
     // (undocumented)
-    stakePOLLEN(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersLiquityTransaction<void>>;
+    stakePOLLEN(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersBeraBorrowTransaction<void>>;
     // (undocumented)
-    stakeUniTokens(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersLiquityTransaction<void>>;
+    stakeUniTokens(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersBeraBorrowTransaction<void>>;
     // (undocumented)
-    transferCollateralGainToTrove(overrides?: EthersTransactionOverrides): Promise<PopulatedEthersLiquityTransaction<CollateralGainTransferDetails>>;
+    transferCollateralGainToTrove(overrides?: EthersTransactionOverrides): Promise<PopulatedEthersBeraBorrowTransaction<CollateralGainTransferDetails>>;
     // (undocumented)
-    unstakePOLLEN(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersLiquityTransaction<void>>;
+    unstakePOLLEN(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersBeraBorrowTransaction<void>>;
     // (undocumented)
-    unstakeUniTokens(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersLiquityTransaction<void>>;
+    unstakeUniTokens(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersBeraBorrowTransaction<void>>;
     // (undocumented)
-    withdrawCollateral(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersLiquityTransaction<TroveAdjustmentDetails>>;
+    withdrawCollateral(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersBeraBorrowTransaction<TroveAdjustmentDetails>>;
     // (undocumented)
-    withdrawGainsFromStabilityPool(overrides?: EthersTransactionOverrides): Promise<PopulatedEthersLiquityTransaction<StabilityPoolGainsWithdrawalDetails>>;
+    withdrawGainsFromStabilityPool(overrides?: EthersTransactionOverrides): Promise<PopulatedEthersBeraBorrowTransaction<StabilityPoolGainsWithdrawalDetails>>;
     // (undocumented)
-    withdrawGainsFromStaking(overrides?: EthersTransactionOverrides): Promise<PopulatedEthersLiquityTransaction<void>>;
+    withdrawGainsFromStaking(overrides?: EthersTransactionOverrides): Promise<PopulatedEthersBeraBorrowTransaction<void>>;
     // (undocumented)
-    withdrawNECTFromStabilityPool(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersLiquityTransaction<StabilityDepositChangeDetails>>;
+    withdrawNECTFromStabilityPool(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersBeraBorrowTransaction<StabilityDepositChangeDetails>>;
     // (undocumented)
-    withdrawPOLLENRewardFromLiquidityMining(overrides?: EthersTransactionOverrides): Promise<PopulatedEthersLiquityTransaction<void>>;
+    withdrawPOLLENRewardFromLiquidityMining(overrides?: EthersTransactionOverrides): Promise<PopulatedEthersBeraBorrowTransaction<void>>;
     }
 
 // @public
-export class PopulatedEthersLiquityTransaction<T = unknown> implements PopulatedBeraBorrowTransaction<EthersPopulatedTransaction, SentEthersLiquityTransaction<T>> {
+export class PopulatedEthersBeraBorrowTransaction<T = unknown> implements PopulatedBeraBorrowTransaction<EthersPopulatedTransaction, SentEthersBeraBorrowTransaction<T>> {
     // @internal
-    constructor(rawPopulatedTransaction: EthersPopulatedTransaction, connection: EthersLiquityConnection, parse: (rawReceipt: EthersTransactionReceipt) => T, gasHeadroom?: number);
+    constructor(rawPopulatedTransaction: EthersPopulatedTransaction, connection: EthersBeraBorrowConnection, parse: (rawReceipt: EthersTransactionReceipt) => T, gasHeadroom?: number);
     readonly gasHeadroom?: number;
     readonly rawPopulatedTransaction: EthersPopulatedTransaction;
     // (undocumented)
-    send(): Promise<SentEthersLiquityTransaction<T>>;
+    send(): Promise<SentEthersBeraBorrowTransaction<T>>;
 }
 
 // @public (undocumented)
-export class PopulatedEthersRedemption extends PopulatedEthersLiquityTransaction<RedemptionDetails> implements PopulatedRedemption<EthersPopulatedTransaction, EthersTransactionResponse, EthersTransactionReceipt> {
+export class PopulatedEthersRedemption extends PopulatedEthersBeraBorrowTransaction<RedemptionDetails> implements PopulatedRedemption<EthersPopulatedTransaction, EthersTransactionResponse, EthersTransactionReceipt> {
     // @internal
-    constructor(rawPopulatedTransaction: EthersPopulatedTransaction, connection: EthersLiquityConnection, attemptedNECTAmount: Decimal, redeemableNECTAmount: Decimal, increaseAmountByMinimumNetDebt?: (maxRedemptionRate?: Decimalish) => Promise<PopulatedEthersRedemption>);
+    constructor(rawPopulatedTransaction: EthersPopulatedTransaction, connection: EthersBeraBorrowConnection, attemptedNECTAmount: Decimal, redeemableNECTAmount: Decimal, increaseAmountByMinimumNetDebt?: (maxRedemptionRate?: Decimalish) => Promise<PopulatedEthersRedemption>);
     // (undocumented)
     readonly attemptedNECTAmount: Decimal;
     // (undocumented)
@@ -441,23 +441,23 @@ export interface _RawTransactionReplacedError extends Error {
 }
 
 // @public
-export class ReadableEthersLiquity implements ReadableBeraBorrow {
+export class ReadableEthersBeraBorrow implements ReadableBeraBorrow {
     // @internal
-    constructor(connection: EthersLiquityConnection);
+    constructor(connection: EthersBeraBorrowConnection);
     // @internal (undocumented)
-    static connect(signerOrProvider: EthersSigner | EthersProvider, optionalParams: EthersLiquityConnectionOptionalParams & {
+    static connect(signerOrProvider: EthersSigner | EthersProvider, optionalParams: EthersBeraBorrowConnectionOptionalParams & {
         useStore: "blockPolled";
-    }): Promise<ReadableEthersLiquityWithStore<BlockPolledLiquityStore>>;
+    }): Promise<ReadableEthersBeraBorrowWithStore<BlockPolledBeraBorrowStore>>;
     // (undocumented)
-    static connect(signerOrProvider: EthersSigner | EthersProvider, optionalParams?: EthersLiquityConnectionOptionalParams): Promise<ReadableEthersLiquity>;
+    static connect(signerOrProvider: EthersSigner | EthersProvider, optionalParams?: EthersBeraBorrowConnectionOptionalParams): Promise<ReadableEthersBeraBorrow>;
     // (undocumented)
-    readonly connection: EthersLiquityConnection;
+    readonly connection: EthersBeraBorrowConnection;
     // @internal (undocumented)
-    static _from(connection: EthersLiquityConnection & {
+    static _from(connection: EthersBeraBorrowConnection & {
         useStore: "blockPolled";
-    }): ReadableEthersLiquityWithStore<BlockPolledLiquityStore>;
+    }): ReadableEthersBeraBorrowWithStore<BlockPolledBeraBorrowStore>;
     // @internal (undocumented)
-    static _from(connection: EthersLiquityConnection): ReadableEthersLiquity;
+    static _from(connection: EthersBeraBorrowConnection): ReadableEthersBeraBorrow;
     // @internal (undocumented)
     _getActivePool(overrides?: EthersCallOverrides): Promise<Trove>;
     // @internal (undocumented)
@@ -472,6 +472,8 @@ export class ReadableEthersLiquity implements ReadableBeraBorrow {
     _getFeesFactory(overrides?: EthersCallOverrides): Promise<(blockTimestamp: number, recoveryMode: boolean) => Fees>;
     // (undocumented)
     getFrontendStatus(address?: string, overrides?: EthersCallOverrides): Promise<FrontendStatus>;
+    // (undocumented)
+    getiBGTBalance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal>;
     // (undocumented)
     getLiquidityMiningPOLLENReward(address?: string, overrides?: EthersCallOverrides): Promise<Decimal>;
     // (undocumented)
@@ -518,12 +520,12 @@ export class ReadableEthersLiquity implements ReadableBeraBorrow {
     getUniTokenAllowance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal>;
     // (undocumented)
     getUniTokenBalance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal>;
-    hasStore(): this is ReadableEthersLiquityWithStore;
-    hasStore(store: "blockPolled"): this is ReadableEthersLiquityWithStore<BlockPolledLiquityStore>;
+    hasStore(): this is ReadableEthersBeraBorrowWithStore;
+    hasStore(store: "blockPolled"): this is ReadableEthersBeraBorrowWithStore<BlockPolledBeraBorrowStore>;
 }
 
 // @public
-export interface ReadableEthersLiquityWithStore<T extends BeraBorrowStore = BeraBorrowStore> extends ReadableEthersLiquity {
+export interface ReadableEthersBeraBorrowWithStore<T extends BeraBorrowStore = BeraBorrowStore> extends ReadableEthersBeraBorrow {
     readonly store: T;
 }
 
@@ -531,70 +533,70 @@ export interface ReadableEthersLiquityWithStore<T extends BeraBorrowStore = Bera
 export const _redeemMaxIterations = 70;
 
 // @public
-export class SendableEthersLiquity implements SendableBeraBorrow<EthersTransactionReceipt, EthersTransactionResponse> {
-    constructor(populatable: PopulatableEthersLiquity);
+export class SendableEthersBeraBorrow implements SendableBeraBorrow<EthersTransactionReceipt, EthersTransactionResponse> {
+    constructor(populatable: PopulatableEthersBeraBorrow);
     // (undocumented)
-    adjustTrove(params: TroveAdjustmentParams<Decimalish>, maxBorrowingRateOrOptionalParams?: Decimalish | BorrowingOperationOptionalParams, overrides?: EthersTransactionOverrides): Promise<SentEthersLiquityTransaction<TroveAdjustmentDetails>>;
+    adjustTrove(params: TroveAdjustmentParams<Decimalish>, maxBorrowingRateOrOptionalParams?: Decimalish | BorrowingOperationOptionalParams, overrides?: EthersTransactionOverrides): Promise<SentEthersBeraBorrowTransaction<TroveAdjustmentDetails>>;
     // (undocumented)
-    approveUniTokens(allowance?: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersLiquityTransaction<void>>;
+    approveUniTokens(allowance?: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersBeraBorrowTransaction<void>>;
     // (undocumented)
-    borrowNECT(amount: Decimalish, maxBorrowingRate?: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersLiquityTransaction<TroveAdjustmentDetails>>;
+    borrowNECT(amount: Decimalish, maxBorrowingRate?: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersBeraBorrowTransaction<TroveAdjustmentDetails>>;
     // (undocumented)
-    claimCollateralSurplus(overrides?: EthersTransactionOverrides): Promise<SentEthersLiquityTransaction<void>>;
+    claimCollateralSurplus(overrides?: EthersTransactionOverrides): Promise<SentEthersBeraBorrowTransaction<void>>;
     // (undocumented)
-    closeTrove(overrides?: EthersTransactionOverrides): Promise<SentEthersLiquityTransaction<TroveClosureDetails>>;
+    closeTrove(overrides?: EthersTransactionOverrides): Promise<SentEthersBeraBorrowTransaction<TroveClosureDetails>>;
     // (undocumented)
-    depositCollateral(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersLiquityTransaction<TroveAdjustmentDetails>>;
+    depositCollateral(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersBeraBorrowTransaction<TroveAdjustmentDetails>>;
     // (undocumented)
-    depositNECTInStabilityPool(amount: Decimalish, frontendTag?: string, overrides?: EthersTransactionOverrides): Promise<SentEthersLiquityTransaction<StabilityDepositChangeDetails>>;
+    depositNECTInStabilityPool(amount: Decimalish, frontendTag?: string, overrides?: EthersTransactionOverrides): Promise<SentEthersBeraBorrowTransaction<StabilityDepositChangeDetails>>;
     // (undocumented)
-    exitLiquidityMining(overrides?: EthersTransactionOverrides): Promise<SentEthersLiquityTransaction<void>>;
+    exitLiquidityMining(overrides?: EthersTransactionOverrides): Promise<SentEthersBeraBorrowTransaction<void>>;
     // (undocumented)
-    liquidate(address: string | string[], overrides?: EthersTransactionOverrides): Promise<SentEthersLiquityTransaction<LiquidationDetails>>;
+    liquidate(address: string | string[], overrides?: EthersTransactionOverrides): Promise<SentEthersBeraBorrowTransaction<LiquidationDetails>>;
     // (undocumented)
-    liquidateUpTo(maximumNumberOfTrovesToLiquidate: number, overrides?: EthersTransactionOverrides): Promise<SentEthersLiquityTransaction<LiquidationDetails>>;
+    liquidateUpTo(maximumNumberOfTrovesToLiquidate: number, overrides?: EthersTransactionOverrides): Promise<SentEthersBeraBorrowTransaction<LiquidationDetails>>;
     // @internal (undocumented)
-    _mintUniToken(amount: Decimalish, address?: string, overrides?: EthersTransactionOverrides): Promise<SentEthersLiquityTransaction<void>>;
+    _mintUniToken(amount: Decimalish, address?: string, overrides?: EthersTransactionOverrides): Promise<SentEthersBeraBorrowTransaction<void>>;
     // (undocumented)
-    openTrove(params: TroveCreationParams<Decimalish>, maxBorrowingRateOrOptionalParams?: Decimalish | BorrowingOperationOptionalParams, overrides?: EthersTransactionOverrides): Promise<SentEthersLiquityTransaction<TroveCreationDetails>>;
+    openTrove(params: TroveCreationParams<Decimalish>, maxBorrowingRateOrOptionalParams?: Decimalish | BorrowingOperationOptionalParams, overrides?: EthersTransactionOverrides): Promise<SentEthersBeraBorrowTransaction<TroveCreationDetails>>;
     // (undocumented)
-    redeemNECT(amount: Decimalish, maxRedemptionRate?: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersLiquityTransaction<RedemptionDetails>>;
+    redeemNECT(amount: Decimalish, maxRedemptionRate?: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersBeraBorrowTransaction<RedemptionDetails>>;
     // (undocumented)
-    registerFrontend(kickbackRate: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersLiquityTransaction<void>>;
+    registerFrontend(kickbackRate: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersBeraBorrowTransaction<void>>;
     // (undocumented)
-    repayNECT(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersLiquityTransaction<TroveAdjustmentDetails>>;
+    repayNECT(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersBeraBorrowTransaction<TroveAdjustmentDetails>>;
     // (undocumented)
-    sendNECT(toAddress: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersLiquityTransaction<void>>;
+    sendNECT(toAddress: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersBeraBorrowTransaction<void>>;
     // (undocumented)
-    sendPOLLEN(toAddress: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersLiquityTransaction<void>>;
+    sendPOLLEN(toAddress: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersBeraBorrowTransaction<void>>;
     // @internal (undocumented)
-    setPrice(price: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersLiquityTransaction<void>>;
+    setPrice(price: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersBeraBorrowTransaction<void>>;
     // (undocumented)
-    stakePOLLEN(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersLiquityTransaction<void>>;
+    stakePOLLEN(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersBeraBorrowTransaction<void>>;
     // (undocumented)
-    stakeUniTokens(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersLiquityTransaction<void>>;
+    stakeUniTokens(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersBeraBorrowTransaction<void>>;
     // (undocumented)
-    transferCollateralGainToTrove(overrides?: EthersTransactionOverrides): Promise<SentEthersLiquityTransaction<CollateralGainTransferDetails>>;
+    transferCollateralGainToTrove(overrides?: EthersTransactionOverrides): Promise<SentEthersBeraBorrowTransaction<CollateralGainTransferDetails>>;
     // (undocumented)
-    unstakePOLLEN(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersLiquityTransaction<void>>;
+    unstakePOLLEN(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersBeraBorrowTransaction<void>>;
     // (undocumented)
-    unstakeUniTokens(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersLiquityTransaction<void>>;
+    unstakeUniTokens(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersBeraBorrowTransaction<void>>;
     // (undocumented)
-    withdrawCollateral(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersLiquityTransaction<TroveAdjustmentDetails>>;
+    withdrawCollateral(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersBeraBorrowTransaction<TroveAdjustmentDetails>>;
     // (undocumented)
-    withdrawGainsFromStabilityPool(overrides?: EthersTransactionOverrides): Promise<SentEthersLiquityTransaction<StabilityPoolGainsWithdrawalDetails>>;
+    withdrawGainsFromStabilityPool(overrides?: EthersTransactionOverrides): Promise<SentEthersBeraBorrowTransaction<StabilityPoolGainsWithdrawalDetails>>;
     // (undocumented)
-    withdrawGainsFromStaking(overrides?: EthersTransactionOverrides): Promise<SentEthersLiquityTransaction<void>>;
+    withdrawGainsFromStaking(overrides?: EthersTransactionOverrides): Promise<SentEthersBeraBorrowTransaction<void>>;
     // (undocumented)
-    withdrawNECTFromStabilityPool(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersLiquityTransaction<StabilityDepositChangeDetails>>;
+    withdrawNECTFromStabilityPool(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersBeraBorrowTransaction<StabilityDepositChangeDetails>>;
     // (undocumented)
-    withdrawPOLLENRewardFromLiquidityMining(overrides?: EthersTransactionOverrides): Promise<SentEthersLiquityTransaction<void>>;
+    withdrawPOLLENRewardFromLiquidityMining(overrides?: EthersTransactionOverrides): Promise<SentEthersBeraBorrowTransaction<void>>;
 }
 
 // @public
-export class SentEthersLiquityTransaction<T = unknown> implements SentBeraBorrowTransaction<EthersTransactionResponse, BeraBorrowReceipt<EthersTransactionReceipt, T>> {
+export class SentEthersBeraBorrowTransaction<T = unknown> implements SentBeraBorrowTransaction<EthersTransactionResponse, BeraBorrowReceipt<EthersTransactionReceipt, T>> {
     // @internal
-    constructor(rawSentTransaction: EthersTransactionResponse, connection: EthersLiquityConnection, parse: (rawReceipt: EthersTransactionReceipt) => T);
+    constructor(rawSentTransaction: EthersTransactionResponse, connection: EthersBeraBorrowConnection, parse: (rawReceipt: EthersTransactionReceipt) => T);
     // (undocumented)
     getReceipt(): Promise<BeraBorrowReceipt<EthersTransactionReceipt, T>>;
     readonly rawSentTransaction: EthersTransactionResponse;

@@ -1,6 +1,6 @@
 import React from "react";
 import { Grid } from "theme-ui";
-import { useLiquitySelector } from "@beraborrow/lib-react";
+import { useBeraBorrowSelector } from "@beraborrow/lib-react";
 import { BeraBorrowStoreState } from "@beraborrow/lib-base";
 import { DisabledEditableRow } from "./Editor";
 import { useTroveView } from "./context/TroveViewContext";
@@ -10,7 +10,7 @@ const select = ({ trove, price }: BeraBorrowStoreState) => ({ trove, price });
 
 export const ReadOnlyTrove: React.FC = () => {
 
-  const { trove, price } = useLiquitySelector(select);
+  const { trove, price } = useBeraBorrowSelector(select);
   const { view } = useTroveView();
 
   const liquidationPrice = trove.collateral.eq(0) ? price : trove.debt.mulDiv(1.1, trove.collateral)

@@ -1,7 +1,7 @@
 const { red, blue, green, yellow, dim, bold } = require("chalk");
 const { Wallet, providers } = require("ethers");
 const { Decimal, UserTrove, NECT_LIQUIDATION_RESERVE } = require("@beraborrow/lib-base");
-const { EthersLiquity, EthersLiquityWithStore } = require("@beraborrow/lib-ethers");
+const { EthersBeraBorrow, EthersBeraBorrowWithStore } = require("@beraborrow/lib-ethers");
 
 function log(message) {
   console.log(`${dim(`[${new Date().toLocaleTimeString()}]`)} ${message}`);
@@ -16,7 +16,7 @@ async function main() {
   // Replace URL if not using a local node
   const provider = new providers.JsonRpcProvider("http://localhost:8545");
   const wallet = new Wallet(process.env.PRIVATE_KEY).connect(provider);
-  const beraborrow = await EthersLiquity.connect(wallet, { useStore: "blockPolled" });
+  const beraborrow = await EthersBeraBorrow.connect(wallet, { useStore: "blockPolled" });
 
   beraborrow.store.onLoaded = () => {
     info("Waiting for price drops...");
@@ -47,7 +47,7 @@ const byDescendingCollateral = ({ collateral: a }, { collateral: b }) =>
   b.gt(a) ? 1 : b.lt(a) ? -1 : 0;
 
 /**
- * @param {EthersLiquityWithStore} [beraborrow]
+ * @param {EthersBeraBorrowWithStore} [beraborrow]
  */
 async function tryToLiquidate(beraborrow) {
   const { store } = beraborrow;

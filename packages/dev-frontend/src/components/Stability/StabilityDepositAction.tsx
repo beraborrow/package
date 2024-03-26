@@ -1,6 +1,6 @@
 import { Button } from "theme-ui";
 import { Decimal, BeraBorrowStoreState, StabilityDepositChange } from "@beraborrow/lib-base";
-import { useLiquitySelector } from "@beraborrow/lib-react";
+import { useBeraBorrowSelector } from "@beraborrow/lib-react";
 
 import { useBeraBorrow } from "../../hooks/BeraBorrowContext";
 import { useTransactionFunction } from "../Transaction";
@@ -19,7 +19,7 @@ export const StabilityDepositAction: React.FC<StabilityDepositActionProps> = ({
   change
 }) => {
   const { config, beraborrow } = useBeraBorrow();
-  const frontendRegistered = useLiquitySelector(selectFrontendRegistered);
+  const frontendRegistered = useBeraBorrowSelector(selectFrontendRegistered);
 
   const frontendTag = frontendRegistered ? config.frontendTag : undefined;
 

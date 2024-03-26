@@ -6,7 +6,7 @@ import {
   Trove,
   BeraBorrowStoreState,
 } from "@beraborrow/lib-base";
-import { useLiquitySelector } from "@beraborrow/lib-react";
+import { useBeraBorrowSelector } from "@beraborrow/lib-react";
 import { useTroveView } from "./context/TroveViewContext";
 
 type TroveEditorProps = {
@@ -31,7 +31,7 @@ export const TroveEditor: React.FC<TroveEditorProps> = ({
   children,
 }) => {
   const { dispatchEvent } = useTroveView();
-  const { trove } = useLiquitySelector(select);
+  const { trove } = useBeraBorrowSelector(select);
 
   // const feePct = new Percent(borrowingRate);
 

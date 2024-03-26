@@ -1,6 +1,6 @@
 import React from "react";
 // import { Card, Heading, Box, Flex, Button, Grid } from "theme-ui";
-import { useLiquitySelector } from "@beraborrow/lib-react";
+import { useBeraBorrowSelector } from "@beraborrow/lib-react";
 import { BeraBorrowStoreState } from "@beraborrow/lib-base";
 import { DisabledEditableRow } from "../Trove/Editor";
 // import { useTroveView } from "./context/TroveViewContext";
@@ -44,7 +44,7 @@ export const StabilityStats: React.FC = () => {
     //     }
     // } = useFluid();
 
-//   const { trove, price } = useLiquitySelector(select);
+//   const { trove, price } = useBeraBorrowSelector(select);
   const {
     // trove,
     // numberOfTroves,
@@ -52,7 +52,7 @@ export const StabilityStats: React.FC = () => {
     remainingStabilityPoolPOLLENReward
     // totalStakedFLO,
     // kickbackRate
-  } = useLiquitySelector(select);
+  } = useBeraBorrowSelector(select);
 
   // const saiInStabilityPoolPct =
   //   total.debt.nonZero && new Percent(saiInStabilityPool.div(total.debt));

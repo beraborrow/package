@@ -1,7 +1,7 @@
 {
   "_format": "hh-sol-artifact-1",
-  "contractName": "LiquityMathTester",
-  "sourceName": "contracts/TestContracts/LiquityMathTester.sol",
+  "contractName": "BeraBorrowMathTester",
+  "sourceName": "contracts/TestContracts/BeraBorrowMathTester.sol",
   "abi": [
     {
       "inputs": [

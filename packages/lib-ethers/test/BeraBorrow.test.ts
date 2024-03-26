@@ -4,7 +4,7 @@ import chaiSpies from "chai-spies";
 import { AddressZero } from "@ethersproject/constants";
 import { BigNumber } from "@ethersproject/bignumber";
 import { Signer } from "@ethersproject/abstract-signer";
-import { ethers, network, deployLiquity } from "hardhat";
+import { ethers, network, deployBeraBorrow } from "hardhat";
 
 import {
   Decimal,
@@ -26,16 +26,16 @@ import {
 import { HintHelpers } from "../types";
 
 import {
-  PopulatableEthersLiquity,
-  PopulatedEthersLiquityTransaction,
+  PopulatableEthersBeraBorrow,
+  PopulatedEthersBeraBorrowTransaction,
   _redeemMaxIterations
-} from "../src/PopulatableEthersLiquity";
+} from "../src/PopulatableEthersBeraBorrow";
 
 import { EthersTransactionReceipt } from "../src/types";
-import { _LiquityDeploymentJSON } from "../src/contracts";
-import { _connectToDeployment } from "../src/EthersLiquityConnection";
-import { EthersLiquity } from "../src/EthersLiquity";
-import { ReadableEthersLiquity } from "../src/ReadableEthersLiquity";
+import { _BeraBorrowDeploymentJSON } from "../src/contracts";
+import { _connectToDeployment } from "../src/EthersBeraBorrowConnection";
+import { EthersBeraBorrow } from "../src/EthersBeraBorrow";
+import { ReadableEthersBeraBorrow } from "../src/ReadableEthersBeraBorrow";
 
 const provider = ethers.provider;
 
@@ -50,11 +50,11 @@ const GAS_BUDGET = Decimal.from(0.1); // iBGT
 const getGasCost = (tx: EthersTransactionReceipt) => tx.gasUsed.mul(tx.effectiveGasPrice);
 
 const connectToDeployment = async (
-  deployment: _LiquityDeploymentJSON,
+  deployment: _BeraBorrowDeploymentJSON,
   signer: Signer,
   frontendTag?: string
 ) =>
-  EthersLiquity._from(
+  EthersBeraBorrow._from(
     _connectToDeployment(deployment, signer, {
       userAddress: await signer.getAddress(),
       frontendTag
@@ -88,17 +88,17 @@ const waitForSuccess = async <T extends BeraBorrowReceipt>(
 
 // TODO make the testcases isolated
 
-describe("EthersLiquity", () => {
+describe("EthersBeraBorrow", () => {
   let deployer: Signer;
   let funder: Signer;
   let user: Signer;
   let otherUsers: Signer[];
 
-  let deployment: _LiquityDeploymentJSON;
+  let deployment: _BeraBorrowDeploymentJSON;
 
-  let deployerLiquity: EthersLiquity;
-  let liquity: EthersLiquity;
-  let otherLiquities: EthersLiquity[];
+  let deployerBeraBorrow: EthersBeraBorrow;
+  let beraborrow: EthersBeraBorrow;
+  let otherLiquities: EthersBeraBorrow[];
 
   const connectUsers = (users: Signer[]) =>
     Promise.all(users.map(user => connectToDeployment(deployment, user)));
@@ -109,8 +109,8 @@ describe("EthersLiquity", () => {
         Promise.all([
           connectToDeployment(deployment, users[i]),
           sendTo(users[i], params.depositCollateral).then(tx => tx.wait())
-        ]).then(async ([liquity]) => {
-          await liquity.openTrove(params);
+        ]).then(async ([beraborrow]) => {
+          await beraborrow.openTrove(params);
         })
       )
       .reduce((a, b) => a.then(b), Promise.resolve());
@@ -132,10 +132,10 @@ describe("EthersLiquity", () => {
 
   before(async () => {
     [deployer, funder, user, ...otherUsers] = await ethers.getSigners();
-    deployment = await deployLiquity(deployer);
+    deployment = await deployBeraBorrow(deployer);
 
-    liquity = await connectToDeployment(deployment, user);
-    expect(liquity).to.be.an.instanceOf(EthersLiquity);
+    beraborrow = await connectToDeployment(deployment, user);
+    expect(beraborrow).to.be.an.instanceOf(EthersBeraBorrow);
   });
 
   // Always setup same initial balance for user
@@ -188,7 +188,7 @@ describe("EthersLiquity", () => {
   });
 
   it("should get the price", async () => {
-    const price = await liquity.getPrice();
+    const price = await beraborrow.getPrice();
     expect(price).to.be.an.instanceOf(Decimal);
   });
 
@@ -221,7 +221,7 @@ describe("EthersLiquity", () => {
         findInsertPosition: () => Promise.resolve(["fake insert position"])
       });
 
-      const fakeLiquity = new PopulatableEthersLiquity(({
+      const fakeBeraBorrow = new PopulatableEthersBeraBorrow(({
         getNumberOfTroves: () => Promise.resolve(1000000),
         getTotal: () => Promise.resolve(new Trove(Decimal.from(10), Decimal.ONE)),
         getPrice: () => Promise.resolve(Decimal.ONE),
@@ -237,7 +237,7 @@ describe("EthersLiquity", () => {
             sortedTroves
           }
         }
-      } as unknown) as ReadableEthersLiquity);
+      } as unknown) as ReadableEthersBeraBorrow);
 
       const nominalCollateralRatio = Decimal.from(0.05);
 
@@ -245,7 +245,7 @@ describe("EthersLiquity", () => {
       const trove = Trove.create(params);
       expect(`${trove._nominalCollateralRatio}`).to.equal(`${nominalCollateralRatio}`);
 
-      await fakeLiquity.openTrove(params);
+      await fakeBeraBorrow.openTrove(params);
 
       expect(hintHelpers.getApproxHint).to.have.been.called.exactly(4);
       expect(hintHelpers.getApproxHint).to.have.been.called.with(nominalCollateralRatio.hex);
@@ -265,41 +265,41 @@ describe("EthersLiquity", () => {
 
   describe("Trove", () => {
     it("should have no Trove initially", async () => {
-      const trove = await liquity.getTrove();
+      const trove = await beraborrow.getTrove();
       expect(trove.isEmpty).to.be.true;
     });
 
     it("should fail to create an undercollateralized Trove", async () => {
-      const price = await liquity.getPrice();
+      const price = await beraborrow.getPrice();
       const undercollateralized = new Trove(NECT_MINIMUM_DEBT.div(price), NECT_MINIMUM_DEBT);
 
-      await expect(liquity.openTrove(Trove.recreate(undercollateralized))).to.eventually.be.rejected;
+      await expect(beraborrow.openTrove(Trove.recreate(undercollateralized))).to.eventually.be.rejected;
     });
 
     it("should fail to create a Trove with too little debt", async () => {
       const withTooLittleDebt = new Trove(Decimal.from(50), NECT_MINIMUM_DEBT.sub(1));
 
-      await expect(liquity.openTrove(Trove.recreate(withTooLittleDebt))).to.eventually.be.rejected;
+      await expect(beraborrow.openTrove(Trove.recreate(withTooLittleDebt))).to.eventually.be.rejected;
     });
 
     const withSomeBorrowing = { depositCollateral: 50, borrowNECT: NECT_MINIMUM_NET_DEBT.add(100) };
 
     it("should create a Trove with some borrowing", async () => {
-      const { newTrove, fee } = await liquity.openTrove(withSomeBorrowing);
+      const { newTrove, fee } = await beraborrow.openTrove(withSomeBorrowing);
       expect(newTrove).to.deep.equal(Trove.create(withSomeBorrowing));
       expect(`${fee}`).to.equal(`${MINIMUM_BORROWING_RATE.mul(withSomeBorrowing.borrowNECT)}`);
     });
 
     it("should fail to withdraw all the collateral while the Trove has debt", async () => {
-      const trove = await liquity.getTrove();
+      const trove = await beraborrow.getTrove();
 
-      await expect(liquity.withdrawCollateral(trove.collateral)).to.eventually.be.rejected;
+      await expect(beraborrow.withdrawCollateral(trove.collateral)).to.eventually.be.rejected;
     });
 
     const repaySomeDebt = { repayNECT: 10 };
 
     it("should repay some debt", async () => {
-      const { newTrove, fee } = await liquity.repayNECT(repaySomeDebt.repayNECT);
+      const { newTrove, fee } = await beraborrow.repayNECT(repaySomeDebt.repayNECT);
       expect(newTrove).to.deep.equal(Trove.create(withSomeBorrowing).adjust(repaySomeDebt));
       expect(`${fee}`).to.equal("0");
     });
@@ -307,7 +307,7 @@ describe("EthersLiquity", () => {
     const borrowSomeMore = { borrowNECT: 20 };
 
     it("should borrow some more", async () => {
-      const { newTrove, fee } = await liquity.borrowNECT(borrowSomeMore.borrowNECT);
+      const { newTrove, fee } = await beraborrow.borrowNECT(borrowSomeMore.borrowNECT);
       expect(newTrove).to.deep.equal(
         Trove.create(withSomeBorrowing).adjust(repaySomeDebt).adjust(borrowSomeMore)
       );
@@ -317,7 +317,7 @@ describe("EthersLiquity", () => {
     const depositMoreCollateral = { depositCollateral: 1 };
 
     it("should deposit more collateral", async () => {
-      const { newTrove } = await liquity.depositCollateral(depositMoreCollateral.depositCollateral);
+      const { newTrove } = await beraborrow.depositCollateral(depositMoreCollateral.depositCollateral);
       expect(newTrove).to.deep.equal(
         Trove.create(withSomeBorrowing)
           .adjust(repaySomeDebt)
@@ -332,7 +332,7 @@ describe("EthersLiquity", () => {
       const {
         rawReceipt,
         details: { newTrove }
-      } = await waitForSuccess(liquity.send.adjustTrove(repayAndWithdraw));
+      } = await waitForSuccess(beraborrow.send.adjustTrove(repayAndWithdraw));
 
       expect(newTrove).to.deep.equal(
         Trove.create(withSomeBorrowing)
@@ -356,7 +356,7 @@ describe("EthersLiquity", () => {
       const {
         rawReceipt,
         details: { newTrove, fee }
-      } = await waitForSuccess(liquity.send.adjustTrove(borrowAndDeposit));
+      } = await waitForSuccess(beraborrow.send.adjustTrove(borrowAndDeposit));
 
       expect(newTrove).to.deep.equal(
         Trove.create(withSomeBorrowing)
@@ -378,35 +378,35 @@ describe("EthersLiquity", () => {
     });
 
     it("should close the Trove with some NECT from another user", async () => {
-      const price = await liquity.getPrice();
-      const initialTrove = await liquity.getTrove();
-      const nectBalance = await liquity.getPOLLENBalance();
+      const price = await beraborrow.getPrice();
+      const initialTrove = await beraborrow.getTrove();
+      const nectBalance = await beraborrow.getPOLLENBalance();
       const nectShortage = initialTrove.netDebt.sub(nectBalance);
 
       let funderTrove = Trove.create({ depositCollateral: 1, borrowNECT: nectShortage });
       funderTrove = funderTrove.setDebt(Decimal.max(funderTrove.debt, NECT_MINIMUM_DEBT));
       funderTrove = funderTrove.setCollateral(funderTrove.debt.mulDiv(1.51, price));
 
-      const funderLiquity = await connectToDeployment(deployment, funder);
-      await funderLiquity.openTrove(Trove.recreate(funderTrove));
-      await funderLiquity.sendNECT(await user.getAddress(), nectShortage);
+      const funderBeraBorrow = await connectToDeployment(deployment, funder);
+      await funderBeraBorrow.openTrove(Trove.recreate(funderTrove));
+      await funderBeraBorrow.sendNECT(await user.getAddress(), nectShortage);
 
-      const { params } = await liquity.closeTrove();
+      const { params } = await beraborrow.closeTrove();
 
       expect(params).to.deep.equal({
         withdrawCollateral: initialTrove.collateral,
         repayNECT: initialTrove.netDebt
       });
 
-      const finalTrove = await liquity.getTrove();
+      const finalTrove = await beraborrow.getTrove();
       expect(finalTrove.isEmpty).to.be.true;
     });
   });
 
-  describe("SendableEthersLiquity", () => {
+  describe("SendableEthersBeraBorrow", () => {
     it("should parse failed transactions without throwing", async () => {
       // By passing a gasLimit, we avoid automatic use of estimateGas which would throw
-      const tx = await liquity.send.openTrove(
+      const tx = await beraborrow.send.openTrove(
         { depositCollateral: 0.01, borrowNECT: 0.01 },
         undefined,
         { gasLimit: 1e6 }
@@ -419,17 +419,17 @@ describe("EthersLiquity", () => {
 
   describe("Frontend", () => {
     it("should have no frontend initially", async () => {
-      const frontend = await liquity.getFrontendStatus(await user.getAddress());
+      const frontend = await beraborrow.getFrontendStatus(await user.getAddress());
 
       assertStrictEqual(frontend.status, "unregistered" as const);
     });
 
     it("should register a frontend", async () => {
-      await liquity.registerFrontend(0.75);
+      await beraborrow.registerFrontend(0.75);
     });
 
     it("should have a frontend now", async () => {
-      const frontend = await liquity.getFrontendStatus(await user.getAddress());
+      const frontend = await beraborrow.getFrontendStatus(await user.getAddress());
 
       assertStrictEqual(frontend.status, "registered" as const);
       expect(`${frontend.kickbackRate}`).to.equal("0.75");
@@ -443,21 +443,21 @@ describe("EthersLiquity", () => {
         value: Decimal.from(20.1).hex
       });
 
-      const otherLiquity = await connectToDeployment(deployment, otherUsers[0], frontendTag);
-      await otherLiquity.openTrove({ depositCollateral: 20, borrowNECT: NECT_MINIMUM_DEBT });
+      const otherBeraBorrow = await connectToDeployment(deployment, otherUsers[0], frontendTag);
+      await otherBeraBorrow.openTrove({ depositCollateral: 20, borrowNECT: NECT_MINIMUM_DEBT });
 
-      await otherLiquity.depositNECTInStabilityPool(NECT_MINIMUM_DEBT);
+      await otherBeraBorrow.depositNECTInStabilityPool(NECT_MINIMUM_DEBT);
 
-      const deposit = await otherLiquity.getStabilityDeposit();
+      const deposit = await otherBeraBorrow.getStabilityDeposit();
       expect(deposit.frontendTag).to.equal(frontendTag);
     });
   });
 
   describe("StabilityPool", () => {
     before(async () => {
-      deployment = await deployLiquity(deployer);
+      deployment = await deployBeraBorrow(deployer);
 
-      [deployerLiquity, liquity, ...otherLiquities] = await connectUsers([
+      [deployerBeraBorrow, beraborrow, ...otherLiquities] = await connectUsers([
         deployer,
         user,
         ...otherUsers.slice(0, 1)
@@ -477,10 +477,10 @@ describe("EthersLiquity", () => {
     const smallStabilityDeposit = Decimal.from(10);
 
     it("should make a small stability deposit", async () => {
-      const { newTrove } = await liquity.openTrove(Trove.recreate(initialTroveOfDepositor));
+      const { newTrove } = await beraborrow.openTrove(Trove.recreate(initialTroveOfDepositor));
       expect(newTrove).to.deep.equal(initialTroveOfDepositor);
 
-      const details = await liquity.depositNECTInStabilityPool(smallStabilityDeposit);
+      const details = await beraborrow.depositNECTInStabilityPool(smallStabilityDeposit);
 
       expect(details).to.deep.equal({
         nectLoss: Decimal.from(0),
@@ -502,21 +502,21 @@ describe("EthersLiquity", () => {
     it("other user should make a Trove with very low ICR", async () => {
       const { newTrove } = await otherLiquities[0].openTrove(Trove.recreate(troveWithVeryLowICR));
 
-      const price = await liquity.getPrice();
+      const price = await beraborrow.getPrice();
       expect(Number(`${newTrove.collateralRatio(price)}`)).to.be.below(1.15);
     });
 
     const dippedPrice = Decimal.from(190);
 
     it("the price should take a dip", async () => {
-      await deployerLiquity.setPrice(dippedPrice);
+      await deployerBeraBorrow.setPrice(dippedPrice);
 
-      const price = await liquity.getPrice();
+      const price = await beraborrow.getPrice();
       expect(`${price}`).to.equal(`${dippedPrice}`);
     });
 
     it("should liquidate other user's Trove", async () => {
-      const details = await liquity.liquidateUpTo(1);
+      const details = await beraborrow.liquidateUpTo(1);
 
       expect(details).to.deep.equal({
         liquidatedAddresses: [await otherUsers[0].getAddress()],
@@ -537,7 +537,7 @@ describe("EthersLiquity", () => {
     });
 
     it("should have a depleted stability deposit and some collateral gain", async () => {
-      const stabilityDeposit = await liquity.getStabilityDeposit();
+      const stabilityDeposit = await beraborrow.getStabilityDeposit();
 
       expect(stabilityDeposit).to.deep.equal(
         new StabilityDeposit(
@@ -554,7 +554,7 @@ describe("EthersLiquity", () => {
     });
 
     it("the Trove should have received some liquidation shares", async () => {
-      const trove = await liquity.getTrove();
+      const trove = await beraborrow.getTrove();
 
       expect(trove).to.deep.equal({
         ownerAddress: await user.getAddress(),
@@ -572,19 +572,19 @@ describe("EthersLiquity", () => {
     });
 
     it("total should equal the Trove", async () => {
-      const trove = await liquity.getTrove();
+      const trove = await beraborrow.getTrove();
 
-      const numberOfTroves = await liquity.getNumberOfTroves();
+      const numberOfTroves = await beraborrow.getNumberOfTroves();
       expect(numberOfTroves).to.equal(1);
 
-      const total = await liquity.getTotal();
+      const total = await beraborrow.getTotal();
       expect(total).to.deep.equal(
         trove.addCollateral("0.000000000000000001") // tiny imprecision
       );
     });
 
     it("should transfer the gains to the Trove", async () => {
-      const details = await liquity.transferCollateralGainToTrove();
+      const details = await beraborrow.transferCollateralGainToTrove();
 
       expect(details).to.deep.equal({
         nectLoss: smallStabilityDeposit,
@@ -605,17 +605,17 @@ describe("EthersLiquity", () => {
           )
       });
 
-      const stabilityDeposit = await liquity.getStabilityDeposit();
+      const stabilityDeposit = await beraborrow.getStabilityDeposit();
       expect(stabilityDeposit.isEmpty).to.be.true;
     });
 
     describe("when people overstay", () => {
       before(async () => {
         // Deploy new instances of the contracts, for a clean slate
-        deployment = await deployLiquity(deployer);
+        deployment = await deployBeraBorrow(deployer);
 
         const otherUsersSubset = otherUsers.slice(0, 5);
-        [deployerLiquity, liquity, ...otherLiquities] = await connectUsers([
+        [deployerBeraBorrow, beraborrow, ...otherLiquities] = await connectUsers([
           deployer,
           user,
           ...otherUsersSubset
@@ -624,15 +624,15 @@ describe("EthersLiquity", () => {
         await sendToEach(otherUsersSubset, 21.1);
 
         let price = Decimal.from(200);
-        await deployerLiquity.setPrice(price);
+        await deployerBeraBorrow.setPrice(price);
 
         // Use this account to print NECT
-        await liquity.openTrove({ depositCollateral: 50, borrowNECT: 5000 });
+        await beraborrow.openTrove({ depositCollateral: 50, borrowNECT: 5000 });
 
         // otherLiquities[0-2] will be independent stability depositors
-        await liquity.sendNECT(await otherUsers[0].getAddress(), 3000);
-        await liquity.sendNECT(await otherUsers[1].getAddress(), 1000);
-        await liquity.sendNECT(await otherUsers[2].getAddress(), 1000);
+        await beraborrow.sendNECT(await otherUsers[0].getAddress(), 3000);
+        await beraborrow.sendNECT(await otherUsers[1].getAddress(), 1000);
+        await beraborrow.sendNECT(await otherUsers[2].getAddress(), 1000);
 
         // otherLiquities[3-4] will be Trove owners whose Troves get liquidated
         await otherLiquities[3].openTrove({ depositCollateral: 21, borrowNECT: 2900 });
@@ -644,21 +644,21 @@ describe("EthersLiquity", () => {
 
         // Tank the price so we can liquidate
         price = Decimal.from(150);
-        await deployerLiquity.setPrice(price);
+        await deployerBeraBorrow.setPrice(price);
 
         // Liquidate first victim
-        await liquity.liquidate(await otherUsers[3].getAddress());
+        await beraborrow.liquidate(await otherUsers[3].getAddress());
         expect((await otherLiquities[3].getTrove()).isEmpty).to.be.true;
 
         // Now otherLiquities[2] makes their deposit too
         await otherLiquities[2].depositNECTInStabilityPool(1000);
 
         // Liquidate second victim
-        await liquity.liquidate(await otherUsers[4].getAddress());
+        await beraborrow.liquidate(await otherUsers[4].getAddress());
         expect((await otherLiquities[4].getTrove()).isEmpty).to.be.true;
 
         // Stability Pool is now empty
-        expect(`${await liquity.getNECTInStabilityPool()}`).to.equal("0");
+        expect(`${await beraborrow.getNECTInStabilityPool()}`).to.equal("0");
       });
 
       it("should still be able to withdraw remaining deposit", async () => {
@@ -686,10 +686,10 @@ describe("EthersLiquity", () => {
       }
 
       // Deploy new instances of the contracts, for a clean slate
-      deployment = await deployLiquity(deployer);
+      deployment = await deployBeraBorrow(deployer);
 
       const otherUsersSubset = otherUsers.slice(0, 3);
-      [deployerLiquity, liquity, ...otherLiquities] = await connectUsers([
+      [deployerBeraBorrow, beraborrow, ...otherLiquities] = await connectUsers([
         deployer,
         user,
         ...otherUsersSubset
@@ -699,12 +699,12 @@ describe("EthersLiquity", () => {
     });
 
     it("should fail to redeem during the bootstrap phase", async () => {
-      await liquity.openTrove(troveCreations[0]);
+      await beraborrow.openTrove(troveCreations[0]);
       await otherLiquities[0].openTrove(troveCreations[1]);
       await otherLiquities[1].openTrove(troveCreations[2]);
       await otherLiquities[2].openTrove(troveCreations[3]);
 
-      await expect(liquity.redeemNECT(4326.5)).to.eventually.be.rejected;
+      await expect(beraborrow.redeemNECT(4326.5)).to.eventually.be.rejected;
     });
 
     const someNECT = Decimal.from(4326.5);
@@ -721,7 +721,7 @@ describe("EthersLiquity", () => {
         .map(params => Trove.create(params))
         .reduce((a, b) => a.add(b));
 
-      const total = await liquity.getTotal();
+      const total = await beraborrow.getTotal();
       expect(total).to.deep.equal(expectedTotal);
 
       const expectedDetails = {
@@ -733,7 +733,7 @@ describe("EthersLiquity", () => {
           .mul(someNECT.div(200))
       };
 
-      const { rawReceipt, details } = await waitForSuccess(liquity.send.redeemNECT(someNECT));
+      const { rawReceipt, details } = await waitForSuccess(beraborrow.send.redeemNECT(someNECT));
       expect(details).to.deep.equal(expectedDetails);
 
       const balance = Decimal.fromBigNumberString(`${await user.getBalance()}`);
@@ -745,7 +745,7 @@ describe("EthersLiquity", () => {
           .sub(gasCost)}`
       );
 
-      expect(`${await liquity.getNECTBalance()}`).to.equal("273.5");
+      expect(`${await beraborrow.getNECTBalance()}`).to.equal("273.5");
 
       expect(`${(await otherLiquities[0].getTrove()).debt}`).to.equal(
         `${Trove.create(troveCreations[1]).debt.sub(
@@ -800,7 +800,7 @@ describe("EthersLiquity", () => {
     it("borrowing rate should be maxed out now", async () => {
       const borrowNECT = Decimal.from(10);
 
-      const { fee, newTrove } = await liquity.borrowNECT(borrowNECT);
+      const { fee, newTrove } = await beraborrow.borrowNECT(borrowNECT);
       expect(`${fee}`).to.equal(`${borrowNECT.mul(MAXIMUM_BORROWING_RATE)}`);
 
       expect(newTrove).to.deep.equal(
@@ -825,10 +825,10 @@ describe("EthersLiquity", () => {
 
     beforeEach(async () => {
       // Deploy new instances of the contracts, for a clean slate
-      deployment = await deployLiquity(deployer);
+      deployment = await deployBeraBorrow(deployer);
 
       const otherUsersSubset = otherUsers.slice(0, 3);
-      [deployerLiquity, liquity, ...otherLiquities] = await connectUsers([
+      [deployerBeraBorrow, beraborrow, ...otherLiquities] = await connectUsers([
         deployer,
         user,
         ...otherUsersSubset
@@ -836,7 +836,7 @@ describe("EthersLiquity", () => {
 
       await sendToEach(otherUsersSubset, 20.1);
 
-      await liquity.openTrove({ depositCollateral: 99, borrowNECT: 5000 });
+      await beraborrow.openTrove({ depositCollateral: 99, borrowNECT: 5000 });
       await otherLiquities[0].openTrove(troveCreationParams);
       await otherLiquities[1].openTrove(troveCreationParams);
       await otherLiquities[2].openTrove(troveCreationParams);
@@ -845,7 +845,7 @@ describe("EthersLiquity", () => {
     });
 
     it("should truncate the amount if it would put the last Trove below the min debt", async () => {
-      const redemption = await liquity.populate.redeemNECT(amountToAttempt);
+      const redemption = await beraborrow.populate.redeemNECT(amountToAttempt);
       expect(`${redemption.attemptedNECTAmount}`).to.equal(`${amountToAttempt}`);
       expect(`${redemption.redeemableNECTAmount}`).to.equal(`${expectedRedeemable}`);
       expect(redemption.isTruncated).to.be.true;
@@ -858,7 +858,7 @@ describe("EthersLiquity", () => {
     it("should increase the amount to the next lowest redeemable value", async () => {
       const increasedRedeemable = expectedRedeemable.add(NECT_MINIMUM_NET_DEBT);
 
-      const initialRedemption = await liquity.populate.redeemNECT(amountToAttempt);
+      const initialRedemption = await beraborrow.populate.redeemNECT(amountToAttempt);
       const increasedRedemption = await initialRedemption.increaseAmountByMinimumNetDebt();
       expect(`${increasedRedemption.attemptedNECTAmount}`).to.equal(`${increasedRedeemable}`);
       expect(`${increasedRedemption.redeemableNECTAmount}`).to.equal(`${increasedRedeemable}`);
@@ -870,7 +870,7 @@ describe("EthersLiquity", () => {
     });
 
     it("should fail to increase the amount if it's not truncated", async () => {
-      const redemption = await liquity.populate.redeemNECT(netDebtPerTrove);
+      const redemption = await beraborrow.populate.redeemNECT(netDebtPerTrove);
       expect(redemption.isTruncated).to.be.false;
 
       expect(() => redemption.increaseAmountByMinimumNetDebt()).to.throw(
@@ -904,21 +904,21 @@ describe("EthersLiquity", () => {
       }
 
       // Deploy new instances of the contracts, for a clean slate
-      deployment = await deployLiquity(deployer);
+      deployment = await deployBeraBorrow(deployer);
       const otherUsersSubset = otherUsers.slice(0, _redeemMaxIterations);
       expect(otherUsersSubset).to.have.length(_redeemMaxIterations);
 
-      [deployerLiquity, liquity, ...otherLiquities] = await connectUsers([
+      [deployerBeraBorrow, beraborrow, ...otherLiquities] = await connectUsers([
         deployer,
         user,
         ...otherUsersSubset
       ]);
 
-      await deployerLiquity.setPrice(massivePrice);
+      await deployerBeraBorrow.setPrice(massivePrice);
       await sendToEach(otherUsersSubset, collateralPerTrove);
 
-      for (const otherLiquity of otherLiquities) {
-        await otherLiquity.openTrove({
+      for (const otherBeraBorrow of otherLiquities) {
+        await otherBeraBorrow.openTrove({
           depositCollateral: collateralPerTrove,
           borrowNECT: amountToBorrowPerTrove
         });
@@ -928,12 +928,12 @@ describe("EthersLiquity", () => {
     });
 
     it("should redeem using the maximum iterations and almost all gas", async () => {
-      await liquity.openTrove({
+      await beraborrow.openTrove({
         depositCollateral: amountToDeposit,
         borrowNECT: amountToRedeem
       });
 
-      const { rawReceipt } = await waitForSuccess(liquity.send.redeemNECT(amountToRedeem));
+      const { rawReceipt } = await waitForSuccess(beraborrow.send.redeemNECT(amountToRedeem));
 
       const gasUsed = rawReceipt.gasUsed.toNumber();
       // gasUsed is ~half the real used amount because of how refunds work, see:
@@ -944,38 +944,38 @@ describe("EthersLiquity", () => {
 
   describe("Liquidity mining", () => {
     before(async () => {
-      deployment = await deployLiquity(deployer);
-      [deployerLiquity, liquity] = await connectUsers([deployer, user]);
+      deployment = await deployBeraBorrow(deployer);
+      [deployerBeraBorrow, beraborrow] = await connectUsers([deployer, user]);
     });
 
     const someUniTokens = 1000;
 
     it("should obtain some UNI LP tokens", async () => {
-      await liquity._mintUniToken(someUniTokens);
+      await beraborrow._mintUniToken(someUniTokens);
 
-      const uniTokenBalance = await liquity.getUniTokenBalance();
+      const uniTokenBalance = await beraborrow.getUniTokenBalance();
       expect(`${uniTokenBalance}`).to.equal(`${someUniTokens}`);
     });
 
     it("should fail to stake UNI LP before approving the spend", async () => {
-      await expect(liquity.stakeUniTokens(someUniTokens)).to.eventually.be.rejected;
+      await expect(beraborrow.stakeUniTokens(someUniTokens)).to.eventually.be.rejected;
     });
 
     it("should stake UNI LP after approving the spend", async () => {
-      const initialAllowance = await liquity.getUniTokenAllowance();
+      const initialAllowance = await beraborrow.getUniTokenAllowance();
       expect(`${initialAllowance}`).to.equal("0");
 
-      await liquity.approveUniTokens();
+      await beraborrow.approveUniTokens();
 
-      const newAllowance = await liquity.getUniTokenAllowance();
+      const newAllowance = await beraborrow.getUniTokenAllowance();
       expect(newAllowance.isZero).to.be.false;
 
-      await liquity.stakeUniTokens(someUniTokens);
+      await beraborrow.stakeUniTokens(someUniTokens);
 
-      const uniTokenBalance = await liquity.getUniTokenBalance();
+      const uniTokenBalance = await beraborrow.getUniTokenBalance();
       expect(`${uniTokenBalance}`).to.equal("0");
 
-      const stake = await liquity.getLiquidityMiningStake();
+      const stake = await beraborrow.getLiquidityMiningStake();
       expect(`${stake}`).to.equal(`${someUniTokens}`);
     });
 
@@ -988,38 +988,38 @@ describe("EthersLiquity", () => {
       await new Promise(resolve => setTimeout(resolve, 4000));
 
       // Trigger a new block with a dummy TX.
-      await liquity._mintUniToken(0);
+      await beraborrow._mintUniToken(0);
 
-      const pollenReward = Number(await liquity.getLiquidityMiningPOLLENReward());
+      const pollenReward = Number(await beraborrow.getLiquidityMiningPOLLENReward());
       expect(pollenReward).to.be.at.least(1); // ~0.2572 per second [(4e6/3) / (60*24*60*60)]
 
-      await liquity.withdrawPOLLENRewardFromLiquidityMining();
-      const pollenBalance = Number(await liquity.getPOLLENBalance());
+      await beraborrow.withdrawPOLLENRewardFromLiquidityMining();
+      const pollenBalance = Number(await beraborrow.getPOLLENBalance());
       expect(pollenBalance).to.be.at.least(pollenReward); // may have increased since checking
     });
 
     it("should partially unstake", async () => {
-      await liquity.unstakeUniTokens(someUniTokens / 2);
+      await beraborrow.unstakeUniTokens(someUniTokens / 2);
 
-      const uniTokenStake = await liquity.getLiquidityMiningStake();
+      const uniTokenStake = await beraborrow.getLiquidityMiningStake();
       expect(`${uniTokenStake}`).to.equal(`${someUniTokens / 2}`);
 
-      const uniTokenBalance = await liquity.getUniTokenBalance();
+      const uniTokenBalance = await beraborrow.getUniTokenBalance();
       expect(`${uniTokenBalance}`).to.equal(`${someUniTokens / 2}`);
     });
 
     it("should unstake remaining tokens and withdraw remaining POLLEN reward", async () => {
       await new Promise(resolve => setTimeout(resolve, 1000));
-      await liquity._mintUniToken(0); // dummy block
-      await liquity.exitLiquidityMining();
+      await beraborrow._mintUniToken(0); // dummy block
+      await beraborrow.exitLiquidityMining();
 
-      const uniTokenStake = await liquity.getLiquidityMiningStake();
+      const uniTokenStake = await beraborrow.getLiquidityMiningStake();
       expect(`${uniTokenStake}`).to.equal("0");
 
-      const pollenReward = await liquity.getLiquidityMiningPOLLENReward();
+      const pollenReward = await beraborrow.getLiquidityMiningPOLLENReward();
       expect(`${pollenReward}`).to.equal("0");
 
-      const uniTokenBalance = await liquity.getUniTokenBalance();
+      const uniTokenBalance = await beraborrow.getUniTokenBalance();
       expect(`${uniTokenBalance}`).to.equal(`${someUniTokens}`);
     });
 
@@ -1029,14 +1029,14 @@ describe("EthersLiquity", () => {
         this.skip();
       }
 
-      await liquity.stakeUniTokens(someUniTokens);
+      await beraborrow.stakeUniTokens(someUniTokens);
       await increaseTime(2 * 30 * 24 * 60 * 60);
-      await liquity.exitLiquidityMining();
+      await beraborrow.exitLiquidityMining();
 
-      const remainingPOLLENReward = await liquity.getRemainingLiquidityMiningPOLLENReward();
+      const remainingPOLLENReward = await beraborrow.getRemainingLiquidityMiningPOLLENReward();
       expect(`${remainingPOLLENReward}`).to.equal("0");
 
-      const pollenBalance = Number(await liquity.getPOLLENBalance());
+      const pollenBalance = Number(await beraborrow.getPOLLENBalance());
       expect(pollenBalance).to.be.within(1333333, 1333334);
     });
   });
@@ -1046,9 +1046,9 @@ describe("EthersLiquity", () => {
     let eightOtherUsers: Signer[];
 
     before(async () => {
-      deployment = await deployLiquity(deployer);
+      deployment = await deployBeraBorrow(deployer);
       eightOtherUsers = otherUsers.slice(0, 8);
-      liquity = await connectToDeployment(deployment, user);
+      beraborrow = await connectToDeployment(deployment, user);
 
       await openTroves(eightOtherUsers, [
         { depositCollateral: 30, borrowNECT: 2000 }, // 0
@@ -1068,7 +1068,7 @@ describe("EthersLiquity", () => {
 
     // Test 1
     it("should not use extra gas when a Trove's position doesn't change", async () => {
-      const { newTrove: initialTrove } = await liquity.openTrove({
+      const { newTrove: initialTrove } = await beraborrow.openTrove({
         depositCollateral: 30,
         borrowNECT: 2400
       });
@@ -1077,7 +1077,7 @@ describe("EthersLiquity", () => {
       const targetTrove = initialTrove.multiply(1.1);
 
       const { rawReceipt } = await waitForSuccess(
-        liquity.send.adjustTrove(initialTrove.adjustTo(targetTrove))
+        beraborrow.send.adjustTrove(initialTrove.adjustTo(targetTrove))
       );
 
       const gasUsed = rawReceipt.gasUsed.toNumber();
@@ -1086,18 +1086,18 @@ describe("EthersLiquity", () => {
 
     // Test 2
     it("should not traverse the whole list when bottom Trove moves", async () => {
-      const bottomLiquity = await connectToDeployment(deployment, eightOtherUsers[7]);
+      const bottomBeraBorrow = await connectToDeployment(deployment, eightOtherUsers[7]);
 
-      const initialTrove = await liquity.getTrove();
-      const bottomTrove = await bottomLiquity.getTrove();
+      const initialTrove = await beraborrow.getTrove();
+      const bottomTrove = await bottomBeraBorrow.getTrove();
 
       const targetTrove = Trove.create({ depositCollateral: 30, borrowNECT: 2900 });
       const interferingTrove = Trove.create({ depositCollateral: 30, borrowNECT: 3000 });
 
-      const tx = await liquity.populate.adjustTrove(initialTrove.adjustTo(targetTrove));
+      const tx = await beraborrow.populate.adjustTrove(initialTrove.adjustTo(targetTrove));
 
       // Suddenly: interference!
-      await bottomLiquity.adjustTrove(bottomTrove.adjustTo(interferingTrove));
+      await bottomBeraBorrow.adjustTrove(bottomTrove.adjustTo(interferingTrove));
 
       const { rawReceipt } = await waitForSuccess(tx.send());
 
@@ -1107,19 +1107,19 @@ describe("EthersLiquity", () => {
 
     // Test 3
     it("should not traverse the whole list when lowering ICR of bottom Trove", async () => {
-      const initialTrove = await liquity.getTrove();
+      const initialTrove = await beraborrow.getTrove();
 
       const targetTrove = [
         Trove.create({ depositCollateral: 30, borrowNECT: 3100 }),
         Trove.create({ depositCollateral: 30, borrowNECT: 3200 })
       ];
 
-      await liquity.adjustTrove(initialTrove.adjustTo(targetTrove[0]));
+      await beraborrow.adjustTrove(initialTrove.adjustTo(targetTrove[0]));
       // Now we are the bottom Trove
 
       // Lower our ICR even more
       const { rawReceipt } = await waitForSuccess(
-        liquity.send.adjustTrove(targetTrove[0].adjustTo(targetTrove[1]))
+        beraborrow.send.adjustTrove(targetTrove[0].adjustTo(targetTrove[1]))
       );
 
       const gasUsed = rawReceipt.gasUsed.toNumber();
@@ -1132,18 +1132,18 @@ describe("EthersLiquity", () => {
 
     let rudeUser: Signer;
     let fiveOtherUsers: Signer[];
-    let rudeLiquity: EthersLiquity;
+    let rudeBeraBorrow: EthersBeraBorrow;
 
     before(async function () {
       if (network.name !== "hardhat") {
         this.skip();
       }
 
-      deployment = await deployLiquity(deployer);
+      deployment = await deployBeraBorrow(deployer);
 
       [rudeUser, ...fiveOtherUsers] = otherUsers.slice(0, 6);
 
-      [deployerLiquity, liquity, rudeLiquity, ...otherLiquities] = await connectUsers([
+      [deployerBeraBorrow, beraborrow, rudeBeraBorrow, ...otherLiquities] = await connectUsers([
         deployer,
         user,
         rudeUser,
@@ -1162,11 +1162,11 @@ describe("EthersLiquity", () => {
     });
 
     it("should include enough gas for updating lastFeeOperationTime", async () => {
-      await liquity.openTrove({ depositCollateral: 20, borrowNECT: 2090 });
+      await beraborrow.openTrove({ depositCollateral: 20, borrowNECT: 2090 });
 
       // We just updated lastFeeOperationTime, so this won't anticipate having to update that
       // during estimateGas
-      const tx = await liquity.populate.redeemNECT(1);
+      const tx = await beraborrow.populate.redeemNECT(1);
       const originalGasEstimate = await provider.estimateGas(tx.rawPopulatedTransaction);
 
       // Fast-forward 2 minutes.
@@ -1185,9 +1185,9 @@ describe("EthersLiquity", () => {
     });
 
     it("should include enough gas for one extra traversal", async () => {
-      const troves = await liquity.getTroves({ first: 10, sortedBy: "ascendingCollateralRatio" });
+      const troves = await beraborrow.getTroves({ first: 10, sortedBy: "ascendingCollateralRatio" });
 
-      const trove = await liquity.getTrove();
+      const trove = await beraborrow.getTrove();
       const newTrove = troveWithICRBetween(troves[3], troves[4]);
 
       // First, we want to test a non-borrowing case, to make sure we're not passing due to any
@@ -1195,7 +1195,7 @@ describe("EthersLiquity", () => {
       const adjustment = trove.adjustTo(newTrove);
       expect(adjustment.borrowNECT).to.be.undefined;
 
-      const tx = await liquity.populate.adjustTrove(adjustment);
+      const tx = await beraborrow.populate.adjustTrove(adjustment);
       const originalGasEstimate = await provider.estimateGas(tx.rawPopulatedTransaction);
 
       // A terribly rude user interferes
@@ -1212,21 +1212,21 @@ describe("EthersLiquity", () => {
       assertDefined(rudeCreation.borrowNECT);
       const nectShortage = rudeTrove.debt.sub(rudeCreation.borrowNECT);
 
-      await liquity.sendNECT(await rudeUser.getAddress(), nectShortage);
-      await rudeLiquity.closeTrove();
+      await beraborrow.sendNECT(await rudeUser.getAddress(), nectShortage);
+      await rudeBeraBorrow.closeTrove();
     });
 
     it("should include enough gas for both when borrowing", async () => {
-      const troves = await liquity.getTroves({ first: 10, sortedBy: "ascendingCollateralRatio" });
+      const troves = await beraborrow.getTroves({ first: 10, sortedBy: "ascendingCollateralRatio" });
 
-      const trove = await liquity.getTrove();
+      const trove = await beraborrow.getTrove();
       const newTrove = troveWithICRBetween(troves[1], troves[2]);
 
       // Make sure we're borrowing
       const adjustment = trove.adjustTo(newTrove);
       expect(adjustment.borrowNECT).to.not.be.undefined;
 
-      const tx = await liquity.populate.adjustTrove(adjustment);
+      const tx = await beraborrow.populate.adjustTrove(adjustment);
       const originalGasEstimate = await provider.estimateGas(tx.rawPopulatedTransaction);
 
       // A terribly rude user interferes again
@@ -1244,7 +1244,7 @@ describe("EthersLiquity", () => {
   });
 
   describe("Gas estimation (POLLEN issuance)", () => {
-    const estimate = (tx: PopulatedEthersLiquityTransaction) =>
+    const estimate = (tx: PopulatedEthersBeraBorrowTransaction) =>
       provider.estimateGas(tx.rawPopulatedTransaction);
 
     before(async function () {
@@ -1252,26 +1252,26 @@ describe("EthersLiquity", () => {
         this.skip();
       }
 
-      deployment = await deployLiquity(deployer);
-      [deployerLiquity, liquity] = await connectUsers([deployer, user]);
+      deployment = await deployBeraBorrow(deployer);
+      [deployerBeraBorrow, beraborrow] = await connectUsers([deployer, user]);
     });
 
     it("should include enough gas for issuing POLLEN", async function () {
       this.timeout("1m");
 
-      await liquity.openTrove({ depositCollateral: 40, borrowNECT: 4000 });
-      await liquity.depositNECTInStabilityPool(19);
+      await beraborrow.openTrove({ depositCollateral: 40, borrowNECT: 4000 });
+      await beraborrow.depositNECTInStabilityPool(19);
 
       await increaseTime(60);
 
       // This will issue POLLEN for the first time ever. That uses a whole lotta gas, and we don't
       // want to pack any extra gas to prepare for this case specifically, because it only happens
       // once.
-      await liquity.withdrawGainsFromStabilityPool();
+      await beraborrow.withdrawGainsFromStabilityPool();
 
-      const claim = await liquity.populate.withdrawGainsFromStabilityPool();
-      const deposit = await liquity.populate.depositNECTInStabilityPool(1);
-      const withdraw = await liquity.populate.withdrawNECTFromStabilityPool(1);
+      const claim = await beraborrow.populate.withdrawGainsFromStabilityPool();
+      const deposit = await beraborrow.populate.depositNECTInStabilityPool(1);
+      const withdraw = await beraborrow.populate.withdrawNECTFromStabilityPool(1);
 
       for (let i = 0; i < 5; ++i) {
         for (const tx of [claim, deposit, withdraw]) {
@@ -1289,12 +1289,12 @@ describe("EthersLiquity", () => {
 
       const creation = Trove.recreate(new Trove(Decimal.from(11.1), Decimal.from(2000.1)));
 
-      await deployerLiquity.openTrove(creation);
-      await deployerLiquity.depositNECTInStabilityPool(creation.borrowNECT);
-      await deployerLiquity.setPrice(198);
+      await deployerBeraBorrow.openTrove(creation);
+      await deployerBeraBorrow.depositNECTInStabilityPool(creation.borrowNECT);
+      await deployerBeraBorrow.setPrice(198);
 
-      const liquidateTarget = await liquity.populate.liquidate(await deployer.getAddress());
-      const liquidateMultiple = await liquity.populate.liquidateUpTo(40);
+      const liquidateTarget = await beraborrow.populate.liquidate(await deployer.getAddress());
+      const liquidateMultiple = await beraborrow.populate.liquidateUpTo(40);
 
       for (let i = 0; i < 5; ++i) {
         for (const tx of [liquidateTarget, liquidateMultiple]) {
@@ -1320,9 +1320,9 @@ describe("EthersLiquity", () => {
 
       this.timeout("1m");
 
-      deployment = await deployLiquity(deployer);
+      deployment = await deployBeraBorrow(deployer);
       const [redeemedUser, ...someMoreUsers] = otherUsers.slice(0, 21);
-      [liquity, ...otherLiquities] = await connectUsers([user, ...someMoreUsers]);
+      [beraborrow, ...otherLiquities] = await connectUsers([user, ...someMoreUsers]);
 
       // Create a "slope" of Troves with similar, but slightly decreasing ICRs
       await openTroves(
@@ -1335,15 +1335,15 @@ describe("EthersLiquity", () => {
 
       // Sweep NECT
       await Promise.all(
-        otherLiquities.map(async otherLiquity =>
-          otherLiquity.sendNECT(await user.getAddress(), await otherLiquity.getNECTBalance())
+        otherLiquities.map(async otherBeraBorrow =>
+          otherBeraBorrow.sendNECT(await user.getAddress(), await otherBeraBorrow.getNECTBalance())
         )
       );
 
-      const price = await liquity.getPrice();
+      const price = await beraborrow.getPrice();
 
       // Create a "designated victim" Trove that'll be redeemed
-      const redeemedTroveDebt = await liquity
+      const redeemedTroveDebt = await beraborrow
         .getNECTBalance()
         .then(x => x.div(10).add(NECT_LIQUIDATION_RESERVE));
       const redeemedTroveCollateral = redeemedTroveDebt.mulDiv(1.1, price);
@@ -1355,30 +1355,30 @@ describe("EthersLiquity", () => {
       await increaseTime(60 * 60 * 24 * 15);
 
       // Increase the borrowing rate by redeeming
-      const { actualNECTAmount } = await liquity.redeemNECT(redeemedTrove.netDebt);
+      const { actualNECTAmount } = await beraborrow.redeemNECT(redeemedTrove.netDebt);
 
       expect(`${actualNECTAmount}`).to.equal(`${redeemedTrove.netDebt}`);
 
-      const borrowingRate = await liquity.getFees().then(fees => Number(fees.borrowingRate()));
+      const borrowingRate = await beraborrow.getFees().then(fees => Number(fees.borrowingRate()));
       expect(borrowingRate).to.be.within(0.04, 0.049); // make sure it's high, but not clamped to 5%
     });
 
     it("should predict the gas increase due to fee decay", async function () {
       this.timeout("1m");
 
-      const [bottomTrove] = await liquity.getTroves({
+      const [bottomTrove] = await beraborrow.getTroves({
         first: 1,
         sortedBy: "ascendingCollateralRatio"
       });
 
-      const borrowingRate = await liquity.getFees().then(fees => fees.borrowingRate());
+      const borrowingRate = await beraborrow.getFees().then(fees => fees.borrowingRate());
 
       for (const [borrowingFeeDecayToleranceMinutes, roughGasHeadroom] of [
         [10, 128000],
         [20, 242000],
         [30, 322000]
       ]) {
-        const tx = await liquity.populate.openTrove(Trove.recreate(bottomTrove, borrowingRate), {
+        const tx = await beraborrow.populate.openTrove(Trove.recreate(bottomTrove, borrowingRate), {
           borrowingFeeDecayToleranceMinutes
         });
 
@@ -1389,14 +1389,14 @@ describe("EthersLiquity", () => {
     it("should include enough gas for the TX to succeed after pending", async function () {
       this.timeout("1m");
 
-      const [bottomTrove] = await liquity.getTroves({
+      const [bottomTrove] = await beraborrow.getTroves({
         first: 1,
         sortedBy: "ascendingCollateralRatio"
       });
 
-      const borrowingRate = await liquity.getFees().then(fees => fees.borrowingRate());
+      const borrowingRate = await beraborrow.getFees().then(fees => fees.borrowingRate());
 
-      const tx = await liquity.populate.openTrove(
+      const tx = await beraborrow.populate.openTrove(
         Trove.recreate(bottomTrove.multiply(2), borrowingRate),
         { borrowingFeeDecayToleranceMinutes: 60 }
       );

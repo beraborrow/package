@@ -2,14 +2,14 @@ import React from "react";
 import { Flex } from "theme-ui";
 
 import { BeraBorrowStoreState } from "@beraborrow/lib-base";
-import { useLiquitySelector } from "@beraborrow/lib-react";
+import { useBeraBorrowSelector } from "@beraborrow/lib-react";
 
 const selector = ({ remainingStabilityPoolPOLLENReward }: BeraBorrowStoreState) => ({
   remainingStabilityPoolPOLLENReward
 });
 
 export const RemainingPOLLEN: React.FC = () => {
-  const { remainingStabilityPoolPOLLENReward } = useLiquitySelector(selector);
+  const { remainingStabilityPoolPOLLENReward } = useBeraBorrowSelector(selector);
 
   return (
     <Flex sx={{ mr: 2, fontSize: 2, fontWeight: "medium" }}>

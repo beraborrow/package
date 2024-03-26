@@ -1,6 +1,6 @@
 import { ethereum, Address, BigInt, BigDecimal } from "@graphprotocol/graph-ts";
 
-import { LqtyStakeChange, LqtyStake } from "../../generated/schema";
+import { PollenStakeChange, PollenStake } from "../../generated/schema";
 
 import { decimalize, DECIMAL_ZERO, BIGINT_ZERO } from "../utils/bignumbers";
 
@@ -12,35 +12,35 @@ import {
 
 import { getUser } from "./User";
 import { beginChange, initChange, finishChange } from "./Change";
-import { updateSystemStateByLqtyStakeChange } from "./SystemState";
+import { updateSystemStateByPollenStakeChange } from "./SystemState";
 
-function startPOLLENStakeChange(event: ethereum.Event): LqtyStakeChange {
+function startPOLLENStakeChange(event: ethereum.Event): PollenStakeChange {
   let sequenceNumber = beginChange();
-  let stakeChange = new LqtyStakeChange(sequenceNumber.toString());
+  let stakeChange = new PollenStakeChange(sequenceNumber.toString());
   stakeChange.issuanceGain = DECIMAL_ZERO;
   stakeChange.redemptionGain = DECIMAL_ZERO;
   initChange(stakeChange, event, sequenceNumber);
   return stakeChange;
 }
 
-function finishPOLLENStakeChange(stakeChange: LqtyStakeChange): void {
+function finishPOLLENStakeChange(stakeChange: PollenStakeChange): void {
   finishChange(stakeChange);
   stakeChange.save();
 }
 
-function getUserStake(address: Address): LqtyStake | null {
+function getUserStake(address: Address): PollenStake | null {
   let user = getUser(address);
 
   if (user.stake == null) {
     return null;
   }
 
-  return LqtyStake.load(user.stake);
+  return PollenStake.load(user.stake);
 }
 
-function createStake(address: Address): LqtyStake {
+function createStake(address: Address): PollenStake {
   let user = getUser(address);
-  let stake = new LqtyStake(address.toHexString());
+  let stake = new PollenStake(address.toHexString());
 
   stake.owner = user.id;
   stake.amount = DECIMAL_ZERO;
@@ -51,7 +51,7 @@ function createStake(address: Address): LqtyStake {
   return stake;
 }
 
-function getOperationType(stake: LqtyStake | null, nextStakeAmount: BigDecimal): string {
+function getOperationType(stake: PollenStake | null, nextStakeAmount: BigDecimal): string {
   let isCreating = stake.amount == DECIMAL_ZERO && nextStakeAmount > DECIMAL_ZERO;
   if (isCreating) {
     return "stakeCreated";
@@ -99,7 +99,7 @@ export function updateStake(event: ethereum.Event, address: Address, newStake: B
     decreaseNumberOfActivePOLLENStakes();
   }
 
-  updateSystemStateByLqtyStakeChange(stakeChange);
+  updateSystemStateByPollenStakeChange(stakeChange);
   finishPOLLENStakeChange(stakeChange);
 
   stake.save();
@@ -116,7 +116,7 @@ export function withdrawStakeGains(
   }
 
   let stake = getUserStake(address) || createStake(address);
-  let stakeChange: LqtyStakeChange = startPOLLENStakeChange(event);
+  let stakeChange: PollenStakeChange = startPOLLENStakeChange(event);
   stakeChange.stake = stake.id;
   stakeChange.stakeOperation = "gainsWithdrawn";
   stakeChange.issuanceGain = decimalize(NECTGain);
@@ -125,7 +125,7 @@ export function withdrawStakeGains(
   stakeChange.stakedAmountChange = DECIMAL_ZERO;
   stakeChange.stakedAmountAfter = stake.amount;
 
-  updateSystemStateByLqtyStakeChange(stakeChange);
+  updateSystemStateByPollenStakeChange(stakeChange);
   finishPOLLENStakeChange(stakeChange);
 
   stake.save();

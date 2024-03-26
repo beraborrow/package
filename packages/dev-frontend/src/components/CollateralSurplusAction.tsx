@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Button, Flex, Spinner } from "theme-ui";
 
 import { BeraBorrowStoreState } from "@beraborrow/lib-base";
-import { useLiquitySelector } from "@beraborrow/lib-react";
+import { useBeraBorrowSelector } from "@beraborrow/lib-react";
 
 import { useBeraBorrow } from "../hooks/BeraBorrowContext";
 
@@ -14,7 +14,7 @@ const select = ({ collateralSurplusBalance }: BeraBorrowStoreState) => ({
 });
 
 export const CollateralSurplusAction: React.FC = () => {
-  const { collateralSurplusBalance } = useLiquitySelector(select);
+  const { collateralSurplusBalance } = useBeraBorrowSelector(select);
   const {
     beraborrow: { send: beraborrow }
   } = useBeraBorrow();

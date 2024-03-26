@@ -44,16 +44,16 @@ import {
 } from "./types";
 
 import {
-  EthersLiquityConnection,
+  EthersBeraBorrowConnection,
   _getContracts,
   _requireAddress,
   _requireSigner
-} from "./EthersLiquityConnection";
+} from "./EthersBeraBorrowConnection";
 
 import { decimalify, promiseAllValues } from "./_utils";
 import { _priceFeedIsTestnet, _uniTokenIsMock } from "./contracts";
 import { logsToString } from "./parseLogs";
-import { ReadableEthersLiquity } from "./ReadableEthersLiquity";
+import { ReadableEthersBeraBorrow } from "./ReadableEthersBeraBorrow";
 
 const bigNumberMax = (a: BigNumber, b?: BigNumber) => (b?.gt(a) ? b : a);
 
@@ -191,23 +191,23 @@ export class EthersTransactionCancelledError extends Error {
  * A transaction that has already been sent.
  *
  * @remarks
- * Returned by {@link SendableEthersLiquity} functions.
+ * Returned by {@link SendableEthersBeraBorrow} functions.
  *
  * @public
  */
-export class SentEthersLiquityTransaction<T = unknown>
+export class SentEthersBeraBorrowTransaction<T = unknown>
   implements
     SentBeraBorrowTransaction<EthersTransactionResponse, BeraBorrowReceipt<EthersTransactionReceipt, T>> {
   /** Ethers' representation of a sent transaction. */
   readonly rawSentTransaction: EthersTransactionResponse;
 
-  private readonly _connection: EthersLiquityConnection;
+  private readonly _connection: EthersBeraBorrowConnection;
   private readonly _parse: (rawReceipt: EthersTransactionReceipt) => T;
 
   /** @internal */
   constructor(
     rawSentTransaction: EthersTransactionResponse,
-    connection: EthersLiquityConnection,
+    connection: EthersBeraBorrowConnection,
     parse: (rawReceipt: EthersTransactionReceipt) => T
   ) {
     this.rawSentTransaction = rawSentTransaction;
@@ -339,13 +339,13 @@ const normalizeBorrowingOperationOptionalParams = (
  * A transaction that has been prepared for sending.
  *
  * @remarks
- * Returned by {@link PopulatableEthersLiquity} functions.
+ * Returned by {@link PopulatableEthersBeraBorrow} functions.
  *
  * @public
  */
-export class PopulatedEthersLiquityTransaction<T = unknown>
+export class PopulatedEthersBeraBorrowTransaction<T = unknown>
   implements
-    PopulatedBeraBorrowTransaction<EthersPopulatedTransaction, SentEthersLiquityTransaction<T>> {
+    PopulatedBeraBorrowTransaction<EthersPopulatedTransaction, SentEthersBeraBorrowTransaction<T>> {
   /** Unsigned transaction object populated by Ethers. */
   readonly rawPopulatedTransaction: EthersPopulatedTransaction;
 
@@ -355,23 +355,23 @@ export class PopulatedEthersLiquityTransaction<T = unknown>
    * @remarks
    * Gas estimation is based on blockchain state at the latest block. However, most transactions
    * stay in pending state for several blocks before being included in a block. This may increase
-   * the actual gas requirements of certain Liquity transactions by the time they are eventually
-   * mined, therefore the Liquity SDK increases these transactions' `gasLimit` by default (unless
+   * the actual gas requirements of certain BeraBorrow transactions by the time they are eventually
+   * mined, therefore the BeraBorrow SDK increases these transactions' `gasLimit` by default (unless
    * `gasLimit` is {@link EthersTransactionOverrides | overridden}).
    *
    * Note: even though the SDK includes gas headroom for many transaction types, currently this
-   * property is only implemented for {@link PopulatableEthersLiquity.openTrove | openTrove()},
-   * {@link PopulatableEthersLiquity.adjustTrove | adjustTrove()} and its aliases.
+   * property is only implemented for {@link PopulatableEthersBeraBorrow.openTrove | openTrove()},
+   * {@link PopulatableEthersBeraBorrow.adjustTrove | adjustTrove()} and its aliases.
    */
   readonly gasHeadroom?: number;
 
-  private readonly _connection: EthersLiquityConnection;
+  private readonly _connection: EthersBeraBorrowConnection;
   private readonly _parse: (rawReceipt: EthersTransactionReceipt) => T;
 
   /** @internal */
   constructor(
     rawPopulatedTransaction: EthersPopulatedTransaction,
-    connection: EthersLiquityConnection,
+    connection: EthersBeraBorrowConnection,
     parse: (rawReceipt: EthersTransactionReceipt) => T,
     gasHeadroom?: number
   ) {
@@ -385,8 +385,8 @@ export class PopulatedEthersLiquityTransaction<T = unknown>
   }
 
   /** {@inheritDoc @beraborrow/lib-base#PopulatedBeraBorrowTransaction.send} */
-  async send(): Promise<SentEthersLiquityTransaction<T>> {
-    return new SentEthersLiquityTransaction(
+  async send(): Promise<SentEthersBeraBorrowTransaction<T>> {
+    return new SentEthersBeraBorrowTransaction(
       await _requireSigner(this._connection).sendTransaction(this.rawPopulatedTransaction),
       this._connection,
       this._parse
@@ -400,7 +400,7 @@ export class PopulatedEthersLiquityTransaction<T = unknown>
  * @public
  */
 export class PopulatedEthersRedemption
-  extends PopulatedEthersLiquityTransaction<RedemptionDetails>
+  extends PopulatedEthersBeraBorrowTransaction<RedemptionDetails>
   implements
     PopulatedRedemption<
       EthersPopulatedTransaction,
@@ -423,7 +423,7 @@ export class PopulatedEthersRedemption
   /** @internal */
   constructor(
     rawPopulatedTransaction: EthersPopulatedTransaction,
-    connection: EthersLiquityConnection,
+    connection: EthersBeraBorrowConnection,
     attemptedNECTAmount: Decimal,
     redeemableNECTAmount: Decimal,
     increaseAmountByMinimumNetDebt?: (
@@ -480,23 +480,23 @@ export interface _TroveChangeWithFees<T> {
  *
  * @public
  */
-export class PopulatableEthersLiquity
+export class PopulatableEthersBeraBorrow
   implements
     PopulatableBeraBorrow<
       EthersTransactionReceipt,
       EthersTransactionResponse,
       EthersPopulatedTransaction
     > {
-  private readonly _readable: ReadableEthersLiquity;
+  private readonly _readable: ReadableEthersBeraBorrow;
 
-  constructor(readable: ReadableEthersLiquity) {
+  constructor(readable: ReadableEthersBeraBorrow) {
     this._readable = readable;
   }
 
   private _wrapSimpleTransaction(
     rawPopulatedTransaction: EthersPopulatedTransaction
-  ): PopulatedEthersLiquityTransaction<void> {
-    return new PopulatedEthersLiquityTransaction(
+  ): PopulatedEthersBeraBorrowTransaction<void> {
+    return new PopulatedEthersBeraBorrowTransaction(
       rawPopulatedTransaction,
       this._readable.connection,
       noDetails
@@ -507,10 +507,10 @@ export class PopulatableEthersLiquity
     params: T,
     rawPopulatedTransaction: EthersPopulatedTransaction,
     gasHeadroom?: number
-  ): PopulatedEthersLiquityTransaction<_TroveChangeWithFees<T>> {
+  ): PopulatedEthersBeraBorrowTransaction<_TroveChangeWithFees<T>> {
     const { borrowerOperations } = _getContracts(this._readable.connection);
 
-    return new PopulatedEthersLiquityTransaction(
+    return new PopulatedEthersBeraBorrowTransaction(
       rawPopulatedTransaction,
       this._readable.connection,
 
@@ -536,10 +536,10 @@ export class PopulatableEthersLiquity
 
   private async _wrapTroveClosure(
     rawPopulatedTransaction: EthersPopulatedTransaction
-  ): Promise<PopulatedEthersLiquityTransaction<TroveClosureDetails>> {
+  ): Promise<PopulatedEthersBeraBorrowTransaction<TroveClosureDetails>> {
     const { activePool, nectToken } = _getContracts(this._readable.connection);
 
-    return new PopulatedEthersLiquityTransaction(
+    return new PopulatedEthersBeraBorrowTransaction(
       rawPopulatedTransaction,
       this._readable.connection,
 
@@ -563,10 +563,10 @@ export class PopulatableEthersLiquity
 
   private _wrapLiquidation(
     rawPopulatedTransaction: EthersPopulatedTransaction
-  ): PopulatedEthersLiquityTransaction<LiquidationDetails> {
+  ): PopulatedEthersBeraBorrowTransaction<LiquidationDetails> {
     const { troveManager } = _getContracts(this._readable.connection);
 
-    return new PopulatedEthersLiquityTransaction(
+    return new PopulatedEthersBeraBorrowTransaction(
       rawPopulatedTransaction,
       this._readable.connection,
 
@@ -622,8 +622,8 @@ export class PopulatableEthersLiquity
 
   private _wrapStabilityPoolGainsWithdrawal(
     rawPopulatedTransaction: EthersPopulatedTransaction
-  ): PopulatedEthersLiquityTransaction<StabilityPoolGainsWithdrawalDetails> {
-    return new PopulatedEthersLiquityTransaction(
+  ): PopulatedEthersBeraBorrowTransaction<StabilityPoolGainsWithdrawalDetails> {
+    return new PopulatedEthersBeraBorrowTransaction(
       rawPopulatedTransaction,
       this._readable.connection,
       ({ logs }) => this._extractStabilityPoolGainsWithdrawalDetails(logs)
@@ -633,8 +633,8 @@ export class PopulatableEthersLiquity
   private _wrapStabilityDepositTopup(
     change: { depositNECT: Decimal },
     rawPopulatedTransaction: EthersPopulatedTransaction
-  ): PopulatedEthersLiquityTransaction<StabilityDepositChangeDetails> {
-    return new PopulatedEthersLiquityTransaction(
+  ): PopulatedEthersBeraBorrowTransaction<StabilityDepositChangeDetails> {
+    return new PopulatedEthersBeraBorrowTransaction(
       rawPopulatedTransaction,
       this._readable.connection,
 
@@ -647,10 +647,10 @@ export class PopulatableEthersLiquity
 
   private async _wrapStabilityDepositWithdrawal(
     rawPopulatedTransaction: EthersPopulatedTransaction
-  ): Promise<PopulatedEthersLiquityTransaction<StabilityDepositChangeDetails>> {
+  ): Promise<PopulatedEthersBeraBorrowTransaction<StabilityDepositChangeDetails>> {
     const { stabilityPool, nectToken } = _getContracts(this._readable.connection);
 
-    return new PopulatedEthersLiquityTransaction(
+    return new PopulatedEthersBeraBorrowTransaction(
       rawPopulatedTransaction,
       this._readable.connection,
 
@@ -672,10 +672,10 @@ export class PopulatableEthersLiquity
 
   private _wrapCollateralGainTransfer(
     rawPopulatedTransaction: EthersPopulatedTransaction
-  ): PopulatedEthersLiquityTransaction<CollateralGainTransferDetails> {
+  ): PopulatedEthersBeraBorrowTransaction<CollateralGainTransferDetails> {
     const { borrowerOperations } = _getContracts(this._readable.connection);
 
-    return new PopulatedEthersLiquityTransaction(
+    return new PopulatedEthersBeraBorrowTransaction(
       rawPopulatedTransaction,
       this._readable.connection,
 
@@ -817,7 +817,7 @@ export class PopulatableEthersLiquity
     params: TroveCreationParams<Decimalish>,
     maxBorrowingRateOrOptionalParams?: Decimalish | BorrowingOperationOptionalParams,
     overrides?: EthersTransactionOverrides
-  ): Promise<PopulatedEthersLiquityTransaction<TroveCreationDetails>> {
+  ): Promise<PopulatedEthersBeraBorrowTransaction<TroveCreationDetails>> {
     overrides = this._prepareOverrides(overrides);
     const { borrowerOperations } = _getContracts(this._readable.connection);
 
@@ -903,7 +903,7 @@ export class PopulatableEthersLiquity
   /** {@inheritDoc @beraborrow/lib-base#PopulatableBeraBorrow.closeTrove} */
   async closeTrove(
     overrides?: EthersTransactionOverrides
-  ): Promise<PopulatedEthersLiquityTransaction<TroveClosureDetails>> {
+  ): Promise<PopulatedEthersBeraBorrowTransaction<TroveClosureDetails>> {
     overrides = this._prepareOverrides(overrides);
     const { borrowerOperations } = _getContracts(this._readable.connection);
 
@@ -916,7 +916,7 @@ export class PopulatableEthersLiquity
   depositCollateral(
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
-  ): Promise<PopulatedEthersLiquityTransaction<TroveAdjustmentDetails>> {
+  ): Promise<PopulatedEthersBeraBorrowTransaction<TroveAdjustmentDetails>> {
     return this.adjustTrove({ depositCollateral: amount }, undefined, overrides);
   }
 
@@ -924,7 +924,7 @@ export class PopulatableEthersLiquity
   withdrawCollateral(
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
-  ): Promise<PopulatedEthersLiquityTransaction<TroveAdjustmentDetails>> {
+  ): Promise<PopulatedEthersBeraBorrowTransaction<TroveAdjustmentDetails>> {
     return this.adjustTrove({ withdrawCollateral: amount }, undefined, overrides);
   }
 
@@ -933,7 +933,7 @@ export class PopulatableEthersLiquity
     amount: Decimalish,
     maxBorrowingRate?: Decimalish,
     overrides?: EthersTransactionOverrides
-  ): Promise<PopulatedEthersLiquityTransaction<TroveAdjustmentDetails>> {
+  ): Promise<PopulatedEthersBeraBorrowTransaction<TroveAdjustmentDetails>> {
     return this.adjustTrove({ borrowNECT: amount }, maxBorrowingRate, overrides);
   }
 
@@ -941,7 +941,7 @@ export class PopulatableEthersLiquity
   repayNECT(
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
-  ): Promise<PopulatedEthersLiquityTransaction<TroveAdjustmentDetails>> {
+  ): Promise<PopulatedEthersBeraBorrowTransaction<TroveAdjustmentDetails>> {
     return this.adjustTrove({ repayNECT: amount }, undefined, overrides);
   }
 
@@ -950,7 +950,7 @@ export class PopulatableEthersLiquity
     params: TroveAdjustmentParams<Decimalish>,
     maxBorrowingRateOrOptionalParams?: Decimalish | BorrowingOperationOptionalParams,
     overrides?: EthersTransactionOverrides
-  ): Promise<PopulatedEthersLiquityTransaction<TroveAdjustmentDetails>> {
+  ): Promise<PopulatedEthersBeraBorrowTransaction<TroveAdjustmentDetails>> {
     overrides = this._prepareOverrides(overrides);
     const { borrowerOperations } = _getContracts(this._readable.connection);
 
@@ -1050,7 +1050,7 @@ export class PopulatableEthersLiquity
   /** {@inheritDoc @beraborrow/lib-base#PopulatableBeraBorrow.claimCollateralSurplus} */
   async claimCollateralSurplus(
     overrides?: EthersTransactionOverrides
-  ): Promise<PopulatedEthersLiquityTransaction<void>> {
+  ): Promise<PopulatedEthersBeraBorrowTransaction<void>> {
     overrides = this._prepareOverrides(overrides);
     const { borrowerOperations } = _getContracts(this._readable.connection);
 
@@ -1063,12 +1063,12 @@ export class PopulatableEthersLiquity
   async setPrice(
     price: Decimalish,
     overrides?: EthersTransactionOverrides
-  ): Promise<PopulatedEthersLiquityTransaction<void>> {
+  ): Promise<PopulatedEthersBeraBorrowTransaction<void>> {
     overrides = this._prepareOverrides(overrides);
     const { priceFeed } = _getContracts(this._readable.connection);
 
     if (!_priceFeedIsTestnet(priceFeed)) {
-      throw new Error("setPrice() unavailable on this deployment of Liquity");
+      throw new Error("setPrice() unavailable on this deployment of BeraBorrow");
     }
 
     return this._wrapSimpleTransaction(
@@ -1080,7 +1080,7 @@ export class PopulatableEthersLiquity
   async liquidate(
     address: string | string[],
     overrides?: EthersTransactionOverrides
-  ): Promise<PopulatedEthersLiquityTransaction<LiquidationDetails>> {
+  ): Promise<PopulatedEthersBeraBorrowTransaction<LiquidationDetails>> {
     overrides = this._prepareOverrides(overrides);
     const { troveManager } = _getContracts(this._readable.connection);
 
@@ -1103,7 +1103,7 @@ export class PopulatableEthersLiquity
   async liquidateUpTo(
     maximumNumberOfTrovesToLiquidate: number,
     overrides?: EthersTransactionOverrides
-  ): Promise<PopulatedEthersLiquityTransaction<LiquidationDetails>> {
+  ): Promise<PopulatedEthersBeraBorrowTransaction<LiquidationDetails>> {
     overrides = this._prepareOverrides(overrides);
     const { troveManager } = _getContracts(this._readable.connection);
 
@@ -1121,7 +1121,7 @@ export class PopulatableEthersLiquity
     amount: Decimalish,
     frontendTag?: string,
     overrides?: EthersTransactionOverrides
-  ): Promise<PopulatedEthersLiquityTransaction<StabilityDepositChangeDetails>> {
+  ): Promise<PopulatedEthersBeraBorrowTransaction<StabilityDepositChangeDetails>> {
     overrides = this._prepareOverrides(overrides);
     const { stabilityPool } = _getContracts(this._readable.connection);
     const depositNECT = Decimal.from(amount);
@@ -1141,7 +1141,7 @@ export class PopulatableEthersLiquity
   async withdrawNECTFromStabilityPool(
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
-  ): Promise<PopulatedEthersLiquityTransaction<StabilityDepositChangeDetails>> {
+  ): Promise<PopulatedEthersBeraBorrowTransaction<StabilityDepositChangeDetails>> {
     overrides = this._prepareOverrides(overrides);
     const { stabilityPool } = _getContracts(this._readable.connection);
 
@@ -1157,7 +1157,7 @@ export class PopulatableEthersLiquity
   /** {@inheritDoc @beraborrow/lib-base#PopulatableBeraBorrow.withdrawGainsFromStabilityPool} */
   async withdrawGainsFromStabilityPool(
     overrides?: EthersTransactionOverrides
-  ): Promise<PopulatedEthersLiquityTransaction<StabilityPoolGainsWithdrawalDetails>> {
+  ): Promise<PopulatedEthersBeraBorrowTransaction<StabilityPoolGainsWithdrawalDetails>> {
     overrides = this._prepareOverrides(overrides);
     const { stabilityPool } = _getContracts(this._readable.connection);
 
@@ -1173,7 +1173,7 @@ export class PopulatableEthersLiquity
   /** {@inheritDoc @beraborrow/lib-base#PopulatableBeraBorrow.transferCollateralGainToTrove} */
   async transferCollateralGainToTrove(
     overrides?: EthersTransactionOverrides
-  ): Promise<PopulatedEthersLiquityTransaction<CollateralGainTransferDetails>> {
+  ): Promise<PopulatedEthersBeraBorrowTransaction<CollateralGainTransferDetails>> {
     overrides = this._prepareOverrides(overrides);
     const { stabilityPool } = _getContracts(this._readable.connection);
 
@@ -1198,7 +1198,7 @@ export class PopulatableEthersLiquity
     toAddress: string,
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
-  ): Promise<PopulatedEthersLiquityTransaction<void>> {
+  ): Promise<PopulatedEthersBeraBorrowTransaction<void>> {
     overrides = this._prepareOverrides(overrides);
     const { nectToken } = _getContracts(this._readable.connection);
 
@@ -1217,7 +1217,7 @@ export class PopulatableEthersLiquity
     toAddress: string,
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
-  ): Promise<PopulatedEthersLiquityTransaction<void>> {
+  ): Promise<PopulatedEthersBeraBorrowTransaction<void>> {
     overrides = this._prepareOverrides(overrides);
     const { pollenToken } = _getContracts(this._readable.connection);
 
@@ -1306,7 +1306,7 @@ export class PopulatableEthersLiquity
   async stakePOLLEN(
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
-  ): Promise<PopulatedEthersLiquityTransaction<void>> {
+  ): Promise<PopulatedEthersBeraBorrowTransaction<void>> {
     overrides = this._prepareOverrides(overrides);
     const { pollenStaking } = _getContracts(this._readable.connection);
 
@@ -1319,7 +1319,7 @@ export class PopulatableEthersLiquity
   async unstakePOLLEN(
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
-  ): Promise<PopulatedEthersLiquityTransaction<void>> {
+  ): Promise<PopulatedEthersBeraBorrowTransaction<void>> {
     overrides = this._prepareOverrides(overrides);
     const { pollenStaking } = _getContracts(this._readable.connection);
 
@@ -1331,7 +1331,7 @@ export class PopulatableEthersLiquity
   /** {@inheritDoc @beraborrow/lib-base#PopulatableBeraBorrow.withdrawGainsFromStaking} */
   withdrawGainsFromStaking(
     overrides?: EthersTransactionOverrides
-  ): Promise<PopulatedEthersLiquityTransaction<void>> {
+  ): Promise<PopulatedEthersBeraBorrowTransaction<void>> {
     return this.unstakePOLLEN(Decimal.ZERO, overrides);
   }
 
@@ -1339,7 +1339,7 @@ export class PopulatableEthersLiquity
   async registerFrontend(
     kickbackRate: Decimalish,
     overrides?: EthersTransactionOverrides
-  ): Promise<PopulatedEthersLiquityTransaction<void>> {
+  ): Promise<PopulatedEthersBeraBorrowTransaction<void>> {
     overrides = this._prepareOverrides(overrides);
     const { stabilityPool } = _getContracts(this._readable.connection);
 
@@ -1357,13 +1357,13 @@ export class PopulatableEthersLiquity
     amount: Decimalish,
     address?: string,
     overrides?: EthersTransactionOverrides
-  ): Promise<PopulatedEthersLiquityTransaction<void>> {
+  ): Promise<PopulatedEthersBeraBorrowTransaction<void>> {
     address ??= _requireAddress(this._readable.connection, overrides);
     overrides = this._prepareOverrides(overrides);
     const { uniToken } = _getContracts(this._readable.connection);
 
     if (!_uniTokenIsMock(uniToken)) {
-      throw new Error("_mintUniToken() unavailable on this deployment of Liquity");
+      throw new Error("_mintUniToken() unavailable on this deployment of BeraBorrow");
     }
 
     return this._wrapSimpleTransaction(
@@ -1375,7 +1375,7 @@ export class PopulatableEthersLiquity
   async approveUniTokens(
     allowance?: Decimalish,
     overrides?: EthersTransactionOverrides
-  ): Promise<PopulatedEthersLiquityTransaction<void>> {
+  ): Promise<PopulatedEthersBeraBorrowTransaction<void>> {
     overrides = this._prepareOverrides(overrides);
     const { uniToken, unipool } = _getContracts(this._readable.connection);
 
@@ -1393,7 +1393,7 @@ export class PopulatableEthersLiquity
   async stakeUniTokens(
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
-  ): Promise<PopulatedEthersLiquityTransaction<void>> {
+  ): Promise<PopulatedEthersBeraBorrowTransaction<void>> {
     overrides = this._prepareOverrides(overrides);
     const { unipool } = _getContracts(this._readable.connection);
 
@@ -1410,7 +1410,7 @@ export class PopulatableEthersLiquity
   async unstakeUniTokens(
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
-  ): Promise<PopulatedEthersLiquityTransaction<void>> {
+  ): Promise<PopulatedEthersBeraBorrowTransaction<void>> {
     overrides = this._prepareOverrides(overrides);
     const { unipool } = _getContracts(this._readable.connection);
 
@@ -1426,7 +1426,7 @@ export class PopulatableEthersLiquity
   /** {@inheritDoc @beraborrow/lib-base#PopulatableBeraBorrow.withdrawPOLLENRewardFromLiquidityMining} */
   async withdrawPOLLENRewardFromLiquidityMining(
     overrides?: EthersTransactionOverrides
-  ): Promise<PopulatedEthersLiquityTransaction<void>> {
+  ): Promise<PopulatedEthersBeraBorrowTransaction<void>> {
     overrides = this._prepareOverrides(overrides);
     const { unipool } = _getContracts(this._readable.connection);
 
@@ -1438,7 +1438,7 @@ export class PopulatableEthersLiquity
   /** {@inheritDoc @beraborrow/lib-base#PopulatableBeraBorrow.exitLiquidityMining} */
   async exitLiquidityMining(
     overrides?: EthersTransactionOverrides
-  ): Promise<PopulatedEthersLiquityTransaction<void>> {
+  ): Promise<PopulatedEthersBeraBorrowTransaction<void>> {
     overrides = this._prepareOverrides(overrides);
     const { unipool } = _getContracts(this._readable.connection);
 

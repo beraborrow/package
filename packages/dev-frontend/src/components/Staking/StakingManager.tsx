@@ -9,7 +9,7 @@ import {
   POLLENStakeChange
 } from "@beraborrow/lib-base";
 
-import { LiquityStoreUpdate, useLiquityReducer, useLiquitySelector } from "@beraborrow/lib-react";
+import { BeraBorrowStoreUpdate, useBeraBorrowReducer, useBeraBorrowSelector } from "@beraborrow/lib-react";
 
 import { GT, COIN } from "../../strings";
 
@@ -26,7 +26,7 @@ const init = ({ pollenStake }: BeraBorrowStoreState) => ({
 
 type StakeManagerState = ReturnType<typeof init>;
 type StakeManagerAction =
-  | LiquityStoreUpdate
+  | BeraBorrowStoreUpdate
   | { type: "revert" }
   | { type: "setStake"; newValue: Decimalish };
 
@@ -118,8 +118,8 @@ const StakingManagerActionDescription: React.FC<StakingManagerActionDescriptionP
 
 export const StakingManager: React.FC = () => {
   const { dispatch: dispatchStakingViewAction } = useStakingView();
-  const [{ originalStake, editedPOLLEN }, dispatch] = useLiquityReducer(reduce, init);
-  const pollenBalance = useLiquitySelector(selectPOLLENBalance);
+  const [{ originalStake, editedPOLLEN }, dispatch] = useBeraBorrowReducer(reduce, init);
+  const pollenBalance = useBeraBorrowSelector(selectPOLLENBalance);
 
   const change = originalStake.whatChanged(editedPOLLEN);
   const [validChange, description] = !change

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Card, Box, Heading, Flex, Button, Label, Input } from "theme-ui";
 
 import { Decimal, BeraBorrowStoreState } from "@beraborrow/lib-base";
-import { useLiquitySelector } from "@beraborrow/lib-react";
+import { useBeraBorrowSelector } from "@beraborrow/lib-react";
 
 import { useBeraBorrow } from "../hooks/BeraBorrowContext";
 
@@ -19,7 +19,7 @@ export const PriceManager: React.FC = () => {
     }
   } = useBeraBorrow();
 
-  const price = useLiquitySelector(selectPrice);
+  const price = useBeraBorrowSelector(selectPrice);
   const [editedPrice, setEditedPrice] = useState(price.toString(2));
 
   useEffect(() => {

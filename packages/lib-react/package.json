@@ -1,7 +1,7 @@
 {
   "name": "@beraborrow/lib-react",
   "version": "0.0.0-semantic-release",
-  "description": "Components and hooks for React-based Liquity frontends",
+  "description": "Components and hooks for React-based BeraBorrow frontends",
   "keywords": [
     "BeraBorrow",
     "protocol",

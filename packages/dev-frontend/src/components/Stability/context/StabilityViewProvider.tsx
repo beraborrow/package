@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
-import { useLiquitySelector } from "@beraborrow/lib-react";
+import { useBeraBorrowSelector } from "@beraborrow/lib-react";
 import { BeraBorrowStoreState, StabilityDeposit } from "@beraborrow/lib-base";
 import { StabilityViewContext } from "./StabilityViewContext";
 import type { StabilityView, StabilityEvent } from "./types";
@@ -42,7 +42,7 @@ const select = ({ stabilityDeposit }: BeraBorrowStoreState): StabilityDeposit =>
 
 export const StabilityViewProvider: React.FC = props => {
   const { children } = props;
-  const stabilityDeposit = useLiquitySelector(select);
+  const stabilityDeposit = useBeraBorrowSelector(select);
 
   const [view, setView] = useState<StabilityView>(getInitialView(stabilityDeposit));
   const viewRef = useRef<StabilityView>(view);

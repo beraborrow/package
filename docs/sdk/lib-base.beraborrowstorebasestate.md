@@ -21,12 +21,12 @@ export interface BeraBorrowStoreBaseState
 |  [frontend](./lib-base.beraborrowstorebasestate.frontend.md) | [FrontendStatus](./lib-base.frontendstatus.md) | Status of currently used frontend. |
 |  [liquidityMiningPOLLENReward](./lib-base.beraborrowstorebasestate.liquidityminingpollenreward.md) | [Decimal](./lib-base.decimal.md) | Amount of POLLEN the user has earned through mining liquidity. |
 |  [liquidityMiningStake](./lib-base.beraborrowstorebasestate.liquidityminingstake.md) | [Decimal](./lib-base.decimal.md) | Amount of Uniswap iBGT/NECT LP tokens the user has staked in liquidity mining. |
-|  [pollenBalance](./lib-base.beraborrowstorebasestate.pollenbalance.md) | [Decimal](./lib-base.decimal.md) | User's POLLEN token balance. |
-|  [pollenStake](./lib-base.beraborrowstorebasestate.pollenstake.md) | [POLLENStake](./lib-base.pollenstake.md) | User's POLLEN stake. |
-|  [NECTBalance](./lib-base.beraborrowstorebasestate.nectbalance.md) | [Decimal](./lib-base.decimal.md) | User's NECT token balance. |
-|  [NECTInStabilityPool](./lib-base.beraborrowstorebasestate.nectinstabilitypool.md) | [Decimal](./lib-base.decimal.md) | Total amount of NECT currently deposited in the Stability Pool. |
+|  [nectBalance](./lib-base.beraborrowstorebasestate.nectbalance.md) | [Decimal](./lib-base.decimal.md) | User's NECT token balance. |
+|  [nectInStabilityPool](./lib-base.beraborrowstorebasestate.nectinstabilitypool.md) | [Decimal](./lib-base.decimal.md) | Total amount of NECT currently deposited in the Stability Pool. |
 |  [numberOfTroves](./lib-base.beraborrowstorebasestate.numberoftroves.md) | number | Number of Troves that are currently open. |
 |  [ownFrontend](./lib-base.beraborrowstorebasestate.ownfrontend.md) | [FrontendStatus](./lib-base.frontendstatus.md) | Status of user's own frontend. |
+|  [pollenBalance](./lib-base.beraborrowstorebasestate.pollenbalance.md) | [Decimal](./lib-base.decimal.md) | User's POLLEN token balance. |
+|  [pollenStake](./lib-base.beraborrowstorebasestate.pollenstake.md) | [POLLENStake](./lib-base.pollenstake.md) | User's POLLEN stake. |
 |  [price](./lib-base.beraborrowstorebasestate.price.md) | [Decimal](./lib-base.decimal.md) | Current price of the native currency (e.g. iBGT) in USD. |
 |  [remainingLiquidityMiningPOLLENReward](./lib-base.beraborrowstorebasestate.remainingliquidityminingpollenreward.md) | [Decimal](./lib-base.decimal.md) | Remaining POLLEN that will be collectively rewarded to liquidity miners. |
 |  [remainingStabilityPoolPOLLENReward](./lib-base.beraborrowstorebasestate.remainingstabilitypoolpollenreward.md) | [Decimal](./lib-base.decimal.md) | Remaining POLLEN that will be collectively rewarded to stability depositors. |

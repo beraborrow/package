@@ -3,10 +3,10 @@ import { useEffect, useReducer } from "react";
 import { BeraBorrowStoreState } from "@beraborrow/lib-base";
 
 import { equals } from "../utils/equals";
-import { useLiquityStore } from "./useLiquityStore";
+import { useBeraBorrowStore } from "./useBeraBorrowStore";
 
-export const useLiquitySelector = <S, T>(select: (state: BeraBorrowStoreState<T>) => S): S => {
-  const store = useLiquityStore<T>();
+export const useBeraBorrowSelector = <S, T>(select: (state: BeraBorrowStoreState<T>) => S): S => {
+  const store = useBeraBorrowStore<T>();
   const [, rerender] = useReducer(() => ({}), {});
 
   useEffect(

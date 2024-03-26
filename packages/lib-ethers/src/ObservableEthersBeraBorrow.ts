@@ -9,8 +9,8 @@ import {
   TroveWithPendingRedistribution
 } from "@beraborrow/lib-base";
 
-import { _getContracts, _requireAddress } from "./EthersLiquityConnection";
-import { ReadableEthersLiquity } from "./ReadableEthersLiquity";
+import { _getContracts, _requireAddress } from "./EthersBeraBorrowConnection";
+import { ReadableEthersBeraBorrow } from "./ReadableEthersBeraBorrow";
 
 const debouncingDelayMs = 50;
 
@@ -37,10 +37,10 @@ const debounce = (listener: (latestBlock: number) => void) => {
 };
 
 /** @alpha */
-export class ObservableEthersLiquity implements ObservableBeraBorrow {
-  private readonly _readable: ReadableEthersLiquity;
+export class ObservableEthersBeraBorrow implements ObservableBeraBorrow {
+  private readonly _readable: ReadableEthersBeraBorrow;
 
-  constructor(readable: ReadableEthersLiquity) {
+  constructor(readable: ReadableEthersBeraBorrow) {
     this._readable = readable;
   }
 

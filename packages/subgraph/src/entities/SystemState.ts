@@ -6,7 +6,7 @@ import {
   TroveChange,
   StabilityDepositChange,
   CollSurplusChange,
-  LqtyStakeChange
+  PollenStakeChange
 } from "../../generated/schema";
 
 import {
@@ -202,7 +202,7 @@ export function updateSystemStateByCollSurplusChange(collSurplusChange: CollSurp
   bumpSystemState(systemState);
 }
 
-export function updateSystemStateByLqtyStakeChange(stakeChange: LqtyStakeChange): void {
+export function updateSystemStateByPollenStakeChange(stakeChange: PollenStakeChange): void {
   let systemState = getCurrentSystemState();
 
   systemState.totalPOLLENTokensStaked = systemState.totalPOLLENTokensStaked.plus(
