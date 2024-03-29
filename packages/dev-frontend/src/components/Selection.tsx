@@ -93,14 +93,14 @@ const Selection: React.FC = props => {
                                                 onMouseEnter={() => setHoverBear(true)}
                                                 onMouseLeave={() => setHoverBear(false)}
                                                 onClick={onShowTrove}
-                                                src="/imgs/bear-honey.png" className={`flex flex-row mx-auto items-start min-w-[365px] md:min-w-[536px] h-[271px] md:h-[410px] z-[3] -mb-[150px] md:-mb-[100px] lg:mb-0 ${(!showTrove && hoverBear) ? "filter-shadow" : ""} ${showTrove ? "animate-fade-smaller-bear" : "cursor-pointer"} ${showStability ? "invisible" : "visible"}`}
+                                                src="/imgs/bear-honey.png" className={`flex flex-row mx-auto items-start min-w-[365px] md:min-w-[536px] h-[271px] md:h-[410px] z-[3] -mb-[250px] md:-mb-[100px] lg:mb-0 ${(!showTrove && hoverBear) ? "filter-shadow" : ""} ${showTrove ? "animate-fade-smaller-bear" : "cursor-pointer"} ${showStability ? "invisible" : "visible"}`}
                                             />
                                         </div>
                                         <img
                                             src="/imgs/borrowing-arrow.png" className={`w-[233px] h-[90px] relative z-[5] top-[50px] -left-[265px] md:-left-[50%] scale-90 md:scale-100 ${!showTrove && hoverBear ? "animate-fade-show" : "invisible"}`}
                                         />
                                     </div>
-                                    <div className={`w-full flex flex-row justify-end z-[5] relative ${showStability ? "" : "-right-[80px] md:right-auto"} group`}>
+                                    <div className={`w-full flex flex-row justify-end md:z-[5] relative ${showStability ? "" : "-right-[80px] md:right-auto"} group`}>
                                         <img src="/imgs/stability-arrow.png" className={`w-[242px] h-[100px] relative top-[70px] md:top-0 lg:top-[70px] -right-[301px] md:-right-[321px] scale-90 md:scale-100 z-[10] ${!showStability && hoverFish ? "animate-fade-show" : "invisible"}`} />
                                         <div className={`flex flex-col ${showStability ? "fixed lg:sticky top-[100px] lg:top-auto w-full" : ""}`}>
                                             <div className={`flex flex-col text-white z-[5] mb-[30px] lg:mb-[100px] ${showStability ? "animate-fade-show px-10 lg:px-0" : "invisible"}`}>
@@ -118,7 +118,7 @@ const Selection: React.FC = props => {
                                                 onClick={onShowStability}
                                                 className={`w-[380px] md:w-[400px] h-[158px] md:h-[165px] relative cursor-pointer mb-0 lg:mb-5 ${showTrove ? "invisible" : ""} ${!showStability ? "block" : "hidden animate-fade-bigger-bear lg:animate-fade-smaller-fish"}`}>
                                                 <img
-                                                    src="/imgs/lake.png" className={`w-[380px] md:w-[400px] h-[158px] md:h-[165px] mix-blend-color-burn ${(!showStability && hoverFish) ? "filter-shadow" : ""}`}
+                                                    src="/imgs/lake.png" className={`w-[380px] md:w-[400px] h-[158px] md:h-[165px] ${(!showStability && hoverFish) ? "filter-shadow" : ""}`}
                                                 />
                                                 {/* <img
                                         src="/imgs/fish1.png" className={`absolute w-[116px] md:w-[128px] h-[98px] md:h-[100px] top-0 left-[98px]`}
@@ -136,8 +136,8 @@ const Selection: React.FC = props => {
                                         </div>
                                     </div>
                                 </div>
-                                <div className='flex flex-row relative h-full'>
-                                    <div className={`w-full lg:w-[700px] min-w-full lg:min-w-[700px] h-[200px] md:h-[450px] lg:h-full relative lg:top-0 px-5 md:px-[128px] lg:px-0 lg:pt-[30px] lg:pr-[60px] overflow-y-auto z-[3] ${showTrove ? "animate-slide-in-top-350 md:animate-slide-in-top-500 lg:animate-slide-in-right visible" : "invisible"}`}>
+                                <div className='flex flex-row relative h-0 lg:h-full'>
+                                    <div className={`w-full lg:w-[700px] min-w-full lg:min-w-[700px] h-[200px] md:h-[450px] lg:h-full relative lg:top-0 px-5 md:px-[128px] lg:px-0 lg:pt-[30px] lg:pr-[60px] overflow-y-auto z-[10] ${showTrove ? "animate-slide-in-top-350 md:animate-slide-in-top-500 lg:animate-slide-in-right visible" : "invisible"}`}>
                                         {
                                             (troveView === "ACTIVE" || troveView === "ADJUSTING") && <Borrow />
                                         }

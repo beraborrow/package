@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Input } from "theme-ui";
 
 import {
@@ -27,11 +27,15 @@ type StabilityDepositEditorProps = {
 export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
   originalDeposit,
   editedNECT,
+  changePending,
   dispatch,
   children
 }) => {
   const { nectBalance, nectInStabilityPool } = useBeraBorrowSelector(select);
   const [isWithdraw, setIsWithdraw] = useState<boolean>(false)
+
+  const [depositAmount, setDepositAmount] = useState<Number>(0)
+  const [withdrawAmount, setWithdrawAmount] = useState<Number>(0)
   
   const [editing, setEditing] = useState<string>();
 
@@ -41,16 +45,26 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
 
   const newPoolShare = editedNECT.mulDiv(100, nectInStabilityPoolAfterChange);
 
+  useEffect (() => {
+    dispatch({ 
+      type: "setDeposit",
+      newValue: !isWithdraw ? originalDeposit.currentNECT.add(Number(depositAmount)) : originalDeposit.currentNECT.sub(Number(withdrawAmount))
+    });
+  }, [isWithdraw])
+
+  useEffect (() => {
+    if (isWithdraw) {
+      if (!changePending) setWithdrawAmount (0)
+    } else {
+      if (!changePending) setDepositAmount (0)
+    }
+  }, [changePending])
+
   return (
     <>
       <div className="flex flex-row justify-between text-lg font-medium p-0 border border-dark-gray rounded-[260px]">
         <div className={`${!isWithdraw ? "bg-dark-gray text-[#150D39]" : "bg-transparent text-dark-gray"} cursor-pointer w-full text-center px-5 py-[18px] rounded-l-[260px]`} onClick={() => setIsWithdraw(!isWithdraw)}>Deposit</div>
         <span className={`${isWithdraw ? "bg-dark-gray text-[#150D39]" : "bg-transparent text-dark-gray"} cursor-pointer w-full text-center px-5 py-[18px] rounded-r-[260px]`} onClick={() => setIsWithdraw(!isWithdraw)}>Withdraw</span>
-        {/* {isDirty && !isTransactionPending && (
-          <Button variant="titleIcon" sx={{ ":enabled:hover": { color: "danger" } }} onClick={reset}>
-            <Icon name="history" size="lg" />
-          </Button>
-        )} */}
       </div>
 
       <div className="px-0 py-4 mt-[44px] text-dark-gray">
@@ -59,43 +73,54 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
               <div>{isWithdraw ? "Withdraw": "Deposit"}</div>
               <div className="flex flex-row">
                   <div>Balance</div>
-                  <div className="ml-2 font-normal">{`${nectBalance.prettify(4)}`} NECT</div>
+                  <div className="ml-2 font-normal">
+                    {`${!isWithdraw ? nectBalance.prettify(4) : originalDeposit.currentNECT.toString()}`}
+                    &nbsp;NECT
+                  </div>
               </div>
           </div>
           <div 
-              // className={`flex flex-row items-center justify-between border ${editing !== "collateral" && editedNECT.eq(0) ? "border-[#F45348]" : "border-[#FFEDD4]"} rounded-[180px] px-5 py-[14px]`}
               className={`flex flex-row items-center justify-between border border-[#FFEDD4] rounded-[180px] px-5 py-[14px]`}
               onClick={() => setEditing("collateral")}
             >
                 {
                   editing === "collateral" ? (
-                    <Input
-                      autoFocus
-                      id="trove-collateral"
-                      type="number"
-                      step="any"
-                      defaultValue={editedNECT.toString(4)}
-                      onChange={(e) => dispatch({ type: "setDeposit", newValue: e.target.value })}
-                      onBlur={() => {setEditing(undefined)}}
-                      variant="editor"
-                      sx={{
-                        backgroundColor: "transparent",
-                        fontSize: "18px",
-                        fontWeight: "medium",
-                        width: "100%",
-                        outline: "2px solid transparent",
-                        outlineOffset: "2px",
-                        borderColor: "transparent",
-                        padding: 0,
-                        marginRight: "4px"
-                      }}
-                    />
+                      <Input
+                        autoFocus
+                        id="trove-collateral"
+                        type="number"
+                        step="any"
+                        defaultValue={
+                          !isWithdraw ? depositAmount.toString() : withdrawAmount.toString()
+                        }
+                        onChange={(e) => {
+                          dispatch({ 
+                            type: "setDeposit",
+                            newValue: !isWithdraw ? originalDeposit.currentNECT.add(Number(e.target.value)) : originalDeposit.currentNECT.sub(Number(e.target.value))
+                          });
+                          !isWithdraw ? setDepositAmount(Number(e.target.value)) : setWithdrawAmount(Number(e.target.value))
+                        }}
+                        onBlur={() => {setEditing(undefined)}}
+                        variant="editor"
+                        sx={{
+                          backgroundColor: "transparent",
+                          fontSize: "18px",
+                          fontWeight: "medium",
+                          width: "100%",
+                          outline: "2px solid transparent",
+                          outlineOffset: "2px",
+                          borderColor: "transparent",
+                          padding: 0,
+                          marginRight: "4px"
+                        }}
+                      />
                   ):(
-                    <div className="opacity-60">{editedNECT.prettify(4)}</div>
+                    <div className="opacity-60">
+                      {!isWithdraw ? depositAmount.toString() : withdrawAmount.toString()}
+                    </div>
                   )
                 }
                 <div className="flex flex-row items-center font-medium text-lg">
-                    {/* <span className="w-4 h-4 rounded-full bg-[#BDFAE2] mr-2" /> */}
                     NECT
                 </div>
             </div>
@@ -124,47 +149,14 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
                 >
                     <div className="opacity-60">{editedNECT.mulDiv(newPoolShare, 100).prettify(4)}</div>
                     <div className="flex flex-row items-center font-medium text-lg">
-                        {/* <span className="w-4 h-4 rounded-full bg-[#BDFAE2] mr-2" /> */}
                         NECT
                     </div>
                 </div>
             </div>
           )
         }
-
-        {/* {!originalDeposit.isEmpty && (
-          <>
-            <StaticRow
-              label="Liquidation gain"
-              inputId="deposit-gain"
-              amount={originalDeposit.collateralGain.prettify(4)}
-              color={originalDeposit.collateralGain.nonZero && "success"}
-              unit="iBGT"
-            />
-
-            <StaticRow
-              label="Reward"
-              inputId="deposit-reward"
-              amount={originalDeposit.pollenReward.prettify()}
-              color={originalDeposit.pollenReward.nonZero && "success"}
-              unit={GT}
-              infoIcon={
-                <InfoIcon
-                  tooltip={
-                    <Card variant="tooltip" sx={{ width: "240px" }}>
-                      Although the POLLEN rewards accrue every minute, the value on the UI only updates
-                      when a user transacts with the Stability Pool. Therefore you may receive more
-                      rewards than is displayed when you claim or adjust your deposit.
-                    </Card>
-                  }
-                />
-              }
-            />
-          </>
-        )} */}
         {children}
       </div>
-
       {/* {changePending && <LoadingOverlay />} */}
     </>
   );

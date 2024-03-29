@@ -30,5 +30,5 @@ export const StabilityDepositAction: React.FC<StabilityDepositActionProps> = ({
       : beraborrow.send.withdrawNECTFromStabilityPool.bind(beraborrow.send, change.withdrawNECT)
   );
 
-  return <Button style={{width: "100%", marginTop: "16px", color: "#0B1722"}} onClick={sendTransaction}>{children}</Button>;
+  return <Button style={{width: "100%", marginTop: "16px"}} onClick={sendTransaction}>{children}</Button>;
 };

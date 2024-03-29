@@ -40,8 +40,6 @@ const reduce = (
   state: StabilityDepositManagerState,
   action: StabilityDepositManagerAction
 ): StabilityDepositManagerState => {
-  // console.log(state);
-  // console.log(action);
 
   const { originalDeposit, editedNECT, changePending } = state;
 
@@ -132,11 +130,7 @@ export const StabilityDepositManager: React.FC = () => {
         ) : (
           <ActionDescription>Adjust the {COIN} amount to deposit or withdraw.</ActionDescription>
         ))}
-
       <Flex variant="layout.actions">
-        {/* <Button variant="cancel" onClick={handleCancel}>
-          Cancel
-        </Button> */}
         {
           !changePending ?
           (validChange ? (
@@ -145,7 +139,7 @@ export const StabilityDepositManager: React.FC = () => {
             </StabilityDepositAction>
           ) : (
             <Button style={{width: "100%", marginTop: "16px", backgroundColor: "#f6f6f6", color: "#0B1722", borderColor: "#f6f6f6"}} disabled>Complete transaction</Button>
-          )) : (<Button sx={{width: "100%"}} disabled>Transaction in progress</Button>)
+          )) : (<Button sx={{width: "100%", marginTop: "16px"}} disabled>Transaction in progress</Button>)
         }
       </Flex>
     </StabilityDepositEditor>

@@ -52,13 +52,13 @@ const button: ThemeUIStyleObject = {
 
   ":disabled": {
     opacity: 0.5
-  }
+  },
 };
 
 const buttonOutline = (color: string, hoverColor: string): ThemeUIStyleObject => ({
   color,
   borderColor: color,
-  background: "none",
+  background: "transparent",
 
   ":enabled:hover": {
     color: "background",
@@ -204,7 +204,7 @@ const theme: Theme = {
       borderColor: "primary",
 
       ":enabled:hover": {
-        bg: "secondary",
+        bg: "transparent",
         borderColor: "primary",
         color: "primary"
       }
