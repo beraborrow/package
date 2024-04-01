@@ -66,25 +66,9 @@ const infuraNetwork = (name: string): { [name: string]: NetworkUserConfig } => (
 // https://docs.tellor.io/tellor/integration/reference-page
 
 const oracleAddresses = {
-  mainnet: {
-    chainlink: "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419",
-    tellor: "0x88dF592F8eb5D7Bd38bFeF7dEb0fBc02cf3778a0"
-  },
-  rinkeby: {
-    chainlink: "0x8A753747A1Fa494EC906cE90E9f37563A8AF630e",
-    tellor: "0x88dF592F8eb5D7Bd38bFeF7dEb0fBc02cf3778a0" // Core
-  },
-  kovan: {
-    chainlink: "0x9326BFA02ADD2366b30bacB125260Af641031331",
-    tellor: "0x20374E579832859f180536A69093A126Db1c8aE9" // Playground
-  },
-  goerli: {
-    chainlink: "0xD4a33860578De61DBAbDc8BFdb98FD742fA7028e",
-    tellor: "0x51c59c6cAd28ce3693977F2feB4CfAebec30d8a2"
-  },
-  sepolia: {
-    chainlink: "0x694AA1769357215DE4FAC081bf1f309aDC325306",
-    tellor: "0x80fc34a2f9FfE86F41580F47368289C402DEc660"
+  berachain: {
+    chainlink: "0x8b327b4B93B7aAA184aA2F90Fba34185F80C3429",
+    tellor: "0x93225f2574789EcE78a9fEE68D64F394aDccE3E5"
   }
 };
 
@@ -92,12 +76,7 @@ const hasOracles = (network: string): network is keyof typeof oracleAddresses =>
   network in oracleAddresses;
 
 const ibgtAddresses = {
-  mainnet: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-  ropsten: "0xc778417E063141139Fce010982780140Aa0cD5Ab",
-  rinkeby: "0xc778417E063141139Fce010982780140Aa0cD5Ab",
-  goerli: "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
-  kovan: "0xd0A1E359811322d97991E03f863a0C30C2cF029C",
-  sepolia: "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9"
+  berachain: "0x61ac8568e1309342F4614b1D664E341A4E10C5b8"
 };
 
 const hasiBGT = (network: string): network is keyof typeof ibgtAddresses => network in ibgtAddresses;
@@ -121,15 +100,8 @@ const config: HardhatUserConfig = {
       accounts: [deployerAccount, devChainRichAccount, ...generateRandomAccounts(numAccounts - 2)]
     },
 
-    ...infuraNetwork("ropsten"),
-    ...infuraNetwork("rinkeby"),
-    ...infuraNetwork("goerli"),
-    ...infuraNetwork("kovan"),
-    ...infuraNetwork("sepolia"),
-    ...infuraNetwork("mainnet"),
-
-    kiln: {
-      url: "https://rpc.kiln.themerge.dev",
+    berachain: {
+      url: "https://artio.rpc.berachain.com/",
       accounts: [deployerAccount]
     },
 

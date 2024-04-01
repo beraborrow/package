@@ -4,8 +4,6 @@ import { Signer } from "@ethersproject/abstract-signer";
 import { Decimal } from "@beraborrow/lib-base";
 
 import devOrNull from "../deployments/dev.json";
-import mainnet from "../deployments/mainnet.json";
-import sepolia from "../deployments/sepolia.json";
 import berachain from "../deployments/berachain.json";
 
 import { numberify, panic } from "./_utils";
@@ -26,7 +24,6 @@ const dev = devOrNull as _BeraBorrowDeploymentJSON | null;
 const deployments: {
   [chainId: number]: _BeraBorrowDeploymentJSON | undefined;
 } = {
-  [mainnet.chainId]: mainnet,
   [berachain.chainId]: berachain,
 
   ...(dev !== null ? { [dev.chainId]: dev } : {})

@@ -80,7 +80,7 @@ module.exports = {
             //     chainId: 1
             // }
         },
-        bera: {
+        berachain: {
             url: "https://artio.rpc.berachain.com/", // https://rpc.ankr.com/berachain_testnet
             gasPrice: process.env.GAS_PRICE ? parseInt(process.env.GAS_PRICE) : 20000000000,
             accounts: [

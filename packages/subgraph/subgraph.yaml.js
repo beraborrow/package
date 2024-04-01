@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const network = process.argv[2] || "mainnet";
+const network = process.argv[2] || "berachain";
 const { addresses, startBlock } = require(`@beraborrow/lib-ethers/deployments/${network}.json`);
 
 console.log(`Preparing subgraph manifest for network "${network}"`);
