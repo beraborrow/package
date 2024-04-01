@@ -93,7 +93,7 @@ contract BorrowerOperations is BeraBorrowBase, Ownable, CheckContract, IBorrower
     event TroveCreated(address indexed _borrower, uint arrayIndex);
     event TroveUpdated(address indexed _borrower, uint _debt, uint _coll, uint stake, BorrowerOperation operation);
     event NECTBorrowingFeePaid(address indexed _borrower, uint _NECTFee);
-    
+
     // --- Dependency setters ---
 
     function setAddresses(
@@ -152,11 +152,15 @@ contract BorrowerOperations is BeraBorrowBase, Ownable, CheckContract, IBorrower
         _renounceOwnership();
     }
 
+    function getActivePool() external override view returns(IActivePool) {
+        return activePool;
+    }
+
     // --- Borrower Trove Operations ---
 
     function openTrove(uint _maxFeePercentage, uint _NECTAmount, address _upperHint, address _lowerHint, uint _ibgtAmount) external override {
         // burner0621 modified
-        IERC20 ibgtToken = IERC20(IBGT_ADDRESS);
+        IERC20 ibgtToken = IERC20(activePool.iBGTTokenAddress());
         ibgtToken.transferFrom(msg.sender, address(this), _ibgtAmount);
         // ////////////////////
 
@@ -218,7 +222,7 @@ contract BorrowerOperations is BeraBorrowBase, Ownable, CheckContract, IBorrower
     // Send iBGT as collateral to a trove
     function addColl(address _upperHint, address _lowerHint, uint _ibgtAmount) external override {
         // burner0621 modified
-        IERC20 ibgtToken = IERC20(IBGT_ADDRESS);
+        IERC20 ibgtToken = IERC20(activePool.iBGTTokenAddress());
         ibgtToken.transferFrom(msg.sender, address(this), _ibgtAmount);
         //////////////////////
         _adjustTrove(msg.sender, 0, 0, false, _upperHint, _lowerHint, 0, _ibgtAmount);
@@ -228,7 +232,7 @@ contract BorrowerOperations is BeraBorrowBase, Ownable, CheckContract, IBorrower
     function moveiBGTGainToTrove(address _borrower, address _upperHint, address _lowerHint, uint _ibgtAmount) external override {
         _requireCallerIsStabilityPool();
         // burner0621 modified
-        IERC20 ibgtToken = IERC20(IBGT_ADDRESS);
+        IERC20 ibgtToken = IERC20(activePool.iBGTTokenAddress());
         ibgtToken.transferFrom(msg.sender, address(this), _ibgtAmount);
         // ////////////////////
         _adjustTrove(_borrower, 0, 0, false, _upperHint, _lowerHint, 0, _ibgtAmount);
@@ -251,7 +255,7 @@ contract BorrowerOperations is BeraBorrowBase, Ownable, CheckContract, IBorrower
 
     function adjustTrove(uint _maxFeePercentage, uint _collWithdrawal, uint _NECTChange, bool _isDebtIncrease, address _upperHint, address _lowerHint, uint _ibgtAmount) external override {
         // burner0621 modified
-        IERC20 ibgtToken = IERC20(IBGT_ADDRESS);
+        IERC20 ibgtToken = IERC20(activePool.iBGTTokenAddress());
         ibgtToken.transferFrom(msg.sender, address(this), _ibgtAmount);
         // ////////////////////
         _adjustTrove(msg.sender, _collWithdrawal, _NECTChange, _isDebtIncrease, _upperHint, _lowerHint, _maxFeePercentage, _ibgtAmount);
@@ -466,7 +470,7 @@ contract BorrowerOperations is BeraBorrowBase, Ownable, CheckContract, IBorrower
         // require(success, "BorrowerOps: Sending iBGT to ActivePool failed");
         
         // burner0621 modified for iBGT
-        IERC20 token = IERC20(IBGT_ADDRESS);
+        IERC20 token = IERC20(activePool.iBGTTokenAddress());
         bool success = token.transfer(address(_activePool), _amount);
         require(success, "BorrowerOps: Sending iBGT to ActivePool failed");
         _activePool.receiveiBGT(_amount);

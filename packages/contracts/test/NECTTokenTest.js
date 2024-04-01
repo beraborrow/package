@@ -68,7 +68,6 @@ contract('NECTToken', async accounts => {
 
       const contracts = await deploymentHelper.deployTesterContractsHardhat()
 
-
       const POLLENContracts = await deploymentHelper.deployPOLLENContracts(bountyAddress, lpRewardsAddress, multisig)
 
       await deploymentHelper.connectCoreContracts(contracts, POLLENContracts)

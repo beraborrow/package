@@ -1,9 +1,10 @@
 const fs = require('fs')
+const { ERC20 } = require ("../berachainDeployment/ABIs/ERC20")
 
 const ZERO_ADDRESS = '0x' + '0'.repeat(40)
 const maxBytes32 = '0x' + 'f'.repeat(64)
 
-class MainnetDeploymentHelper {
+class BerachainDeploymentHelper {
   constructor(configParams, deployerWallet) {
     this.configParams = configParams
     this.deployerWallet = deployerWallet
@@ -64,7 +65,7 @@ class MainnetDeploymentHelper {
     return contract
   }
 
-  async deployBeraBorrowCoreMainnet(tellorMasterAddr, deploymentState) {
+  async deployBeraBorrowCoreBerachain(tellorMasterAddr, iBGTTokenAddr, deploymentState) {
     // Get contract factories
     const priceFeedFactory = await this.getFactory("PriceFeed")
     const sortedTrovesFactory = await this.getFactory("SortedTroves")
@@ -91,6 +92,12 @@ class MainnetDeploymentHelper {
     const borrowerOperations = await this.loadOrDeploy(borrowerOperationsFactory, 'borrowerOperations', deploymentState)
     const hintHelpers = await this.loadOrDeploy(hintHelpersFactory, 'hintHelpers', deploymentState)
     const tellorCaller = await this.loadOrDeploy(tellorCallerFactory, 'tellorCaller', deploymentState, [tellorMasterAddr])
+
+    const iBGTToken = new ethers.Contract(
+      iBGTTokenAddr,
+      ERC20.abi,
+      this.deployerWallet
+    )
 
     const nectTokenParams = [
       troveManager.address,
@@ -133,14 +140,15 @@ class MainnetDeploymentHelper {
       collSurplusPool,
       borrowerOperations,
       hintHelpers,
-      tellorCaller
+      tellorCaller,
+      iBGTToken
     }
     return coreContracts
   }
 
   async deployPriceFeedBeraBorrow(deploymentState) {
     const deployerWallet = (await ethers.getSigners())[0]
-    const ibgtTokenFactory = await this.getFactory("iBGT")
+    const ibgtTokenFactory = await this.getFactory("iBGTToken")
     const ibgtToken = await this.loadOrDeploy(ibgtTokenFactory, 'iBGT', deploymentState)
     await ibgtToken.mint (deployerWallet.address, "1000000000000000000000000000")
     const ibgtOraclePriceFeedFactory = await this.getFactory("iBGTOraclePriceFeed")
@@ -167,7 +175,7 @@ class MainnetDeploymentHelper {
     return FLOContracts
   }
 
-  async deployPOLLENContractsMainnet(bountyAddress, lpRewardsAddress, multisigAddress, deploymentState) {
+  async deployPOLLENContractsBerachain(bountyAddress, lpRewardsAddress, multisigAddress, deploymentState) {
     const pollenStakingFactory = await this.getFactory("POLLENStaking")
     const lockupContractFactory_Factory = await this.getFactory("LockupContractFactory")
     const communityIssuanceFactory = await this.getFactory("CommunityIssuance")
@@ -211,7 +219,7 @@ class MainnetDeploymentHelper {
     return POLLENContracts
   }
 
-  async deployUnipoolMainnet(deploymentState) {
+  async deployUnipoolBerachain(deploymentState) {
     const unipoolFactory = await this.getFactory("Unipool")
     const unipool = await this.loadOrDeploy(unipoolFactory, 'unipool', deploymentState)
 
@@ -224,7 +232,7 @@ class MainnetDeploymentHelper {
     return unipool
   }
 
-  async deployMultiTroveGetterMainnet(beraborrowCore, deploymentState) {
+  async deployMultiTroveGetterBerachain(beraborrowCore, deploymentState) {
     const multiTroveGetterFactory = await this.getFactory("MultiTroveGetter")
     const multiTroveGetterParams = [
       beraborrowCore.troveManager.address,
@@ -252,7 +260,7 @@ class MainnetDeploymentHelper {
     return owner == ZERO_ADDRESS
   }
   // Connect contracts to their dependencies
-  async connectCoreContractsMainnet(contracts, POLLENContracts, chainlinkProxyAddress) {
+  async connectCoreContractsBerachain(contracts, POLLENContracts, chainlinkProxyAddress) {
     const gasPrice = this.configParams.GAS_PRICE
     // Set ChainlinkAggregatorProxy and TellorCaller in the PriceFeed
     await this.isOwnershipRenounced(contracts.priceFeed) ||
@@ -319,6 +327,7 @@ class MainnetDeploymentHelper {
         contracts.troveManager.address,
         contracts.stabilityPool.address,
         contracts.defaultPool.address,
+        contracts.iBGTToken.address,
 	{gasPrice}
       ))
 
@@ -346,14 +355,14 @@ class MainnetDeploymentHelper {
       ))
   }
 
-  async connectPOLLENContractsMainnet(POLLENContracts) {
+  async connectPOLLENContractsBerachain(POLLENContracts) {
     const gasPrice = this.configParams.GAS_PRICE
     // Set POLLENToken address in LCF
     await this.isOwnershipRenounced(POLLENContracts.pollenStaking) ||
       await this.sendAndWaitForTransaction(POLLENContracts.lockupContractFactory.setPOLLENTokenAddress(POLLENContracts.pollenToken.address, {gasPrice}))
   }
 
-  async connectPOLLENContractsToCoreMainnet(POLLENContracts, coreContracts) {
+  async connectPOLLENContractsToCoreBerachain(POLLENContracts, coreContracts) {
     const gasPrice = this.configParams.GAS_PRICE
     await this.isOwnershipRenounced(POLLENContracts.pollenStaking) ||
       await this.sendAndWaitForTransaction(POLLENContracts.pollenStaking.setAddresses(
@@ -373,7 +382,7 @@ class MainnetDeploymentHelper {
       ))
   }
 
-  async connectUnipoolMainnet(uniPool, POLLENContracts, NECTWiBGTPairAddr, duration) {
+  async connectUnipoolBerachain(uniPool, POLLENContracts, NECTiBGTPairAddr, duration) {
     const gasPrice = this.configParams.GAS_PRICE
     await this.isOwnershipRenounced(uniPool) ||
       await this.sendAndWaitForTransaction(uniPool.setParams(POLLENContracts.pollenToken.address, NECTiBGTPairAddr, duration, {gasPrice}))
@@ -420,4 +429,4 @@ class MainnetDeploymentHelper {
   }
 }
 
-module.exports = MainnetDeploymentHelper
+module.exports = BerachainDeploymentHelper

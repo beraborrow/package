@@ -24,10 +24,10 @@ const beneficiaries = {
   TEST_INVESTOR_E: "0x89ff871dbcd0a456fe92db98d190c38bc10d1cc1"
 }
 
-const OUTPUT_FILE = './mainnetDeployment/localForkDeploymentOutput.json'
+const OUTPUT_FILE = './berachainDeployment/localForkDeploymentOutput.json'
 
 const waitFunction = async () => {
-  // Fast forward time 1000s (local mainnet fork only)
+  // Fast forward time 1000s (local berachain fork only)
   ethers.provider.send("evm_increaseTime", [1000])
   ethers.provider.send("evm_mine") 
 }

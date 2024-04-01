@@ -1,18 +1,19 @@
 const { UniswapV2Factory } = require("./ABIs/UniswapV2Factory.js")
 const { UniswapV2Pair } = require("./ABIs/UniswapV2Pair.js")
+const { ERC20 } = require("./ABIs/ERC20.js")
 const { UniswapV2Router02 } = require("./ABIs/UniswapV2Router02.js")
 const { ChainlinkAggregatorV3Interface } = require("./ABIs/ChainlinkAggregatorV3Interface.js")
 const { TestHelper: th, TimeValues: timeVals } = require("../utils/testHelpers.js")
 const { dec } = th
-const MainnetDeploymentHelper = require("../utils/mainnetDeploymentHelpers.js")
+const BerachainDeploymentHelper = require("../utils/berachainDeploymentHelpers.js")
 const toBigNum = ethers.BigNumber.from
 
-async function mainnetDeploy(configParams) {
+async function berachainDeploy(configParams) {
   const date = new Date()
   console.log(date.toUTCString())
   const deployerWallet = (await ethers.getSigners())[0]
   // const account2Wallet = (await ethers.getSigners())[1]
-  const mdh = new MainnetDeploymentHelper(configParams, deployerWallet)
+  const mdh = new BerachainDeploymentHelper(configParams, deployerWallet)
   const gasPrice = configParams.GAS_PRICE
 
   const deploymentState = mdh.loadPreviousDeployment()
@@ -20,8 +21,9 @@ async function mainnetDeploy(configParams) {
   console.log(`deployer address: ${deployerWallet.address}`)
   assert.equal(deployerWallet.address, configParams.beraborrowAddrs.DEPLOYER)
   // assert.equal(account2Wallet.address, configParams.beneficiaries.ACCOUNT_2)
+
   let deployeriBGTBalance = await ethers.provider.getBalance(deployerWallet.address)
-  console.log(`deployeriBGTBalance before: ${deployeriBGTBalance}`)
+  console.log(`deployeriBGTBalance before: ${deployeriBGTBalance.toString()}`)
 
   // Get UniswapV2Factory instance at its deployed address
   const uniswapV2Factory = new ethers.Contract(
@@ -38,7 +40,7 @@ async function mainnetDeploy(configParams) {
   console.log(`deployer's iBGT balance before deployments: ${deployeriBGTBalance}`)
 
   // Deploy core logic contracts
-  const beraborrowCore = await mdh.deployBeraBorrowCoreMainnet(configParams.externalAddrs.TELLOR_MASTER, deploymentState)
+  const beraborrowCore = await mdh.deployBeraBorrowCoreBerachain(configParams.externalAddrs.TELLOR_MASTER, configParams.externalAddrs.iBGT_ERC20, deploymentState)
   await mdh.logContractObjects(beraborrowCore)
 
   // Check Uniswap Pair NECT-iBGT pair before pair creation
@@ -65,10 +67,10 @@ async function mainnetDeploy(configParams) {
   }
 
   // Deploy Unipool
-  const unipool = await mdh.deployUnipoolMainnet(deploymentState)
+  const unipool = await mdh.deployUnipoolBerachain(deploymentState)
 
   // Deploy POLLEN Contracts
-  const POLLENContracts = await mdh.deployPOLLENContractsMainnet(
+  const POLLENContracts = await mdh.deployPOLLENContractsBerachain(
     configParams.beraborrowAddrs.GENERAL_SAFE, // bounty address
     unipool.address,  // lp rewards address
     configParams.beraborrowAddrs.POLLEN_SAFE, // multisig POLLEN endowment address
@@ -76,16 +78,17 @@ async function mainnetDeploy(configParams) {
   )
 
   // Connect all core contracts up
-  await mdh.connectCoreContractsMainnet(beraborrowCore, POLLENContracts, configParams.externalAddrs.CHAINLINK_iBGTUSD_PROXY)
-  await mdh.connectPOLLENContractsMainnet(POLLENContracts)
-  await mdh.connectPOLLENContractsToCoreMainnet(POLLENContracts, beraborrowCore)
+  await mdh.connectCoreContractsBerachain(beraborrowCore, POLLENContracts, configParams.externalAddrs.CHAINLINK_iBGTUSD_PROXY)
+  await mdh.connectPOLLENContractsBerachain(POLLENContracts)
+  await mdh.connectPOLLENContractsToCoreBerachain(POLLENContracts, beraborrowCore)
 
   // Deploy a read-only multi-trove getter
-  const multiTroveGetter = await mdh.deployMultiTroveGetterMainnet(beraborrowCore, deploymentState)
+  const multiTroveGetter = await mdh.deployMultiTroveGetterBerachain(beraborrowCore, deploymentState)
 
   // Connect Unipool to POLLENToken and the NECT-iBGT pair address, with a 6 week duration
   const LPRewardsDuration = timeVals.SECONDS_IN_SIX_WEEKS
-  await mdh.connectUnipoolMainnet(unipool, POLLENContracts, NECTiBGTPairAddr, LPRewardsDuration)
+  console.log (NECTiBGTPairAddr, "*************")
+  await mdh.connectUnipoolBerachain(unipool, POLLENContracts, NECTiBGTPairAddr, LPRewardsDuration)
 
   // Log POLLEN and Unipool addresses
   await mdh.logContractObjects(POLLENContracts)
@@ -654,7 +657,7 @@ async function mainnetDeploy(configParams) {
 
 
   // ************************
-  // --- NOT FOR APRIL 5: Test short-term lockup contract POLLEN withdrawal on mainnet ---
+  // --- NOT FOR APRIL 5: Test short-term lockup contract POLLEN withdrawal on berachain ---
 
   // now = (await ethers.provider.getBlock(latestBlock)).timestamp
 
@@ -712,5 +715,5 @@ async function mainnetDeploy(configParams) {
 }
 
 module.exports = {
-  mainnetDeploy
+  berachainDeploy
 }

@@ -79,7 +79,7 @@ contract DefaultPool is Ownable, CheckContract, IDefaultPool {
         // (bool success, ) = activePool.call{ value: _amount }("");
         // require(success, "DefaultPool: sending iBGT failed");
         // burner0621 modified for iBGT
-        IERC20 token = IERC20(IBGT_ADDRESS);
+        IERC20 token = IERC20(IActivePool(activePool).iBGTTokenAddress());
         bool success = token.transfer(activePool, _amount);
         require(success, "DefaultPool: sending iBGT failed");
         IActivePool(activePool).receiveiBGT(_amount);

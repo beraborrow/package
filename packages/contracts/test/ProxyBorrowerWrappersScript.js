@@ -142,41 +142,28 @@ contract('BorrowerWrappers', async accounts => {
 
   it('claimCollateralAndOpenTrove(): reverts if nothing to claim', async () => {
     // Whale opens Trove
-    try{
-      await openTrove({ ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
-    }catch(e){
-      console.log (e, "LLLLLLLLLLLLLLL")
-    }
+    await openTrove({ ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
     // alice opens Trove
     const { nectAmount, collateral } = await openTrove({ ICR: toBN(dec(15, 17)), extraParams: { from: alice } })
     
-    console.log ("*****************")
     const proxyAddress = borrowerWrappers.getProxyAddressFromUser(alice)
     assert.equal(await iBGTToken.balanceOf(proxyAddress), '0')
-    console.log ("*****************1")
 
     // skip bootstrapping phase
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
-    console.log ("*****************2")
 
     // alice claims collateral and re-opens the trove
     await assertRevert(
       borrowerWrappers.claimCollateralAndOpenTrove(th._100pct, nectAmount, alice, alice, 0, { from: alice }),
       'CollSurplusPool: No collateral available to claim'
     )
-    console.log ("*****************3")
 
     // check everything remain the same
     assert.equal(await iBGTToken.balanceOf(proxyAddress), '0')
-    console.log ("*****************4")
     th.assertIsApproximatelyEqual(await collSurplusPool.getCollateral(proxyAddress), '0')
-    console.log ("*****************5")
     th.assertIsApproximatelyEqual(await nectToken.balanceOf(proxyAddress), nectAmount)
-    console.log ("*****************6")
     assert.equal(await troveManager.getTroveStatus(proxyAddress), 1)
-    console.log ("*****************7")
     th.assertIsApproximatelyEqual(await troveManager.getTroveColl(proxyAddress), collateral)
-    console.log ("*****************8")
   })
 
   it('claimCollateralAndOpenTrove(): without sending any value', async () => {

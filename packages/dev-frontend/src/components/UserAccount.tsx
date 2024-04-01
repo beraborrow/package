@@ -28,7 +28,7 @@ export const UserAccount: React.FC = () => {
       const writeData = await writeContract(preparedData)
       const txPendingData = waitForTransaction(writeData)
       toast.promise(txPendingData, {
-        pending: "Waiting for pending... 👌",
+        pending: "iBGT coming... 👌",
       });
       const txData = await txPendingData;
       if (txData && txData.status === 1) {

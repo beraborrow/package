@@ -264,19 +264,6 @@
   },
   {
     "inputs": [],
-    "name": "IBGT_ADDRESS",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "MCR",
     "outputs": [
       {
@@ -452,6 +439,19 @@
     "outputs": [
       {
         "internalType": "contract IDefaultPool",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getActivePool",
+    "outputs": [
+      {
+        "internalType": "contract IActivePool",
         "name": "",
         "type": "address"
       }

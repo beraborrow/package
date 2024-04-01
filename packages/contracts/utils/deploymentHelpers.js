@@ -1,5 +1,5 @@
 const { artifacts } = require("hardhat")
-const configParams = require("../mainnetDeployment/deploymentParams.mainnet.js")
+const configParams = require("../berachainDeployment/deploymentParams.berachain.js")
 const SortedTroves = artifacts.require("./SortedTroves.sol")
 const TroveManager = artifacts.require("./TroveManager.sol")
 const PriceFeedTestnet = artifacts.require("./PriceFeedTestnet.sol")
@@ -29,6 +29,11 @@ const BeraBorrowMathTester = artifacts.require("./BeraBorrowMathTester.sol")
 const BorrowerOperationsTester = artifacts.require("./BorrowerOperationsTester.sol")
 const TroveManagerTester = artifacts.require("./TroveManagerTester.sol")
 const NECTTokenTester = artifacts.require("./NECTTokenTester.sol")
+
+const iBGTOraclePriceFeed = artifacts.require("./iBGTOraclePriceFeed.sol")
+const NECTOraclePriceFeed = artifacts.require("./NECTOraclePriceFeed.sol")
+const TellorMaster = artifacts.require("./TellorMaster.sol")
+const _iBGTToken = artifacts.require ("./iBGTToken.sol")
 
 // const IBGTToken = artifacts.require("./iBGT.sol")
 // const iBGTOraclePriceFeed = artifacts.require("./iBGTOraclePriceFeed.sol")
@@ -109,15 +114,15 @@ class DeploymentHelper {
       stabilityPool.address,
       borrowerOperations.address
     )
-    // const iBGTToken = await IBGTToken.new()
-    // const ibgtOraclePriceFeed = await iBGTOraclePriceFeed.new()
-    // const nectOraclePriceFeed = await NECTOraclePriceFeed.new()
-    // const tellorMaster = await TellorMaster.new()
-    // IBGTToken.setAsDeployed(iBGTToken)
-    // iBGTOraclePriceFeed.setAsDeployed(ibgtOraclePriceFeed)
-    // NECTOraclePriceFeed.setAsDeployed(nectOraclePriceFeed)
-    // TellorMaster.setAsDeployed(tellorMaster)
-    
+    const iBGTToken = await _iBGTToken.new()
+    const ibgtOraclePriceFeed = await iBGTOraclePriceFeed.new()
+    const nectOraclePriceFeed = await NECTOraclePriceFeed.new()
+    const tellorMaster = await TellorMaster.new()
+    _iBGTToken.setAsDeployed(iBGTToken)
+    iBGTOraclePriceFeed.setAsDeployed(ibgtOraclePriceFeed)
+    NECTOraclePriceFeed.setAsDeployed(nectOraclePriceFeed)
+    TellorMaster.setAsDeployed(tellorMaster)
+
     NECTToken.setAsDeployed(nectToken)
     DefaultPool.setAsDeployed(defaultPool)
     PriceFeedTestnet.setAsDeployed(priceFeedTestnet)
@@ -137,12 +142,11 @@ class DeploymentHelper {
     }catch(e){
       console.log (e)
     }
-    const ibgtTokenFactory = await ethers.getContractFactory("iBGT", deployerWallet)
-    const iBGTToken = new ethers.Contract(
-      configParams.externalAddrs.iBGT_ERC20,
-      ibgtTokenFactory.interface,
-      deployerWallet
-    );
+    // const iBGTToken = new ethers.Contract(
+    //   configParams.externalAddrs.iBGT_ERC20,
+    //   ERC20.abi,
+    //   deployerWallet
+    // );
 
     const coreContracts = {
       iBGTToken,
@@ -185,6 +189,7 @@ class DeploymentHelper {
       testerContracts.stabilityPool.address,
       testerContracts.borrowerOperations.address
     )
+    testerContracts.iBGTToken = await _iBGTToken.new()
     return testerContracts
   }
 
@@ -412,7 +417,8 @@ class DeploymentHelper {
       contracts.borrowerOperations.address,
       contracts.troveManager.address,
       contracts.stabilityPool.address,
-      contracts.defaultPool.address
+      contracts.defaultPool.address,
+      contracts.iBGTToken.address
     )
 
     await contracts.defaultPool.setAddresses(

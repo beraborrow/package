@@ -46,7 +46,7 @@ contract EchidnaTester is CheckContract {
 
     uint private numberOfTroves;
 
-    constructor() public payable {
+    constructor(address _ibgtTokenAddress) public payable {
         troveManager = new TroveManager();
         borrowerOperations = new BorrowerOperations();
         activePool = new ActivePool();
@@ -77,7 +77,7 @@ contract EchidnaTester is CheckContract {
             address(nectToken), address(0));
 
         activePool.setAddresses(address(borrowerOperations), 
-            address(troveManager), address(stabilityPool), address(defaultPool));
+            address(troveManager), address(stabilityPool), address(defaultPool), _ibgtTokenAddress);
 
         defaultPool.setAddresses(address(troveManager), address(activePool));
         
@@ -91,7 +91,7 @@ contract EchidnaTester is CheckContract {
         sortedTroves.setParams(1e18, address(troveManager), address(borrowerOperations));
 
         // burner0621 modified
-        IERC20 token = IERC20(IBGT_ADDRESS);
+        IERC20 token = IERC20(activePool.iBGTTokenAddress());
         //////////////////////
         for (uint i = 0; i < NUMBER_OF_ACTORS; i++) {
             echidnaProxies[i] = new EchidnaProxy(troveManager, borrowerOperations, stabilityPool, nectToken);
@@ -169,7 +169,7 @@ contract EchidnaTester is CheckContract {
         EchidnaProxy echidnaProxy = echidnaProxies[actor];
         // uint actorBalance = address(echidnaProxy).balance;
         // burner0621 modified
-        IERC20 ibgtToken = IERC20(IBGT_ADDRESS);
+        IERC20 ibgtToken = IERC20(activePool.iBGTTokenAddress());
         uint actorBalance = ibgtToken.balanceOf(address(echidnaProxy));
         //////////////////////
 
@@ -198,7 +198,7 @@ contract EchidnaTester is CheckContract {
         EchidnaProxy echidnaProxy = echidnaProxies[actor];
         // uint actorBalance = address(echidnaProxy).balance;
         // burner0621 modified
-        IERC20 ibgtToken = IERC20(IBGT_ADDRESS);
+        IERC20 ibgtToken = IERC20(activePool.iBGTTokenAddress());
         uint actorBalance = ibgtToken.balanceOf(address(echidnaProxy));
         //////////////////////
 
@@ -237,7 +237,7 @@ contract EchidnaTester is CheckContract {
         EchidnaProxy echidnaProxy = echidnaProxies[actor];
         // uint actorBalance = address(echidnaProxy).balance;
         // burner0621 modified
-        IERC20 ibgtToken = IERC20(IBGT_ADDRESS);
+        IERC20 ibgtToken = IERC20(activePool.iBGTTokenAddress());
         uint actorBalance = ibgtToken.balanceOf(address(echidnaProxy));
         //////////////////////
 
@@ -316,7 +316,7 @@ contract EchidnaTester is CheckContract {
 
     function echidna_canary_active_pool_balance() public view returns(bool) {
         // burner0621 modified
-        IERC20 ibgtToken = IERC20(IBGT_ADDRESS);
+        IERC20 ibgtToken = IERC20(activePool.iBGTTokenAddress());
         //////////////////////
         // if (address(activePool).balance > 0) {
         if (ibgtToken.balanceOf(address(activePool)) > 0) {
@@ -379,7 +379,7 @@ contract EchidnaTester is CheckContract {
 
     function echidna_iBGT_balances() public view returns(bool) {
         // burner0621 modified
-        IERC20 ibgtToken = IERC20(IBGT_ADDRESS);
+        IERC20 ibgtToken = IERC20(activePool.iBGTTokenAddress());
         //////////////////////
         // if (address(troveManager).balance > 0) {
         if (ibgtToken.balanceOf(address(troveManager)) > 0) {

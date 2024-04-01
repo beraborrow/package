@@ -2,6 +2,8 @@
 
 pragma solidity 0.6.11;
 
+import "./IActivePool.sol";
+
 // Common interface for the Trove Manager.
 interface IBorrowerOperations {
 
@@ -56,4 +58,7 @@ interface IBorrowerOperations {
     function claimCollateral() external;
 
     function getCompositeDebt(uint _debt) external pure returns (uint);
+
+    // burner0621 modified
+    function getActivePool() external view returns(IActivePool);
 }

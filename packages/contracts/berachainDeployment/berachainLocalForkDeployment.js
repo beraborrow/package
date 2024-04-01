@@ -1,4 +1,4 @@
-const { mainnetDeploy } = require('./mainnetDeployment.js')
+const { berachainDeploy } = require('./berachainDeployment.js')
 const configParams = require("./deploymentParams.localFork.js")
 
 const iBGT_WHALE = "0x53d284357ec70ce289d6d64134dfac8e511c8a3d"
@@ -32,7 +32,7 @@ async function main() {
     params: [iBGT_WHALE]
   })
 
-  await mainnetDeploy(configParams)
+  await berachainDeploy(configParams)
 }
 
 main()

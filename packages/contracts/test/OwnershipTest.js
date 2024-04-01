@@ -103,7 +103,7 @@ contract('All BeraBorrow functions with onlyOwner modifier', async accounts => {
 
   describe('ActivePool', async accounts => {
     it("setAddresses(): reverts when called by non-owner, with wrong addresses, or twice", async () => {
-      await testSetAddresses(activePool, 4)
+      await testSetAddresses(activePool, 5)
     })
   })
 

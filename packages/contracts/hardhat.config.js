@@ -70,15 +70,15 @@ module.exports = {
         },
         hardhat: {
             accounts: accountsList,
-            gas: 1000000000,  // tx gas limit
             blockGasLimit: 1500000000,
             gas: 210000000,
             gasPrice: 11000000000000,
             initialBaseFeePerGas: 0,
-            forking: {
-                url: `https://ethereum-rpc.publicnode.com`,
-                enabled: true
-            }
+            // forking: {
+            //     url: `https://ethereum-rpc.publicnode.com`,
+            //     enabled: true,
+            //     chainId: 1
+            // }
         },
         bera: {
             url: "https://artio.rpc.berachain.com/", // https://rpc.ankr.com/berachain_testnet

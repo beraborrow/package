@@ -9,6 +9,7 @@ import "../Dependencies/CheckContract.sol";
 import "../Dependencies/console.sol";
 import "../Interfaces/IPOLLENToken.sol";
 import "../Interfaces/IPOLLENStaking.sol";
+import "../Interfaces/IActivePool.sol";
 import "../Dependencies/BeraBorrowMath.sol";
 import "../Interfaces/INECTToken.sol";
 import "../Dependencies/IERC20.sol";
@@ -219,7 +220,7 @@ contract POLLENStaking is IPOLLENStaking, Ownable, CheckContract, BaseMath {
         // (bool success, ) = msg.sender.call{value: iBGTGain}("");
         // require(success, "POLLENStaking: Failed to send accumulated iBGTGain");
         // burner0621 modified for iBGT
-        IERC20 token = IERC20(IBGT_ADDRESS);
+        IERC20 token = IERC20(IActivePool(activePoolAddress).iBGTTokenAddress());
         bool success = token.transfer(msg.sender, iBGTGain);
         require(success, "POLLENStaking: Failed to send accumulated iBGTGain");
         ////////////////////////////////

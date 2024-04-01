@@ -1,5 +1,5 @@
 // Test with:
-// GAS_PRICE=0 BLOCK_NUMBER=12612689 npx hardhat run mainnetDeployment/balancerPoolDeployment.js --config hardhat.config.mainnet-fork.js
+// GAS_PRICE=0 BLOCK_NUMBER=12612689 npx hardhat run berachainDeployment/balancerPoolDeployment.js --config hardhat.config.berachain-fork.js
 
 const { WeightedPool2TokensFactory } = require("./ABIs/WeightedPool2TokensFactory.js")
 const { WeightedPool2Tokens } = require("./ABIs/WeightedPool2Tokens.js")
@@ -19,7 +19,7 @@ const ORACLE_POOL_FACTORY = '0xA5bf2ddF098bb0Ef6d120C98217dD6B141c74EE0';
 
 const DELEGATE_OWNER = '0xBA1BA1ba1BA1bA1bA1Ba1BA1ba1BA1bA1ba1ba1B';
 
-// Mainnet addresses; adjust for testnets
+// berachain addresses; adjust for testnets
 
 const iBGT = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
 const NECT = '0x5f98805A4E8be255a32880FDeC7F6728C6568bA0';

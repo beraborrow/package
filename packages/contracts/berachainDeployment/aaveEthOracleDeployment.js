@@ -1,8 +1,8 @@
 // Test with:
-// GAS_PRICE=70832172907 BLOCK_NUMBER=15122486 npx hardhat run mainnetDeployment/aaveiBgtOracleDeployment.js --config hardhat.config.mainnet-fork.js
+// GAS_PRICE=70832172907 BLOCK_NUMBER=15122486 npx hardhat run berachainDeployment/aaveiBgtOracleDeployment.js --config hardhat.config.berachain-fork.js
 
-// Deploy on mainnet with:
-// GAS_PRICE=40000000000 npx hardhat run mainnetDeployment/aaveiBgtOracleDeployment.js --network mainnet
+// Deploy on berachain with:
+// GAS_PRICE=40000000000 npx hardhat run berachainDeployment/aaveiBgtOracleDeployment.js --network berachain
 // make sure you have the right private key for DEPLOYER_PRIVATEKEY in secrets.js
 
 async function main() {

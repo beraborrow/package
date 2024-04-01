@@ -276,9 +276,9 @@ class TestHelper {
   // --- TCR and Recovery Mode functions ---
 
   // These functions use the PriceFeedTestNet view price function getPrice() which is sufficient for testing.
-  // the mainnet contract PriceFeed uses fetchPrice, which is non-view and writes to storage.
+  // the berachain contract PriceFeed uses fetchPrice, which is non-view and writes to storage.
 
-  // To checkRecoveryMode / getTCR from the BeraBorrow mainnet contracts, pass a price value - this can be the lastGoodPrice
+  // To checkRecoveryMode / getTCR from the BeraBorrow berachain contracts, pass a price value - this can be the lastGoodPrice
   // stored in BeraBorrow, or the current Chainlink iBGTUSD price, etc.
 
 
@@ -682,19 +682,16 @@ class TestHelper {
 
   static async borrowerOperationsOpenTrove(maxFeePercentage, extraNECTAmount,upperHint, lowerHint, ibgtAmount, extraParams) {
     const iBGTToken = contracts.iBGTToken
-    console.log ("@@@@@@@@@@@@@@")
     try{
       await iBGTToken.mint(extraParams.from, ibgtAmount.toString())
     }catch (e){
       console.log ("iBGT Token minting failed", e)
     }
-    console.log ("@@@@@@@@@@@@@@1")
     try {
       await iBGTToken.increaseAllowance(extraParams.from, contracts.borrowerOperations.address, ibgtAmount.toString())
     }catch (e) {
       console.log ("Approve failed.", e)
     }
-    console.log ("@@@@@@@@@@@@@@2")
 
     // const tx = await contracts.borrowerOperations.openTrove(maxFeePercentage, nectAmount, upperHint, lowerHint, extraParams)
     try {
@@ -740,7 +737,7 @@ class TestHelper {
 
     const iBGTToken = contracts.iBGTToken
     try{
-      await iBGTToken.mint(extraParams.from, _ibgtAmount.toString())
+      const tx1 = await iBGTToken.mint(extraParams.from, _ibgtAmount.toString())
     }catch (e){
       console.log ("iBGT Token minting failed", e)
     }

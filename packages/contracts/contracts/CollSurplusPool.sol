@@ -8,6 +8,7 @@ import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/console.sol";
 import "./Dependencies/IERC20.sol";
+import "./Interfaces/IActivePool.sol";
 
 contract CollSurplusPool is Ownable, CheckContract, ICollSurplusPool {
     using SafeMath for uint256;
@@ -17,6 +18,7 @@ contract CollSurplusPool is Ownable, CheckContract, ICollSurplusPool {
     address public borrowerOperationsAddress;
     address public troveManagerAddress;
     address public activePoolAddress;
+    IActivePool public activePool;
 
     // deposited ibgt tracker
     uint256 internal iBGT;
@@ -31,7 +33,7 @@ contract CollSurplusPool is Ownable, CheckContract, ICollSurplusPool {
 
     event CollBalanceUpdated(address indexed _account, uint _newBalance);
     event iBGTSent(address _to, uint _amount);
-    
+
     // --- Contract setters ---
 
     function setAddresses(
@@ -50,6 +52,7 @@ contract CollSurplusPool is Ownable, CheckContract, ICollSurplusPool {
         borrowerOperationsAddress = _borrowerOperationsAddress;
         troveManagerAddress = _troveManagerAddress;
         activePoolAddress = _activePoolAddress;
+        activePool = IActivePool(_activePoolAddress);
 
         emit BorrowerOperationsAddressChanged(_borrowerOperationsAddress);
         emit TroveManagerAddressChanged(_troveManagerAddress);
@@ -93,7 +96,7 @@ contract CollSurplusPool is Ownable, CheckContract, ICollSurplusPool {
         // (bool success, ) = _account.call{ value: claimableColl }("");
         // require(success, "CollSurplusPool: sending iBGT failed");
         // burner0621 modified for iBGT
-        IERC20 token = IERC20(IBGT_ADDRESS);
+        IERC20 token = IERC20(activePool.iBGTTokenAddress());
         bool success = token.transfer(_account, claimableColl);
         require(success, "CollSurplusPool: sending iBGT failed");
         ////////////////////////////////

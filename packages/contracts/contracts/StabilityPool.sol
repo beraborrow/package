@@ -425,30 +425,25 @@ contract StabilityPool is BeraBorrowBase, Ownable, CheckContract, IStabilityPool
         _requireUserHasDeposit(initialDeposit);
         _requireUserHasTrove(msg.sender);
         _requireUserHasiBGTGain(msg.sender);
-        console.log ("**************************@@@@@@@@@@@@@@@@@");
 
         ICommunityIssuance communityIssuanceCached = communityIssuance;
 
         _triggerPOLLENIssuance(communityIssuanceCached);
-        console.log ("**************************@@@@@@@@@@@@@@@@@0");
 
         uint depositoriBGTGain = getDepositoriBGTGain(msg.sender);
 
         uint compoundedNECTDeposit = getCompoundedNECTDeposit(msg.sender);
         uint NECTLoss = initialDeposit.sub(compoundedNECTDeposit); // Needed only for event log
-        console.log ("**************************@@@@@@@@@@@@@@@@@1");
 
         // First pay out any POLLEN gains
         address frontEnd = deposits[msg.sender].frontEndTag;
         _payOutPOLLENGains(communityIssuanceCached, msg.sender, frontEnd);
-        console.log ("**************************@@@@@@@@@@@@@@@@@2");
 
         // Update front end stake
         uint compoundedFrontEndStake = getCompoundedFrontEndStake(frontEnd);
         uint newFrontEndStake = compoundedFrontEndStake;
         _updateFrontEndStakeAndSnapshots(frontEnd, newFrontEndStake);
         emit FrontEndStakeChanged(frontEnd, newFrontEndStake, msg.sender);
-        console.log ("**************************@@@@@@@@@@@@@@@@@3");
 
         _updateDepositAndSnapshots(msg.sender, compoundedNECTDeposit);
 
@@ -461,15 +456,13 @@ contract StabilityPool is BeraBorrowBase, Ownable, CheckContract, IStabilityPool
         iBGT = iBGT.sub(depositoriBGTGain);
         emit StabilityPooliBGTBalanceUpdated(iBGT);
         emit iBGTSent(msg.sender, depositoriBGTGain);
-        console.log ("**************************@@@@@@@@@@@@@@@@@4");
 
-        IERC20 ibgtToken = IERC20(IBGT_ADDRESS);
+        IERC20 ibgtToken = IERC20(activePool.iBGTTokenAddress());
         ibgtToken.approve (address(borrowerOperations), depositoriBGTGain);
         // borrowerOperations.moveiBGTGainToTrove{ value: depositoriBGTGain }(msg.sender, _upperHint, _lowerHint);
         // burner0621 modified
         borrowerOperations.moveiBGTGainToTrove(msg.sender, _upperHint, _lowerHint, depositoriBGTGain);
         //////////////////////
-        console.log ("**************************@@@@@@@@@@@@@@@@@5");
     }
 
     // --- POLLEN issuance functions ---
@@ -851,7 +844,7 @@ contract StabilityPool is BeraBorrowBase, Ownable, CheckContract, IStabilityPool
         // (bool success, ) = msg.sender.call{ value: _amount }("");
         // require(success, "StabilityPool: sending iBGT failed");
         // burner0621 modified for iBGT
-        IERC20 token = IERC20(IBGT_ADDRESS);
+        IERC20 token = IERC20(activePool.iBGTTokenAddress());
         bool success = token.transfer(msg.sender, _amount);
         require(success, "StabilityPool: sending iBGT failed");
         ////////////////////////////////

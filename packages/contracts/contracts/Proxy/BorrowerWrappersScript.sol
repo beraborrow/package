@@ -60,12 +60,14 @@ contract BorrowerWrappersScript is BorrowerOperationsScript, iBGTTransferScript,
         IPOLLENStaking pollenStakingCached = troveManagerCached.pollenStaking();
         require(_pollenStakingAddress == address(pollenStakingCached), "BorrowerWrappersScript: Wrong POLLENStaking address");
         pollenStaking = pollenStakingCached;
+
+        setiBGTTokenAddress (IBorrowerOperations(_borrowerOperationsAddress).getActivePool().iBGTTokenAddress());
     }
 
     function claimCollateralAndOpenTrove(uint _maxFee, uint _NECTAmount, address _upperHint, address _lowerHint, uint _ibgtAmount) external {
         // uint balanceBefore = address(this).balance;
         // burner0621 modified
-        IERC20 ibgtToken = IERC20(IBGT_ADDRESS);
+        IERC20 ibgtToken = IERC20(borrowerOperations.getActivePool().iBGTTokenAddress());
         uint balanceBefore = ibgtToken.balanceOf(address(this));
         //////////////////////
 
@@ -91,7 +93,7 @@ contract BorrowerWrappersScript is BorrowerOperationsScript, iBGTTransferScript,
     function claimSPRewardsAndRecycle(uint _maxFee, address _upperHint, address _lowerHint) external {
         // uint collBalanceBefore = address(this).balance;
         // burner0621 modified
-        IERC20 ibgtToken = IERC20(IBGT_ADDRESS);
+        IERC20 ibgtToken = IERC20(borrowerOperations.getActivePool().iBGTTokenAddress());
         uint collBalanceBefore = ibgtToken.balanceOf(address(this));
         //////////////////////
         uint pollenBalanceBefore = pollenToken.balanceOf(address(this));
@@ -130,7 +132,7 @@ contract BorrowerWrappersScript is BorrowerOperationsScript, iBGTTransferScript,
     function claimStakingGainsAndRecycle(uint _maxFee, address _upperHint, address _lowerHint) external {
         // uint collBalanceBefore = address(this).balance;
         // burner0621 modified
-        IERC20 ibgtToken = IERC20(IBGT_ADDRESS);
+        IERC20 ibgtToken = IERC20(borrowerOperations.getActivePool().iBGTTokenAddress());
         uint collBalanceBefore = ibgtToken.balanceOf(address(this));
         //////////////////////
         uint nectBalanceBefore = nectToken.balanceOf(address(this));

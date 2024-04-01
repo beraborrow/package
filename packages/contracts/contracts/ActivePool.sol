@@ -32,6 +32,7 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
     address public troveManagerAddress;
     address public stabilityPoolAddress;
     address public defaultPoolAddress;
+    address private _iBGTTokenAddress;
     uint256 internal iBGT;  // deposited ibgt tracker
     uint256 internal NECTDebt;
 
@@ -48,7 +49,8 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
         address _borrowerOperationsAddress,
         address _troveManagerAddress,
         address _stabilityPoolAddress,
-        address _defaultPoolAddress
+        address _defaultPoolAddress,
+        address _ibgtTokenAddress
     )
         external
         onlyOwner
@@ -57,11 +59,13 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
         checkContract(_troveManagerAddress);
         checkContract(_stabilityPoolAddress);
         checkContract(_defaultPoolAddress);
+        checkContract(_ibgtTokenAddress);
 
         borrowerOperationsAddress = _borrowerOperationsAddress;
         troveManagerAddress = _troveManagerAddress;
         stabilityPoolAddress = _stabilityPoolAddress;
         defaultPoolAddress = _defaultPoolAddress;
+        _iBGTTokenAddress = _ibgtTokenAddress;
 
         emit BorrowerOperationsAddressChanged(_borrowerOperationsAddress);
         emit TroveManagerAddressChanged(_troveManagerAddress);
@@ -97,7 +101,7 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
         // (bool success, ) = _account.call{ value: _amount }("");
         // require(success, "ActivePool: sending iBGT failed");
         // burner0621 modified for iBGT
-        IERC20 token = IERC20(IBGT_ADDRESS);
+        IERC20 token = IERC20(_iBGTTokenAddress);
         bool success = token.transfer(_account, _amount);
         require(success, "ActivePool: sending iBGT failed");
         if (Address.isContract(_account)) {
@@ -155,6 +159,10 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
         _requireCallerIsBorrowerOperationsOrDefaultPool();
         iBGT = iBGT.add(_amount);
         emit ActivePooliBGTBalanceUpdated(iBGT);
+    }
+
+    function iBGTTokenAddress() external view override returns (address) {
+        return _iBGTTokenAddress;
     }
     ///////////////////////////////
 }

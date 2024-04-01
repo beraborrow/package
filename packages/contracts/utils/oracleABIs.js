@@ -1,4 +1,4 @@
-const MainnetAggregatorABI = [
+const BerachainAggregatorABI = [
     {
       "constant": true,
       "inputs": [],
@@ -178,7 +178,7 @@ const TestnetAggregatorABI = [
       "type": "function"
     }
   ]
-const MainnetPriceFeedABI = [
+const BerachainPriceFeedABI = [
     {
       "inputs": [
         {
@@ -759,8 +759,8 @@ const TestnetPriceFeedABI =  [
 ]
 
 module.exports = {
-    MainnetAggregator: MainnetAggregatorABI,
+    BerachainAggregator: BerachainAggregatorABI,
     TestnetAggregator: TestnetAggregatorABI,
-    MainnetPriceFeed: MainnetPriceFeedABI,
+    BerachainPriceFeed: BerachainPriceFeedABI,
     TestnetPriceFeed: TestnetPriceFeedABI
 }
