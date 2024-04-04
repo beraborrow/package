@@ -334,11 +334,12 @@ class DeploymentHelper {
     const borrowerWrappersScript = await BorrowerWrappersScript.new(
       contracts.borrowerOperations.address,
       contracts.troveManager.address,
-      POLLENContracts.pollenStaking.address
+      POLLENContracts.pollenStaking.address,
+      contracts.iBGTToken.address
     )
     contracts.borrowerWrappers = new BorrowerWrappersProxy(owner, proxies, borrowerWrappersScript.address)
 
-    const borrowerOperationsScript = await BorrowerOperationsScript.new(contracts.borrowerOperations.address)
+    const borrowerOperationsScript = await BorrowerOperationsScript.new(contracts.borrowerOperations.address, contracts.iBGTToken.address)
     contracts.borrowerOperations = new BorrowerOperationsProxy(owner, proxies, borrowerOperationsScript.address, contracts.borrowerOperations)
 
     const troveManagerScript = await TroveManagerScript.new(contracts.troveManager.address)

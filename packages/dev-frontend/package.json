@@ -64,7 +64,7 @@
   },
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
-    "start": "vite --port 3000",
+    "start": "vite --port 3005",
     "start-demo": "cross-env VITE_APP_DEMO_MODE=true vite --force",
     "build": "run-s 'build:*'",
     "build:set-version": "node scripts/set-version.cjs",

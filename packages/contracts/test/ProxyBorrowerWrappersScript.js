@@ -97,46 +97,47 @@ contract('BorrowerWrappers', async accounts => {
     NECT_GAS_COMPENSATION = await borrowerOperations.NECT_GAS_COMPENSATION()
   })
 
-  // it('proxy owner can recover iBGT', async () => {
-  //   const amount = toBN(dec(1, 18))
-  //   const proxyAddress = borrowerWrappers.getProxyAddressFromUser(alice)
+  it('proxy owner can recover iBGT', async () => {
+    const amount = toBN(dec(1, 18))
+    const proxyAddress = borrowerWrappers.getProxyAddressFromUser(alice)
 
-  //   // send some iBGT to proxy
-  //   // await web3.eth.sendTransaction({ from: owner, to: proxyAddress, value: amount, gasPrice: GAS_PRICE })
-  //   await iBGTToken.transfer(proxyAddress, amount.toString())
-  //   assert.equal(await iBGTToken.balanceOf(proxyAddress), amount.toString())
+    // send some iBGT to proxy
+    // await web3.eth.sendTransaction({ from: owner, to: proxyAddress, value: amount, gasPrice: GAS_PRICE })
+    await iBGTToken.mint(proxyAddress, amount.toString())
+    assert.equal(await iBGTToken.balanceOf(proxyAddress), amount.toString())
 
-  //   const balanceBefore = toBN(await iBGTToken.balanceOf(alice))
-  //   // recover iBGT
-  //   const gas_Used = th.gasUsed(await borrowerWrappers.transferiBGT(alice, amount, { from: alice, gasPrice: GAS_PRICE }))
+    await iBGTToken.mint(alice, amount.toString())
+    const balanceBefore = toBN(await iBGTToken.balanceOf(alice))
+    // recover iBGT
+    const gas_Used = th.gasUsed(await borrowerWrappers.transferiBGT(alice, amount, iBGTToken.address, { from: alice, gasPrice: GAS_PRICE }))
     
-  //   const balanceAfter = toBN(await iBGTToken.balanceOf(alice))
-  //   const expectedBalance = toBN(balanceBefore)
-  //   assert.equal(balanceAfter.sub(expectedBalance), amount.toString())
-  // })
+    const balanceAfter = toBN(await iBGTToken.balanceOf(alice))
+    const expectedBalance = toBN(balanceBefore)
+    assert.equal(balanceAfter.sub(expectedBalance), amount.toString())
+  })
 
-  // it('non proxy owner cannot recover iBGT', async () => {
-  //   const amount = toBN(dec(1, 18))
-  //   const proxyAddress = borrowerWrappers.getProxyAddressFromUser(alice)
+  it('non proxy owner cannot recover iBGT', async () => {
+    const amount = toBN(dec(1, 18))
+    const proxyAddress = borrowerWrappers.getProxyAddressFromUser(alice)
 
-  //   // send some iBGT to proxy
-  //   // await web3.eth.sendTransaction({ from: owner, to: proxyAddress, value: amount })
-  //   await iBGTToken.transfer(proxyAddress, amount.toString())
-  //   assert.equal(await iBGTToken.balanceOf(proxyAddress), amount.toString())
+    // send some iBGT to proxy
+    // await web3.eth.sendTransaction({ from: owner, to: proxyAddress, value: amount })
+    await iBGTToken.mint(proxyAddress, amount.toString())
+    assert.equal(await iBGTToken.balanceOf(proxyAddress), amount.toString())
 
-  //   const balanceBefore = toBN(await iBGTToken.balanceOf(alice))
+    const balanceBefore = toBN(await iBGTToken.balanceOf(alice))
 
-  //   // try to recover iBGT
-  //   const proxy = borrowerWrappers.getProxyFromUser(alice)
-  //   const signature = 'transferiBGT(address,uint256)'
-  //   const calldata = th.getTransactionData(signature, [alice, amount])
-  //   await assertRevert(proxy.methods["execute(address,bytes)"](borrowerWrappers.scriptAddress, calldata, { from: bob }), 'ds-auth-unauthorized')
+    // try to recover iBGT
+    const proxy = borrowerWrappers.getProxyFromUser(alice)
+    const signature = 'transferiBGT(address,uint256,address)'
+    const calldata = th.getTransactionData(signature, [alice, amount, iBGTToken.address])
+    await assertRevert(proxy.methods["execute(address,bytes)"](borrowerWrappers.scriptAddress, calldata, { from: bob }), 'ds-auth-unauthorized')
 
-  //   assert.equal(await iBGTToken.balanceOf(proxyAddress), amount.toString())
+    assert.equal(await iBGTToken.balanceOf(proxyAddress), amount.toString())
 
-  //   const balanceAfter = toBN(await iBGTToken.balanceOf(alice))
-  //   assert.equal(balanceAfter, balanceBefore.toString())
-  // })
+    const balanceAfter = toBN(await iBGTToken.balanceOf(alice))
+    assert.equal(balanceAfter, balanceBefore.toString())
+  })
 
   // --- claimCollateralAndOpenTrove ---
 

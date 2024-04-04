@@ -211,7 +211,7 @@ export const DisabledEditableRow: React.FC<DisabledEditableRowProps> = ({
   children,
   ...props
 }) => (
-  <Row labelId={`${inputId}-label`} label={label}>
+  <Row labelId={`${inputId}-label`} label={label} sx={{minHeight: 80}}>
     {amount ? (
       <DisabledEditableAmounts inputId={inputId} amount={amount} {...props}>
         {children}

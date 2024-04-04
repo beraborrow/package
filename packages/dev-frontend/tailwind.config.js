@@ -14,16 +14,26 @@ export default {
         'den': 'url("/imgs/den.png")',
       },
       backgroundPosition: {
-        "bottom-50": "center bottom 200px",
+        "bottom-50": "center bottom 50px",
         "top-center-14": 'center top -14px'
       },
       colors: {
         "dark-gray": "#FFEDD4"
       },
+      space: {
+        "trove-lg": "calc(50vw - 100px)"
+      },
+      width: {
+        "trove-lg": "calc(50vw - 100px)",
+        "screen-1/2": "50vw"
+      },
+      minWidth: {
+        "trove-lg": "calc(50vw - 100px)"
+      },
       keyframes: {
         slideInFromRight: {
           '0%': { left: '100%' },
-          '100%': { left: 'calc(100% - 700px)' },
+          '100%': { left: 'calc(50vw + 100px)' },
         },
         slideOutFromRight: {
           '0%': { transform: 'translateX(0)' },
@@ -46,8 +56,8 @@ export default {
           '100%': { top: '350px' },
         },
         slideInFromLeft: {
-          '0%': { left: '-200%' },
-          '100%': { left: '-50%' },
+          '0%': { left: '-100%' },
+          '100%': { left: 'calc(-50vw + 100px)' },
         },
         fadeBiggerBear: {
           '0%': { scale: '85%' },

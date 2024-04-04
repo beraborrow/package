@@ -743,6 +743,11 @@ class TestHelper {
     }
     try {
       await iBGTToken.increaseAllowance(extraParams.from, contracts.borrowerOperations.address, _ibgtAmount.toString())
+      if (Object.keys(contracts.borrowerOperations.proxies).length > 0) {
+        Object.keys(contracts.borrowerOperations.proxies).map(async(addr) => {
+          await iBGTToken.increaseAllowance(extraParams.from, contracts.borrowerOperations.proxies[addr].address, _ibgtAmount.toString())
+        })
+      }
     }catch (e) {
       console.log ("Approve failed.", e)
     }

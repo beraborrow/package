@@ -145,7 +145,7 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
                   </div>
               </div>
               <div 
-                  className={`flex flex-row items-center justify-between border border-[#FFEDD4] rounded-[180px] p-5`}
+                  className={`flex flex-row items-center justify-between border border-[#FFEDD4] rounded-[180px] px-5 py-[14px]`}
                 >
                     <div className="opacity-60">{editedNECT.mulDiv(newPoolShare, 100).prettify(4)}</div>
                     <div className="flex flex-row items-center font-medium text-lg">

@@ -98,7 +98,7 @@ export const ReadOnlyStats: React.FC = () => {
             unit=""
           />
           <DisabledEditableRow
-            label="Minimum Collateral Ratio"
+            label="Min. Collateral Ratio"
             inputId="trove-price"
             amount={"110%"}
             unit=""

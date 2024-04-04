@@ -166,7 +166,7 @@ class BorrowerWrappersProxy extends Proxy {
   }
 
   async transferiBGT(...params) {
-    return this.forwardFunction(params, 'transferiBGT(address,uint256)')
+    return this.forwardFunction(params, 'transferiBGT(address,uint256,address)')
   }
 }
 

@@ -31,9 +31,10 @@ contract BorrowerWrappersScript is BorrowerOperationsScript, iBGTTransferScript,
     constructor(
         address _borrowerOperationsAddress,
         address _troveManagerAddress,
-        address _pollenStakingAddress
+        address _pollenStakingAddress,
+        address _ibgtTokenAddress
     )
-        BorrowerOperationsScript(IBorrowerOperations(_borrowerOperationsAddress))
+        BorrowerOperationsScript(IBorrowerOperations(_borrowerOperationsAddress), _ibgtTokenAddress)
         POLLENStakingScript(_pollenStakingAddress)
         public
     {
@@ -60,15 +61,16 @@ contract BorrowerWrappersScript is BorrowerOperationsScript, iBGTTransferScript,
         IPOLLENStaking pollenStakingCached = troveManagerCached.pollenStaking();
         require(_pollenStakingAddress == address(pollenStakingCached), "BorrowerWrappersScript: Wrong POLLENStaking address");
         pollenStaking = pollenStakingCached;
-
-        setiBGTTokenAddress (IBorrowerOperations(_borrowerOperationsAddress).getActivePool().iBGTTokenAddress());
     }
 
     function claimCollateralAndOpenTrove(uint _maxFee, uint _NECTAmount, address _upperHint, address _lowerHint, uint _ibgtAmount) external {
         // uint balanceBefore = address(this).balance;
         // burner0621 modified
+        console.log ("****************");
         IERC20 ibgtToken = IERC20(borrowerOperations.getActivePool().iBGTTokenAddress());
+        console.log ("****************11");
         uint balanceBefore = ibgtToken.balanceOf(address(this));
+        console.log ("****************22");
         //////////////////////
 
         // Claim collateral

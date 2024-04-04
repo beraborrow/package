@@ -119,7 +119,7 @@ const App = () => {
                   ? [localhost]
                   : config.value.testnetOnly
                   ? [berachain]
-                  : [berachain, mainnet],
+                  : [berachain],
               walletConnectProjectId: config.value.walletConnectProjectId,
               infuraId: config.value.infuraApiKey,
               alchemyId: config.value.alchemyApiKey
