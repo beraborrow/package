@@ -14,6 +14,14 @@ html {
   font-family: 'Metropolis';
 }
 
+.bg-black-gradient {
+  background: "linear-gradient(180deg, #050402 0%, rgba(13, 7, 2, 0.00) 50%)"
+}
+
+.px-60px {
+  @apply px-[60px];
+}
+
 .black-background {
   background-color: #343434;
 }
@@ -88,3 +96,21 @@ input[type="number"]::-webkit-outer-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
 }
+
+.den-tooltip {
+  background-color: white;
+  color: black;
+}
+
+.react-tooltip-arrow
+  {
+      width: 10px!important;
+      height: 10px!important;
+      border-bottom-width: 40px;
+      border-left-width: 40px;
+      bottom: -20px!important;
+      border-color: white!important;
+      border-top-left-radius: 20px!important;
+      border-bottom-right-radius: 10px!important;
+      /* border-radius: 10px!important; */
+  }

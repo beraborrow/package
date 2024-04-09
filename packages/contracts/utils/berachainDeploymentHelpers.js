@@ -175,7 +175,7 @@ class BerachainDeploymentHelper {
     return FLOContracts
   }
 
-  async deployPOLLENContractsBerachain(bountyAddress, lpRewardsAddress, multisigAddress, deploymentState) {
+  async deployPOLLENContractsBerachain(publicSaleAddress, seedSaleAddress, teamAddress, babAddress, strategicAddress, lpRewardsAddress, multisigAddress, deploymentState) {
     const pollenStakingFactory = await this.getFactory("POLLENStaking")
     const lockupContractFactory_Factory = await this.getFactory("LockupContractFactory")
     const communityIssuanceFactory = await this.getFactory("CommunityIssuance")
@@ -190,7 +190,11 @@ class BerachainDeploymentHelper {
       communityIssuance.address,
       pollenStaking.address,
       lockupContractFactory.address,
-      bountyAddress,
+      seedSaleAddress,
+      publicSaleAddress,
+      strategicAddress,
+      teamAddress,
+      babAddress,
       lpRewardsAddress,
       multisigAddress
     ]

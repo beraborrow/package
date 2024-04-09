@@ -46,7 +46,6 @@ async function berachainDeploy(configParams) {
   // Check Uniswap Pair NECT-iBGT pair before pair creation
   let NECTiBGTPairAddr = await uniswapV2Factory.getPair(beraborrowCore.nectToken.address, configParams.externalAddrs.iBGT_ERC20)
   let iBGTNECTPairAddr = await uniswapV2Factory.getPair(configParams.externalAddrs.iBGT_ERC20, beraborrowCore.nectToken.address)
-  console.log ("**********************", NECTiBGTPairAddr)
   assert.equal(NECTiBGTPairAddr, iBGTNECTPairAddr)
 
 
@@ -71,7 +70,11 @@ async function berachainDeploy(configParams) {
 
   // Deploy POLLEN Contracts
   const POLLENContracts = await mdh.deployPOLLENContractsBerachain(
-    configParams.beraborrowAddrs.GENERAL_SAFE, // bounty address
+    configParams.beraborrowAddrs.PUBLIC_SAFE, // public sale address
+    configParams.beraborrowAddrs.SEED_SAFE, // seed address
+    configParams.beraborrowAddrs.TEAM_SAFE, // team address
+    configParams.beraborrowAddrs.BAB_SAFE, // BaB address
+    configParams.beraborrowAddrs.STRATEGIC_SAFE, // strategic address
     unipool.address,  // lp rewards address
     configParams.beraborrowAddrs.POLLEN_SAFE, // multisig POLLEN endowment address
     deploymentState,
@@ -87,7 +90,6 @@ async function berachainDeploy(configParams) {
 
   // Connect Unipool to POLLENToken and the NECT-iBGT pair address, with a 6 week duration
   const LPRewardsDuration = timeVals.SECONDS_IN_SIX_WEEKS
-  console.log (NECTiBGTPairAddr, "*************")
   await mdh.connectUnipoolBerachain(unipool, POLLENContracts, NECTiBGTPairAddr, LPRewardsDuration)
 
   // Log POLLEN and Unipool addresses

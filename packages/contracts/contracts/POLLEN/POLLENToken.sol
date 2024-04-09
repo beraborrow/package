@@ -6,48 +6,10 @@ import "../Dependencies/CheckContract.sol";
 import "../Dependencies/SafeMath.sol";
 import "../Interfaces/IPOLLENToken.sol";
 import "../Interfaces/ILockupContractFactory.sol";
+import "../Dependencies/Ownable.sol";
 import "../Dependencies/console.sol";
 
-/*
-* Based upon OpenZeppelin's ERC20 contract:
-* https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/ERC20.sol
-*  
-* and their EIP2612 (ERC20Permit / ERC712) functionality:
-* https://github.com/OpenZeppelin/openzeppelin-contracts/blob/53516bc555a454862470e7860a9b5254db4d00f5/contracts/token/ERC20/ERC20Permit.sol
-* 
-*
-*  --- Functionality added specific to the POLLENToken ---
-* 
-* 1) Transfer protection: blacklist of addresses that are invalid recipients (i.e. core BeraBorrow contracts) in external 
-* transfer() and transferFrom() calls. The purpose is to protect users from losing tokens by mistakenly sending POLLEN directly to a BeraBorrow
-* core contract, when they should rather call the right function.
-*
-* 2) sendToPOLLENStaking(): callable only by BeraBorrow core contracts, which move POLLEN tokens from user -> POLLENStaking contract.
-*
-* 3) Supply hard-capped at 100 million
-*
-* 4) CommunityIssuance and LockupContractFactory addresses are set at deployment
-*
-* 5) The bug bounties / hackathons allocation of 2 million tokens is minted at deployment to an EOA
-
-* 6) 32 million tokens are minted at deployment to the CommunityIssuance contract
-*
-* 7) The LP rewards allocation of (1 + 1/3) million tokens is minted at deployent to a Staking contract
-*
-* 8) (64 + 2/3) million tokens are minted at deployment to the BeraBorrow multisig
-*
-* 9) Until one year from deployment:
-* -BeraBorrow multisig may only transfer() tokens to LockupContracts that have been deployed via & registered in the 
-*  LockupContractFactory 
-* -approve(), increaseAllowance(), decreaseAllowance() revert when called by the multisig
-* -transferFrom() reverts when the multisig is the sender
-* -sendToPOLLENStaking() reverts when the multisig is the sender, blocking the multisig from staking its POLLEN.
-* 
-* After one year has passed since deployment of the POLLENToken, the restrictions on multisig operations are lifted
-* and the multisig has the same rights as any other address.
-*/
-
-contract POLLENToken is CheckContract, IPOLLENToken {
+contract POLLENToken is CheckContract, IPOLLENToken, Ownable {
     using SafeMath for uint256;
 
     // --- ERC20 Data ---
@@ -103,12 +65,28 @@ contract POLLENToken is CheckContract, IPOLLENToken {
 
     // --- Functions ---
 
+    /*
+    * Total Supply: 420 million
+    * Seed Sale: 18% -> 75.6 million
+    * Public Sale: 0.2% -> 0.84 million
+    * Strategic: 7.8% -> 32.76 million
+    * Community: 37% -> 155.4 million
+    * Team + Advisors: 17% -> 71.4 million
+    * BaB: 40 million
+    * Treasury: 40 million
+    * LP reward: 4 million
+    */
+
     constructor
     (
         address _communityIssuanceAddress, 
         address _pollenStakingAddress,
         address _lockupFactoryAddress,
-        address _bountyAddress,
+        address _seedSaleAddress,
+        address _publicSaleAddress,
+        address _strategicAddress,
+        address _teamAddress,
+        address _babAddress,
         address _lpRewardsAddress,
         address _multisigAddress
     ) 
@@ -134,24 +112,40 @@ contract POLLENToken is CheckContract, IPOLLENToken {
         _CACHED_DOMAIN_SEPARATOR = _buildDomainSeparator(_TYPE_HASH, hashedName, hashedVersion);
         
         // --- Initial POLLEN allocations ---
-     
-        uint bountyEntitlement = _1_MILLION.mul(2); // Allocate 2 million for bounties/hackathons
-        _mint(_bountyAddress, bountyEntitlement);
 
-        uint depositorsAndFrontEndsEntitlement = _1_MILLION.mul(32); // Allocate 32 million to the algorithmic issuance schedule
+        uint seedSaleEntitlement = 75_600_000; // Allocate 75.6 million for seed sale
+        _mint(_seedSaleAddress, seedSaleEntitlement);
+
+        uint publicSaleEntitlement = 840_000; // Allocate 0.84 million for seed sale
+        _mint(_publicSaleAddress, publicSaleEntitlement);
+
+        uint strategicEntitlement = 32_760_000; // Allocate 32.76 million for seed sale
+        _mint(_strategicAddress, strategicEntitlement);
+
+        uint teamEntitlement = 71_400_000; // Allocate 71.4 million for seed sale
+        _mint(_teamAddress, teamEntitlement);
+
+        uint babEntitlement = _1_MILLION.mul(40); // Allocate 40 million for seed sale
+        _mint(_babAddress, babEntitlement);
+
+        uint depositorsAndFrontEndsEntitlement = 155_400_000; // Allocate 155.4 million to the algorithmic issuance schedule
         _mint(_communityIssuanceAddress, depositorsAndFrontEndsEntitlement);
 
-        uint _lpRewardsEntitlement = _1_MILLION.mul(4).div(3);  // Allocate 1.33 million for LP rewards
+        uint _lpRewardsEntitlement = _1_MILLION.mul(4);  // Allocate 4 million for LP rewards
         lpRewardsEntitlement = _lpRewardsEntitlement;
         _mint(_lpRewardsAddress, _lpRewardsEntitlement);
         
-        // Allocate the remainder to the POLLEN Multisig: (100 - 2 - 32 - 1.33) million = 64.66 million
-        uint multisigEntitlement = _1_MILLION.mul(100)
-            .sub(bountyEntitlement)
+        // Allocate the remainder to the POLLEN Multisig: (420 - 75.6 - 0.84 - 32.76 - 71.4 - 40 - 155.4 - 4) million = 64.66 million
+        uint multisigEntitlement = _1_MILLION.mul(420)
+            .sub(seedSaleEntitlement)
+            .sub(publicSaleEntitlement)
+            .sub(teamEntitlement)
+            .sub(babEntitlement)
+            .sub(strategicEntitlement)
             .sub(depositorsAndFrontEndsEntitlement)
             .sub(_lpRewardsEntitlement);
 
-        _mint(_multisigAddress, multisigEntitlement);
+        _mint(_multisigAddress, multisigEntitlement); // treasury
     }
 
     // --- External functions ---

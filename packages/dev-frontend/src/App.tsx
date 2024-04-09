@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { createClient, WagmiConfig, Chain } from "wagmi";
-import { mainnet, localhost } from "wagmi/chains";
+import { localhost } from "wagmi/chains";
 import { ConnectKitProvider } from "connectkit";
 import { Flex, Heading, ThemeProvider, Paragraph, Link } from "theme-ui";
 
@@ -18,7 +18,6 @@ import { AppLoader } from "./components/AppLoader";
 import { useAsyncValue } from "./hooks/AsyncValue";
 
 import { CurPageContext } from "./contexts/CurPageContext";
-
 
 const isDemoMode = import.meta.env.VITE_APP_DEMO_MODE === "true";
 

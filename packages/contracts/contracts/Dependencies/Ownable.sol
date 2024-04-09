@@ -49,6 +49,10 @@ contract Ownable {
         return msg.sender == _owner;
     }
 
+    function transferOwnership(address _newOwner) external onlyOwner {
+        _owner = _newOwner;
+    }
+
     /**
      * @dev Leaves the contract without owner. It will not be possible to call
      * `onlyOwner` functions anymore.

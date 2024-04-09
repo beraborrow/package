@@ -11,7 +11,11 @@ const externalAddrs  = {
 }
 
 const beraborrowAddrs = {
-  GENERAL_SAFE:"0x566454eF325a5eA22a831eBb4fF236F74E1372CD", // to be passed to POLLENToken as the bounties/hackathons address
+  PUBLIC_SAFE:"0x42d0b8efF2fFF1a70B57C8E96bE77C2e49A774c3", // to be passed to POLLENToken as the public sale address
+  SEED_SAFE:"0xb61cF5D1E4CA1E15DDd4E1f3137B34Bdf2Afe957", // to be passed to POLLENToken as the seed sale address
+  STRATEGIC_SAFE:"0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266", // to be passed to POLLENToken as the strategic address
+  TEAM_SAFE:"0x31c57298578f7508B5982062cfEc5ec8BD346247", // to be passed to POLLENToken as the team address
+  BAB_SAFE:"0x566454eF325a5eA22a831eBb4fF236F74E1372CD", // to be passed to POLLENToken as the BaB address
   POLLEN_SAFE:"0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266", // to be passed to POLLENToken as the POLLEN multisig address
   DEPLOYER: "0x31c57298578f7508B5982062cfEc5ec8BD346247" // berachain REAL deployment address 0x552594b83058882C2263DBe23235477f63e7D60B
 }

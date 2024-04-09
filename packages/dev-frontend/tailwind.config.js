@@ -14,26 +14,71 @@ export default {
         'den': 'url("/imgs/den.png")',
       },
       backgroundPosition: {
-        "bottom-50": "center bottom 50px",
+        "bottom-10": "center bottom 10vh",
+        "bottom-15": "center bottom 15vh",
+        "bottom-20": "center bottom 30vh",
         "top-center-14": 'center top -14px'
       },
       colors: {
-        "dark-gray": "#FFEDD4"
+        "dark-gray": "#FFEDD4",
+        "gray-black": "#111",
+        "dark-orange": "#AF8765"
       },
       space: {
         "trove-lg": "calc(50vw - 100px)"
       },
       width: {
-        "trove-lg": "calc(50vw - 100px)",
+        "trove-lg": "min(calc(50% - 100px), 620px)",
         "screen-1/2": "50vw"
       },
+      height: {
+        "screen-100": "calc(100vh - 100px)",
+      },
+      maxWidth: {
+        "8xl": "1440px",
+        "400px": "400px",
+        "500px": "500px"
+      },
       minWidth: {
-        "trove-lg": "calc(50vw - 100px)"
+        "trove-lg": "min(calc(50% - 100px), 620px)",
+        "250px": "250px"
+      },
+      minHeight: {
+        "lg": "600px"
+      },
+      fontSize: {
+        "4.5xl": "40px"
+      },
+      letterSpacing: {
+        "tight": "-1.2px"
+      },
+      spacing: {
+        "14px": "14px",
+        "30px": "30px",
+        "55px": "55px",
+        "25": "100px",
+        "50": "200px",
+        "300px": "300px",
+        "380px": "380px",
+        "400px": "400px",
+        "450px": "450px",
+        "500px": "500px",
+        "600px": "600px"
+      },
+      padding: {
+        'px-60px': '60px',
+        'pr-60px': '60px',
+        'pl-60px': '60px',
+        'px-128px': '128px',
+        'pb-192px': '192px',
+        'pb-30px': '30px',
+        'pt-150px': '150px',
+        'pt-30px': '30px'
       },
       keyframes: {
         slideInFromRight: {
-          '0%': { left: '100%' },
-          '100%': { left: 'calc(50vw + 100px)' },
+          '0%': { right: '-100%' },
+          '100%': { right: 'calc(-50% - 100px)' },
         },
         slideOutFromRight: {
           '0%': { transform: 'translateX(0)' },
@@ -57,7 +102,7 @@ export default {
         },
         slideInFromLeft: {
           '0%': { left: '-100%' },
-          '100%': { left: 'calc(-50vw + 100px)' },
+          '100%': { left: 'calc(-50% + 100px)' },
         },
         fadeBiggerBear: {
           '0%': { scale: '85%' },
